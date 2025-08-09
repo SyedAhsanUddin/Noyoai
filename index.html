@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOYOAI</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- OGL Library for Orb Animation -->
+    <script type="module">
+        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
+        window.ogl = { Renderer, Program, Mesh, Triangle, Vec3 };
+    </script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#001B6B', // Deep Navy Blue
+                        'brand-cta': '#6A0FFF',     // Vibrant Purple
+                        'brand-highlight': '#66CDFF',// Sky Blue
+                        'brand-accent': '#F4A3FF',   // Light Pink
+                        'brand-dark': '#1d1d1f',    
+                        'brand-gray': '#6e6e73',
+                        'brand-navy': '#192A56',
+                        'brand-light-gray': '#f5f5f7'
+                    },
+                    fontFamily: {
+                        display: ['General Sans', 'sans-serif'],
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' }
+                        },
+                        taglineGradient: {
+                            '0%': { backgroundPosition: '200% center' },
+                            '100%': { backgroundPosition: '-200% center' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-1': 'fadeIn 1s ease-out 0.2s forwards',
+                        'fade-in-2': 'fadeIn 1s ease-out 0.4s forwards',
+                        'fade-in-3': 'fadeIn 1s ease-out 0.6s forwards',
+                        'tagline-gradient': 'taglineGradient 6s linear infinite',
+                        scroll: 'scroll 30s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'General Sans', sans-serif;
+            background-color: #000000;
+        }
+        .dropdown-menu {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .dropdown-item:hover {
+            color: #66CDFF;
+        }
+        /* Gradient Text on Hover */
+        .nav-link:hover > span {
+           background: linear-gradient(to right, #F4A3FF, #66CDFF);
+           -webkit-background-clip: text;
+           background-clip: text;
+           color: transparent;
+        }
+        /* Glare Hover Button Styles */
+        .glare-hover {
+            overflow: hidden;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+        .glare-hover::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(-45deg, hsla(0,0%,100%,0) 60%, rgba(255,255,255,0.5) 70%, hsla(0,0%,100%,0), hsla(0,0%,100%,0) 100%);
+            transition: 650ms ease;
+            background-size: 250% 250%, 100% 100%;
+            background-repeat: no-repeat;
+            background-position: -100% -100%, 0 0;
+        }
+        .glare-hover:hover::before {
+            background-position: 100% 100%, 0 0;
+        }
+        .benefit-pod {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .benefit-pod:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+        }
+        .benefit-pod:hover i {
+            color: #6A0FFF; /* Vibrant Purple on hover */
+        }
+        .orb-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Orb is in the middle layer */
+        }
+        .tagline-gradient {
+            background-image: linear-gradient(to right, #001B6B 0%, #6A0FFF 25%, #F4A3FF 50%, #ed293b 75%, #001B6B 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Styles for centered docked nav */
+        #main-header .container {
+            position: relative;
+        }
+        #main-header:not(.header-scrolled) nav {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Styles for the scrolling "notch" navigation */
+        #main-header.header-scrolled {
+            background-color: transparent;
+            border-bottom-color: transparent;
+            backdrop-filter: none;
+        }
+        #main-header.header-scrolled .container {
+            justify-content: center;
+        }
+        #main-header.header-scrolled #logo-link {
+            opacity: 0;
+            width: 0;
+            padding: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+        #main-header.header-scrolled #nav-wrapper {
+            position: static;
+            transform: none;
+            background-color: rgba(29, 29, 31, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+    <!-- HEADER -->
+    <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/10 font-display transition-all duration-300 ease-in-out">
+        <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
+            <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out">
+                <img src="images/noyoai.png" alt="NOYOAI Logo" class="h-10 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/160x40/000000/FFFFFF?text=NOYOAI';">
+            </a>
+            <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
+                <nav class="hidden md:flex items-center gap-10 font-medium text-sm text-white">
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                        <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Industry</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Feature</a>
+                        </div>
+                    </div>
+                    <a href="#" class="relative py-2 group nav-link">
+                        <span>Pricing</span>
+                    </a>
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                         <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Blog</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">FAQ</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Help Center</a>
+                        </div>
+                    </div>
+                    <a href="#" class="relative py-2 group nav-link">
+                        <span>About</span>
+                    </a>
+                </nav>
+                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex flex-col justify-center text-center p-6 font-display">
+        <div id="orb-container" class="orb-container"></div>
+        <div class="relative z-0 max-w-screen-lg mx-auto"> <!-- Text is now behind the orb -->
+            <h1 class="font-bold text-4xl md:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
+                <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
+                <br>
+                <span class="text-3xl md:text-4xl text-gray-300 font-medium">
+                    So That You Are <span class="font-bold tagline-gradient animate-tagline-gradient">Never On Your Own.</span>
+                </span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 opacity-0 animate-fade-in-2">
+                Experience the future of customer engagement. Our custom AI chatbots for WhatsApp provide instant, intelligent, and on-brand conversations, 24/7.
+            </p>
+        </div>
+        <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3"> <!-- Button is in front of the orb -->
+            <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
+                                  transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                Book a Free Demo
+            </a>
+        </div>
+    </section>
+
+    <!-- Infinite Benefits Belt -->
+    <div class="w-full overflow-hidden py-8 bg-black border-t border-b border-white/10">
+         <div class="flex animate-scroll hover:[animation-play-state:paused]">
+            <div class="flex-shrink-0 flex items-center pr-8 space-x-8">
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-sack-dollar text-brand-highlight transition-colors"></i> Operational Efficiency</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-brain text-brand-highlight transition-colors"></i> Data-Driven Insights</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
+            </div>
+             <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-sack-dollar text-brand-highlight transition-colors"></i> Operational Efficiency</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-brain text-brand-highlight transition-colors"></i> Data-Driven Insights</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Scroll-based Header Change
+        const mainHeader = document.getElementById('main-header');
+        if (mainHeader) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.classList.add('header-scrolled');
+                } else {
+                    mainHeader.classList.remove('header-scrolled');
+                }
+            });
+        }
+
+        // Header Dropdown Logic
+        document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
+            const button = dropdown.querySelector('[data-dropdown-button]');
+            const menu = dropdown.querySelector('[data-dropdown-menu]');
+            const icon = button.querySelector('i');
+            let hideTimeout;
+
+            const showMenu = () => {
+                clearTimeout(hideTimeout);
+                menu.classList.remove('hidden');
+                if(icon) icon.style.transform = 'rotate(180deg)';
+                setTimeout(() => menu.classList.add('is-visible'), 10);
+            };
+            const hideMenu = () => {
+                hideTimeout = setTimeout(() => {
+                    menu.classList.remove('is-visible');
+                    if(icon) icon.style.transform = 'rotate(0deg)';
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }, 400);
+            };
+            
+            dropdown.addEventListener('mouseenter', showMenu);
+            dropdown.addEventListener('mouseleave', hideMenu);
+        });
+
+        // Tubelight Nav Bar Logic
+        const nav = document.querySelector('header nav');
+        if (nav) {
+            const navItems = nav.querySelectorAll('a.nav-link, div[data-dropdown]');
+            const tubelight = document.createElement('div');
+
+            // Style the tubelight element
+            tubelight.style.position = 'absolute';
+            tubelight.style.bottom = '-2px'; // Position slightly below the nav items
+            tubelight.style.height = '3px';
+            tubelight.style.backgroundColor = '#66CDFF';
+            tubelight.style.borderRadius = '9999px';
+            tubelight.style.boxShadow = '0 0 10px #66CDFF, 0 0 15px #6A0FFF';
+            tubelight.style.transition = 'left 0.3s ease, width 0.3s ease, opacity 0.3s ease';
+            tubelight.style.pointerEvents = 'none';
+            tubelight.style.opacity = '0';
+
+            // Prepare the nav container
+            nav.classList.add('relative');
+            nav.appendChild(tubelight);
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const { offsetLeft, offsetWidth } = item;
+                    tubelight.style.left = `${offsetLeft}px`;
+                    tubelight.style.width = `${offsetWidth}px`;
+                    tubelight.style.opacity = '1';
+                });
+            });
+
+            nav.addEventListener('mouseleave', () => {
+                tubelight.style.opacity = '0';
+            });
+        }
+
+
+        // Orb Animation Logic
+        const { Renderer, Program, Mesh, Triangle, Vec3 } = window.ogl;
+
+        const container = document.getElementById('orb-container');
+        if (container) {
+            const vert = /* glsl */ `
+                precision highp float;
+                attribute vec2 position;
+                attribute vec2 uv;
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = vec4(position, 0.0, 1.0);
+                }
+            `;
+
+            const frag = /* glsl */ `
+                precision highp float;
+                uniform float iTime;
+                uniform vec3 iResolution;
+                uniform float hue;
+                uniform float hover;
+                uniform float rot;
+                uniform float hoverIntensity;
+                varying vec2 vUv;
+
+                vec3 rgb2yiq(vec3 c){return vec3(dot(c,vec3(.299,.587,.114)),dot(c,vec3(.596,-.274,-.322)),dot(c,vec3(.211,-.523,.312)));}
+                vec3 yiq2rgb(vec3 c){return vec3(c.x+.956*c.y+.621*c.z,c.x-.272*c.y-.647*c.z,c.x-1.106*c.y+1.703*c.z);}
+                vec3 adjustHue(vec3 color,float hueDeg){float hueRad=hueDeg*3.14159265/180.;vec3 yiq=rgb2yiq(color);float cosA=cos(hueRad);float sinA=sin(hueRad);float i=yiq.y*cosA-yiq.z*sinA;float q=yiq.y*sinA+yiq.z*cosA;yiq.y=i;yiq.z=q;return yiq2rgb(yiq);}
+                vec3 hash33(vec3 p3){p3=fract(p3*vec3(.1031,.11369,.13787));p3+=dot(p3,p3.yxz+19.19);return-1.+2.*fract(vec3(p3.x+p3.y,p3.x+p3.z,p3.y+p3.z)*p3.zyx);}
+                float snoise3(vec3 p){const float K1=.333333333;const float K2=.166666667;vec3 i=floor(p+(p.x+p.y+p.z)*K1);vec3 d0=p-(i-(i.x+i.y+i.z)*K2);vec3 e=step(vec3(0.),d0-d0.yzx);vec3 i1=e*(1.-e.zxy);vec3 i2=1.-e.zxy*(1.-e);vec3 d1=d0-(i1-K2);vec3 d2=d0-(i2-K1);vec3 d3=d0-.5;vec4 h=max(.6-vec4(dot(d0,d0),dot(d1,d1),dot(d2,d2),dot(d3,d3)),0.);vec4 n=h*h*h*h*vec4(dot(d0,hash33(i)),dot(d1,hash33(i+i1)),dot(d2,hash33(i+i2)),dot(d3,hash33(i+1.)));return dot(vec4(31.316),n);}
+                vec4 extractAlpha(vec3 colorIn){float a=max(max(colorIn.r,colorIn.g),colorIn.b);return vec4(colorIn.rgb/(a+1e-5),a);}
+                
+                // Using your brand colors (converted from hex to vec3)
+                const vec3 baseColor1 = vec3(0.415, 0.062, 1.0);   // #6A0FFF
+                const vec3 baseColor2 = vec3(0.4, 0.803, 1.0);     // #66CDFF
+                const vec3 baseColor3 = vec3(0.0, 0.105, 0.419);   // #001B6B
+                
+                const float innerRadius=.6;
+                const float noiseScale=.65;
+                float light1(float intensity,float attenuation,float dist){return intensity/(1.+dist*attenuation);}
+                float light2(float intensity,float attenuation,float dist){return intensity/(1.+dist*dist*attenuation);}
+                vec4 draw(vec2 uv){vec3 color1=adjustHue(baseColor1,hue);vec3 color2=adjustHue(baseColor2,hue);vec3 color3=adjustHue(baseColor3,hue);float ang=atan(uv.y,uv.x);float len=length(uv);float invLen=len>0.?1./len:0.;float n0=snoise3(vec3(uv*noiseScale,iTime*.5))*.5+.5;float r0=mix(mix(innerRadius,1.,.4),mix(innerRadius,1.,.6),n0);float d0=distance(uv,(r0*invLen)*uv);float v0=light1(1.,10.,d0);v0*=smoothstep(r0*1.05,r0,len);float cl=cos(ang+iTime*2.)*.5+.5;float a=iTime*-1.;vec2 pos=vec2(cos(a),sin(a))*r0;float d=distance(uv,pos);float v1=light2(1.5,5.,d);v1*=light1(1.,50.,d0);float v2=smoothstep(1.,mix(innerRadius,1.,n0*.5),len);float v3=smoothstep(innerRadius,mix(innerRadius,1.,.5),len);vec3 col=mix(color1,color2,cl);col=mix(color3,col,v0);col=(col+v1)*v2*v3;col=clamp(col,0.,1.);return extractAlpha(col);}
+                vec4 mainImage(vec2 fragCoord){vec2 center=iResolution.xy*.5;float size=min(iResolution.x,iResolution.y);vec2 uv=(fragCoord-center)/size*2.;float angle=rot;float s=sin(angle);float c=cos(angle);uv=vec2(c*uv.x-s*uv.y,s*uv.x+c*uv.y);uv.x+=hover*hoverIntensity*.1*sin(uv.y*10.+iTime);uv.y+=hover*hoverIntensity*.1*sin(uv.x*10.+iTime);return draw(uv);}
+                void main(){vec2 fragCoord=vUv*iResolution.xy;vec4 col=mainImage(fragCoord);gl_FragColor=vec4(col.rgb,col.a*0.8);} // Added opacity to the orb
+            `;
+
+            const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+            const gl = renderer.gl;
+            gl.clearColor(0, 0, 0, 0); // Set clear color to transparent black
+            container.appendChild(gl.canvas);
+
+            const geometry = new Triangle(gl);
+            const program = new Program(gl, {
+                vertex: vert,
+                fragment: frag,
+                uniforms: {
+                    iTime: { value: 0 },
+                    iResolution: { value: new Vec3(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+                    hue: { value: 0 },
+                    hover: { value: 0 },
+                    rot: { value: 0 },
+                    hoverIntensity: { value: 0.5 },
+                },
+            });
+
+            const mesh = new Mesh(gl, { geometry, program });
+
+            function resize() {
+                if (!container) return;
+                const dpr = window.devicePixelRatio || 1;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                renderer.setSize(width * dpr, height * dpr);
+                gl.canvas.style.width = width + "px";
+                gl.canvas.style.height = height + "px";
+                program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+            }
+            window.addEventListener("resize", resize);
+            resize();
+
+            let targetHover = 0;
+            let lastTime = 0;
+            let currentRot = 0;
+            const rotationSpeed = 0.3;
+
+            const handleMouseMove = (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const width = rect.width;
+                const height = rect.height;
+                const size = Math.min(width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const uvX = ((x - centerX) / size) * 2.0;
+                const uvY = ((y - centerY) / size) * 2.0;
+                targetHover = Math.sqrt(uvX * uvX + uvY * uvY) < 0.8 ? 1 : 0;
+            };
+
+            container.addEventListener("mousemove", handleMouseMove);
+            container.addEventListener("mouseleave", () => { targetHover = 0; });
+
+            let rafId;
+            const update = (t) => {
+                rafId = requestAnimationFrame(update);
+                const dt = (t - lastTime) * 0.001;
+                lastTime = t;
+                program.uniforms.iTime.value = t * 0.001;
+                program.uniforms.hover.value += (targetHover - program.uniforms.hover.value) * 0.1;
+                if (targetHover > 0.5) { currentRot += dt * rotationSpeed; }
+                program.uniforms.rot.value = currentRot;
+                renderer.render({ scene: mesh });
+            };
+            rafId = requestAnimationFrame(update);
+        }
+    </script>
+
+</body>
+</html>
