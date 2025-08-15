@@ -33,10 +33,10 @@
             theme: {
                 extend: {
                     colors: {
-                        'brand-primary': '#001B6B',   // Deep Navy Blue
-                        'brand-cta': '#6A0FFF',       // Vibrant Purple
+                        'brand-primary': '#001B6B',  // Deep Navy Blue
+                        'brand-cta': '#6A0FFF',      // Vibrant Purple
                         'brand-highlight': '#66CDFF', // Sky Blue
-                        'brand-accent': '#F4A3FF',    // Light Pink
+                        'brand-accent': '#F4A3FF',   // Light Pink
                         'brand-dark': '#1d1d1f',
                         'brand-gray': '#a0aec0',      // Combined gray
                         'brand-navy': '#192A56',
@@ -100,7 +100,6 @@
             font-family: 'General Sans', 'Satoshi', sans-serif;
             background-color: #000000;
             color: #ffffff;
-            /* overflow-x: hidden; */ /* Commented out to allow individual section scrolling */
         }
         
         /* --- Header & Hero Styles --- */
@@ -194,21 +193,27 @@
             background-clip: text;
             color: transparent;
         }
-        .scroll-stack-scroller {
+        #industries-section-wrapper {
             position: relative;
-            width: 100%; height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
         }
-        .scroll-stack-inner { padding: 20vh 5rem 50rem; }
-        .scroll-stack-end { width: 100%; height: 1px; }
+        .scroll-stack-container {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
         .card-wrapper {
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
             border-radius: 40px;
             overflow: hidden;
-            transform-origin: top center;
-            will-change: transform, filter;
-            height: 25rem; width: 100%;
+            transform-origin: center center;
+            will-change: transform;
+            height: 25rem;
+            width: 80%;
+            max-width: 900px;
             box-sizing: border-box;
             padding: 2px;
             background: transparent;
@@ -542,7 +547,7 @@
         </div>
         <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3"> <!-- Button is in front of the orb -->
             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
-                                 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                                  transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                 Book a Free Demo
             </a>
         </div>
@@ -573,15 +578,14 @@
     </div>
 
     <!-- Industries Served Section -->
-    <div class="scroll-stack-scroller">
-        <div class="scroll-stack-inner">
-            <div class="text-center mb-16 px-4 max-w-2xl mx-auto">
-                <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
-                    A Perfect Fit for <span class="heading-gradient-text">Your Industry.</span>
-                </h2>
-                <p class="text-lg text-brand-gray font-medium">Seamless automation where it matters most.</p>
-            </div>
-
+    <div id="industries-section-wrapper">
+        <div class="text-center py-24 px-4 max-w-2xl mx-auto">
+            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                A Perfect Fit for <span class="heading-gradient-text">Your Industry.</span>
+            </h2>
+            <p class="text-lg text-brand-gray font-medium">Seamless automation where it matters most.</p>
+        </div>
+        <div class="scroll-stack-container">
             <!-- Card 1: Retail -->
             <div class="card-wrapper" style="--color1: #6A0FFF; --color2: #F4A3FF;">
                 <div class="inner-content">
@@ -646,7 +650,6 @@
                     </div>
                 </div>
             </div>
-            <div class="scroll-stack-end"></div>
         </div>
     </div>
     
@@ -837,46 +840,56 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // --- Industries Section Logic ---
-            const scroller = document.querySelector('.scroll-stack-scroller');
-            if (scroller) {
-                const cards = Array.from(scroller.querySelectorAll('.card-wrapper'));
+            const industriesWrapper = document.getElementById('industries-section-wrapper');
+            if (industriesWrapper) {
+                const cards = Array.from(industriesWrapper.querySelectorAll('.card-wrapper'));
                 if (cards.length > 0) {
-                    const itemDistance = 100, itemScale = 0.03, itemStackDistance = 30, stackPosition = "20%", baseScale = 0.85;
-                    cards.forEach((card, i) => {
-                        if (i < cards.length - 1) card.style.marginBottom = `${itemDistance}px`;
-                    });
-                    const calculateProgress = (scrollTop, start, end) => {
-                        if (scrollTop < start) return 0; if (scrollTop > end) return 1;
-                        return (scrollTop - start) / (end - start);
-                    };
-                    const parsePercentage = (value, containerHeight) => {
-                        if (typeof value === 'string' && value.includes('%')) return (parseFloat(value) / 100) * containerHeight;
-                        return parseFloat(value);
-                    };
+                    const container = industriesWrapper.querySelector('.scroll-stack-container');
+                    const titleDiv = industriesWrapper.querySelector('.text-center');
+                    
+                    // Set the height of the wrapper to create scroll space
+                    // A larger multiplier here (e.g., 150) means more scrolling is needed for the animation.
+                    industriesWrapper.style.height = `${100 + cards.length * 150}vh`;
+
                     const updateCardTransforms = () => {
-                        const scrollTop = scroller.scrollTop, containerHeight = scroller.clientHeight;
-                        const stackPositionPx = parsePercentage(stackPosition, containerHeight);
-                        const endElement = scroller.querySelector('.scroll-stack-end');
-                        const endElementTop = endElement ? endElement.offsetTop : 0;
+                        const wrapperTop = industriesWrapper.offsetTop;
+                        const wrapperHeight = industriesWrapper.offsetHeight;
+                        const containerHeight = container.offsetHeight;
+                        const scrollY = window.scrollY;
+                        const titleHeight = titleDiv.offsetHeight;
+
+                        // Start the animation calculation only after the title has been scrolled past
+                        const animationStartTop = wrapperTop + titleHeight;
+
+                        // Calculate how far we've scrolled through the animation zone
+                        const scrollableHeight = wrapperHeight - containerHeight - titleHeight;
+                        const scrollProgress = Math.max(0, Math.min(1, (scrollY - animationStartTop) / scrollableHeight));
+                        
+                        // Determine which card should be "active" based on progress
+                        const activeCardIndex = Math.floor(scrollProgress * cards.length);
+
                         cards.forEach((card, i) => {
-                            const cardTop = card.offsetTop;
-                            const pinStart = cardTop - stackPositionPx - (itemStackDistance * i);
-                            const pinEnd = endElementTop - containerHeight;
-                            const scaleProgress = calculateProgress(scrollTop, pinStart, pinEnd);
-                            const targetScale = baseScale + (i * itemScale);
-                            const scale = 1 - scaleProgress * (1 - targetScale);
-                            let translateY = 0;
-                            if (scrollTop >= pinStart && scrollTop <= pinEnd) {
-                                translateY = scrollTop - cardTop + stackPositionPx + (itemStackDistance * i);
-                            } else if (scrollTop > pinEnd) {
-                                translateY = pinEnd - cardTop + stackPositionPx + (itemStackDistance * i);
+                            const progressForCard = Math.max(0, Math.min(1, (scrollProgress * cards.length) - i));
+                            
+                            const yTranslate = -50 + progressForCard * 50; // Starts at -50% (centered) and moves to 0
+                            const scale = 1 - (i * 0.03) + (progressForCard * 0.03);
+                            
+                            let opacity = 1;
+                            if (i < activeCardIndex) {
+                                opacity = 0; // Hide cards that have been scrolled past
+                            } else if (i === activeCardIndex) {
+                                opacity = 1 - ( (scrollProgress * cards.length) - i);
                             }
-                            card.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
+
+                            card.style.transform = `translate(-50%, -50%) scale(${Math.min(1, scale)})`;
+                            card.style.opacity = opacity;
+                            card.style.zIndex = cards.length - i;
                         });
                     };
-                    scroller.addEventListener('scroll', updateCardTransforms);
+
+                    window.addEventListener('scroll', updateCardTransforms);
                     window.addEventListener('resize', updateCardTransforms);
-                    updateCardTransforms();
+                    updateCardTransforms(); // Initial call
                 }
             }
 
@@ -1012,10 +1025,12 @@
         });
     </script>
     
-    <!-- React Babel Script for Features Section -->
+    <!-- React Babel Script for Features & DotGrid Sections -->
     <script type="text/babel">
-        const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef } = React;
+        const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
+        const InertiaPlugin = window.InertiaPlugin;
 
+        // --- Features Section Component ---
         const Card = forwardRef(
             ({ customClass, ...rest }, ref) => (
                 <div
@@ -1147,8 +1162,10 @@
         }
 
         const featuresContainer = document.getElementById('features-root');
-        const featuresRoot = ReactDOM.createRoot(featuresContainer);
-        featuresRoot.render(<FeaturesApp />);
+        if (featuresContainer) {
+            const featuresRoot = ReactDOM.createRoot(featuresContainer);
+            featuresRoot.render(<FeaturesApp />);
+        }
     </script>
 
 </body>
