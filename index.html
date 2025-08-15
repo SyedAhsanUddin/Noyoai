@@ -102,9 +102,6 @@
             color: #ffffff;
             overflow-x: hidden;
         }
-        body.menu-open {
-            overflow: hidden;
-        }
         
         /* --- Header & Hero Styles --- */
         .dropdown-menu {
@@ -193,7 +190,7 @@
         }
         #mobile-menu {
             transition: transform 0.3s ease-in-out;
-            z-index: 40;
+            z-index: 60;
         }
         #mobile-menu-button {
             z-index: 50;
@@ -572,14 +569,19 @@
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg flex flex-col items-center justify-center gap-8 text-2xl font-bold -translate-x-full md:hidden">
-            <a href="#" class="nav-link">Solutions</a>
-            <a href="#" class="nav-link">Pricing</a>
-            <a href="#" class="nav-link">Resources</a>
-            <a href="#" class="nav-link">About</a>
-             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg mt-4">
-                Get Started
-            </a>
+        <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg -translate-x-full md:hidden">
+            <button id="mobile-menu-close-button" class="absolute top-6 right-6 text-white text-4xl">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-bold">
+                <a href="#" class="nav-link">Solutions</a>
+                <a href="#" class="nav-link">Pricing</a>
+                <a href="#" class="nav-link">Resources</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg mt-4">
+                    Get Started
+                </a>
+            </div>
         </div>
     </header>
 
@@ -792,24 +794,18 @@
 
         // Mobile Menu Toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
         const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuIcon = mobileMenuButton.querySelector('i');
 
-        mobileMenuButton.addEventListener('click', () => {
-            const isMenuOpen = !mobileMenu.classList.contains('-translate-x-full');
-            if (isMenuOpen) {
-                mobileMenu.classList.add('-translate-x-full');
-                mobileMenuIcon.classList.add('fa-bars');
-                mobileMenuIcon.classList.remove('fa-times');
-                document.body.classList.remove('menu-open');
+        const openMenu = () => {
+             mobileMenu.classList.remove('-translate-x-full');
+        }
+        const closeMenu = () => {
+            mobileMenu.classList.add('-translate-x-full');
+        }
 
-            } else {
-                mobileMenu.classList.remove('-translate-x-full');
-                mobileMenuIcon.classList.remove('fa-bars');
-                mobileMenuIcon.classList.add('fa-times');
-                document.body.classList.add('menu-open');
-            }
-        });
+        mobileMenuButton.addEventListener('click', openMenu);
+        mobileMenuCloseButton.addEventListener('click', closeMenu);
 
 
         // Tubelight Nav Bar Logic
@@ -1240,3 +1236,5 @@
 
 </body>
 </html>
+" and am asking a follow up question about it.
+the hero section is not responsive on mobile and the text is going out of the screen, fix this is
