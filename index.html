@@ -100,6 +100,7 @@
             font-family: 'General Sans', 'Satoshi', sans-serif;
             background-color: #000000;
             color: #ffffff;
+            overflow-x: hidden;
         }
         
         /* --- Header & Hero Styles --- */
@@ -159,8 +160,7 @@
         }
         #main-header .container { position: relative; }
         
-        /* This rule correctly centers the nav links in the initial view */
-        #main-header:not(.header-scrolled) nav {
+        #main-header:not(.header-scrolled) #desktop-nav {
             position: absolute;
             left: 50%; top: 50%;
             transform: translate(-50%, -50%);
@@ -188,6 +188,9 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
 
         /* --- Industries Section Styles --- */
         .heading-gradient-text {
@@ -210,16 +213,23 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            border-radius: 40px;
+            border-radius: 20px;
             overflow: hidden;
             transform-origin: center center;
             will-change: transform;
-            height: 25rem;
-            width: 80%;
+            height: auto;
+            width: 90%;
             max-width: 900px;
             box-sizing: border-box;
             padding: 2px;
             background: transparent;
+        }
+         @media (min-width: 768px) {
+            .card-wrapper {
+                height: 25rem;
+                width: 80%;
+                 border-radius: 40px;
+            }
         }
         .card-wrapper::before {
             content: '';
@@ -247,11 +257,17 @@
             position: relative;
             background: #000;
             color: white;
-            padding: 3rem;
-            border-radius: 38px;
+            padding: 1.5rem;
+            border-radius: 18px;
             z-index: 2;
             height: 100%;
             transition: transform 0.3s ease;
+        }
+         @media (min-width: 768px) {
+            .inner-content {
+                padding: 3rem;
+                border-radius: 38px;
+            }
         }
         .card-wrapper:hover .inner-content { transform: scale(0.98); }
         .industry-button {
@@ -305,6 +321,14 @@
             -webkit-backface-visibility: hidden;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            height: auto;
+        }
+         @media (min-width: 640px) {
+            .card {
+                width: 450px;
+                height: 300px;
+            }
         }
         
         /* --- How It Works Section Styles --- */
@@ -412,14 +436,19 @@
             max-width: 56rem;
             margin: 0 auto;
         }
-        .testimonial-grid { display: grid; gap: 5rem; align-items: center; }
+        .testimonial-grid { display: grid; gap: 2rem; align-items: center; }
         .image-container {
             position: relative;
-            width: 100%; height: 24rem;
+            width: 100%; height: 18rem;
             perspective: 1000px;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+         @media (min-width: 768px) {
+            .image-container {
+                height: 24rem;
+            }
         }
         .testimonial-image {
             position: absolute;
@@ -485,7 +514,7 @@
         .arrow-button svg { fill: var(--color-arrow-fg); }
         @media (min-width: 768px) {
             .main-section h2 { font-size: 3rem; }
-            .testimonial-grid { grid-template-columns: 1fr 1fr; }
+            .testimonial-grid { grid-template-columns: 1fr 1fr; gap: 5rem;}
             .arrow-buttons { padding-top: 0; }
         }
     </style>
@@ -495,11 +524,11 @@
     <!-- HEADER -->
     <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/10 font-display transition-all duration-300 ease-in-out">
         <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
-            <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out">
-                <img src="images/logo.png" alt="NOYOAI Logo" class="h-10 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+            <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-12 md:h-14 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
             </a>
             <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
-                <nav class="hidden md:flex items-center gap-10 font-medium text-sm text-white">
+                <nav id="desktop-nav" class="hidden md:flex items-center gap-10 font-medium text-sm text-white">
                     <div class="relative group" data-dropdown>
                         <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
                             <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
@@ -526,17 +555,31 @@
                         <span>About</span>
                     </a>
                 </nav>
-                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105">
+                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 hidden md:inline-block">
                     Get Started
                 </a>
+                 <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden z-50 text-white text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
             </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg flex flex-col items-center justify-center gap-8 text-2xl font-bold -translate-x-full md:hidden">
+            <a href="#" class="nav-link">Solutions</a>
+            <a href="#" class="nav-link">Pricing</a>
+            <a href="#" class="nav-link">Resources</a>
+            <a href="#" class="nav-link">About</a>
+             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg mt-4">
+                Get Started
+            </a>
         </div>
     </header>
 
     <!-- HERO SECTION -->
     <section class="relative min-h-screen flex flex-col justify-center text-center p-6 font-display">
         <div id="orb-container" class="orb-container"></div>
-        <div class="relative z-0 max-w-screen-lg mx-auto"> <!-- Text is now behind the orb -->
+        <div class="relative z-10 max-w-screen-lg mx-auto">
             <h1 class="font-bold text-4xl md:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
                 <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
                 <br>
@@ -548,7 +591,7 @@
                 Experience the future of customer engagement. Our custom AI chatbots for WhatsApp provide instant, intelligent, and on-brand conversations, 24/7.
             </p>
         </div>
-        <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3"> <!-- Button is in front of the orb -->
+        <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3">
             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
                                         transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                 Book a Free Demo
@@ -582,74 +625,64 @@
 
     <!-- Industries Served Section -->
     <div id="industries-section-wrapper">
-        <div class="text-center py-24 px-4 max-w-2xl mx-auto">
-            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+        <div class="text-center py-16 md:py-24 px-4 max-w-2xl mx-auto">
+            <h2 class="font-bold text-3xl md:text-5xl text-white mb-4">
                 A Perfect Fit for <span class="heading-gradient-text">Your Industry.</span>
             </h2>
-            <p class="text-lg text-brand-gray font-medium">Seamless automation where it matters most.</p>
+            <p class="text-base md:text-lg text-brand-gray font-medium">Seamless automation where it matters most.</p>
         </div>
         <div class="scroll-stack-container">
             <!-- Card 1: Retail -->
             <div class="card-wrapper" style="--color1: #6A0FFF; --color2: #F4A3FF;">
-                <div class="inner-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
-                        <img src="https://placehold.co/600x400/000000/ffffff?text=Retail" class="w-full h-auto rounded-3xl" alt="Modern retail store">
-                        <div class="text-left text-white">
-                            <a href="#" class="industry-button font-bold text-4xl mb-4">Retail</a>
-                            <p class="text-xl font-medium mt-4">Transform your customer experience with 24/7 AI assistance. From instant order tracking to personalized recommendations, <span class="font-bold">NOYO Ai</span> empowers your brand to build lasting loyalty.</p>
-                        </div>
+                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
+                    <img src="https://placehold.co/600x400/000000/ffffff?text=Retail" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern retail store">
+                    <div class="text-left text-white">
+                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Retail</a>
+                        <p class="text-base md:text-xl font-medium mt-4">Transform your customer experience with 24/7 AI assistance. From instant order tracking to personalized recommendations, <span class="font-bold">NOYO Ai</span> empowers your brand to build lasting loyalty.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Real Estate -->
             <div class="card-wrapper" style="--color1: #66CDFF; --color2: #001B6B;">
-                <div class="inner-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
-                        <img src="https://placehold.co/600x400/000000/ffffff?text=Real+Estate" class="w-full h-auto rounded-3xl" alt="Modern house exterior">
-                        <div class="text-left text-white">
-                             <a href="#" class="industry-button font-bold text-4xl mb-4">Real Estate</a>
-                            <p class="text-xl font-medium mt-4">Capture and qualify every lead, day or night. <span class="font-bold">NOYO Ai</span> schedules viewings and answers property inquiries instantly, freeing your agents to focus on what they do best: closing deals.</p>
-                        </div>
+                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
+                    <img src="https://placehold.co/600x400/000000/ffffff?text=Real+Estate" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern house exterior">
+                    <div class="text-left text-white">
+                         <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Real Estate</a>
+                        <p class="text-base md:text-xl font-medium mt-4">Capture and qualify every lead, day or night. <span class="font-bold">NOYO Ai</span> schedules viewings and answers property inquiries instantly, freeing your agents to focus on what they do best: closing deals.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Salons -->
             <div class="card-wrapper" style="--color1: #F4A3FF; --color2: #6A0FFF;">
-                <div class="inner-content">
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
-                        <img src="https://placehold.co/600x400/000000/ffffff?text=Salons" class="w-full h-auto rounded-3xl" alt="Serene salon interior">
-                        <div class="text-left text-white">
-                            <a href="#" class="industry-button font-bold text-4xl mb-4">Salons</a>
-                            <p class="text-xl font-medium mt-4">Streamline your appointment management. <span class="font-bold">NOYO Ai</span> handles bookings and sends intelligent reminders, reducing no-shows and allowing you to focus on providing exceptional client care.</p>
-                        </div>
+                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
+                     <img src="https://placehold.co/600x400/000000/ffffff?text=Salons" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Serene salon interior">
+                    <div class="text-left text-white">
+                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Salons</a>
+                        <p class="text-base md:text-xl font-medium mt-4">Streamline your appointment management. <span class="font-bold">NOYO Ai</span> handles bookings and sends intelligent reminders, reducing no-shows and allowing you to focus on providing exceptional client care.</p>
                     </div>
                 </div>
             </div>
             
             <!-- Card 4: Clinics -->
             <div class="card-wrapper" style="--color1: #001B6B; --color2: #66CDFF;">
-                <div class="inner-content">
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
-                        <img src="https://placehold.co/600x400/000000/ffffff?text=Clinics" class="w-full h-auto rounded-3xl" alt="Modern clinic interior">
-                        <div class="text-left text-white">
-                            <a href="#" class="industry-button font-bold text-4xl mb-4">Clinics</a>
-                            <p class="text-xl font-medium mt-4">Elevate the patient experience. <span class="font-bold">NOYO Ai</span> automates appointment scheduling, sends crucial pre-visit information, and manages follow-up care, ensuring seamless communication.</p>
-                        </div>
+                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
+                     <img src="https://placehold.co/600x400/000000/ffffff?text=Clinics" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern clinic interior">
+                    <div class="text-left text-white">
+                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Clinics</a>
+                        <p class="text-base md:text-xl font-medium mt-4">Elevate the patient experience. <span class="font-bold">NOYO Ai</span> automates appointment scheduling, sends crucial pre-visit information, and manages follow-up care, ensuring seamless communication.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Card 5: eCommerce -->
             <div class="card-wrapper" style="--color1: #6A0FFF; --color2: #F4A3FF;">
-                <div class="inner-content">
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center h-full">
-                        <img src="https://placehold.co/600x400/000000/ffffff?text=eCommerce" class="w-full h-auto rounded-3xl" alt="Person shopping online">
-                        <div class="text-left text-white">
-                             <a href="#" class="industry-button font-bold text-4xl mb-4">eCommerce</a>
-                            <p class="text-xl font-medium mt-4">Turn conversations into conversions. <span class="font-bold">NOYO Ai</span> re-engages customers, recovers abandoned carts, and provides expert product support to drive sales and elevate your online store.</p>
-                        </div>
+                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
+                     <img src="https://placehold.co/600x400/000000/ffffff?text=eCommerce" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Person shopping online">
+                    <div class="text-left text-white">
+                         <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">eCommerce</a>
+                        <p class="text-base md:text-xl font-medium mt-4">Turn conversations into conversions. <span class="font-bold">NOYO Ai</span> re-engages customers, recovers abandoned carts, and provides expert product support to drive sales and elevate your online store.</p>
                     </div>
                 </div>
             </div>
@@ -750,8 +783,26 @@
             dropdown.addEventListener('mouseleave', hideMenu);
         });
 
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuIcon = mobileMenuButton.querySelector('i');
+
+        mobileMenuButton.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('-translate-x-full')) {
+                mobileMenu.classList.remove('-translate-x-full');
+                mobileMenuIcon.classList.remove('fa-bars');
+                mobileMenuIcon.classList.add('fa-times');
+            } else {
+                mobileMenu.classList.add('-translate-x-full');
+                 mobileMenuIcon.classList.add('fa-bars');
+                mobileMenuIcon.classList.remove('fa-times');
+            }
+        });
+
+
         // Tubelight Nav Bar Logic
-        const nav = document.querySelector('header nav');
+        const nav = document.querySelector('#desktop-nav');
         if (nav) {
             const navItems = nav.querySelectorAll('a.nav-link, div[data-dropdown]');
             const tubelight = document.createElement('div');
@@ -1061,9 +1112,14 @@
             });
 
         const CardSwap = ({
-            width = 450, height = 300, cardDistance = 50, verticalDistance = 50,
-            delay = 4000, skewAmount = 5, easing = "elastic", children,
+            width = "90%", height = 300, cardDistance = 20, verticalDistance = 20,
+            delay = 4000, skewAmount = 2, easing = "elastic", children,
         }) => {
+             const isMobile = window.innerWidth < 640;
+            const cardWidth = isMobile ? '90vw' : 450;
+            const cardHeight = isMobile ? 'auto' : 300;
+
+
             const config = easing === "elastic"
                 ? { ease: "elastic.out(0.6,0.9)", durDrop: 2, durMove: 2, durReturn: 2, promoteOverlap: 0.9, returnDelay: 0.05 }
                 : { ease: "power1.inOut", durDrop: 0.8, durMove: 0.8, durReturn: 0.8, promoteOverlap: 0.45, returnDelay: 0.2 };
@@ -1116,7 +1172,7 @@
 
             const rendered = childArr.map((child, i) =>
                 isValidElement(child)
-                    ? cloneElement(child, { key: i, ref: refs[i], style: { width, height, ...(child.props.style ?? {}) } })
+                    ? cloneElement(child, { key: i, ref: refs[i], style: { width: cardWidth, height: cardHeight, ...(child.props.style ?? {}) } })
                     : child
             );
 
@@ -1138,7 +1194,7 @@
             ];
 
             return (
-                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center bg-black p-8 gap-16">
+                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center bg-black p-4 md:p-8 gap-8 md:gap-16">
                     <div className="text-center lg:text-left max-w-lg">
                         <h1 className="font-bold text-4xl md:text-5xl text-white mb-4">
                             Everything You Need. <span className="features-heading-gradient">Nothing You Don't.</span>
@@ -1153,8 +1209,8 @@
                                         <div className="w-12 h-12 mb-4 bg-blue-500/10 rounded-lg flex items-center justify-center">
                                             <i className={`fa-solid ${feature.icon} text-2xl text-blue-400`}></i>
                                         </div>
-                                        <h3 className="font-bold text-2xl mb-2 text-white">{feature.title}</h3>
-                                        <p className="text-gray-400 font-medium text-lg">{feature.description}</p>
+                                        <h3 className="font-bold text-xl md:text-2xl mb-2 text-white">{feature.title}</h3>
+                                        <p className="text-gray-400 font-medium text-base md:text-lg">{feature.description}</p>
                                     </div>
                                 </Card>
                             ))}
