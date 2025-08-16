@@ -407,7 +407,7 @@
         .mobile-card-stack-container {
             position: relative;
             width: 100%;
-            height: 450px; /* Adjust height as needed */
+            height: 450px;
             perspective: 1000px;
             margin-bottom: 2rem;
         }
@@ -418,11 +418,10 @@
             height: 400px;
             top: 0;
             left: 50%;
-            transform: translateX(-50%);
             border-radius: 1.5rem;
-            background: rgba(29, 29, 31, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(29, 29, 31, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             padding: 2rem;
             display: flex;
             flex-direction: column;
@@ -433,6 +432,7 @@
             user-select: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            will-change: transform, opacity;
         }
         .mobile-step-card::before {
             content: '';
@@ -441,12 +441,16 @@
             border-radius: inherit;
             background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
             z-index: -1;
-            opacity: 0.5;
-            filter: blur(5px);
+            opacity: 0.7;
+            filter: blur(10px);
+            transition: opacity 0.3s;
+        }
+        .mobile-step-card:not(.is-active-card)::before {
+            opacity: 0;
         }
         .mobile-step-card i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
             background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
             -webkit-background-clip: text;
             background-clip: text;
@@ -462,11 +466,12 @@
             height: 10px;
             border-radius: 50%;
             background-color: #4b5563; /* gray-600 */
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         }
         .mobile-progress-dot.is-active {
             background-color: var(--brand-highlight);
             transform: scale(1.2);
+            box-shadow: 0 0 10px var(--brand-highlight), 0 0 15px var(--brand-highlight);
         }
 
         /* --- Testimonials Section Styles --- */
@@ -1052,31 +1057,38 @@
                     dots.forEach((dot, i) => {
                         dot.classList.toggle('is-active', i === index);
                     });
+                     cards.forEach((card, i) => {
+                        card.classList.toggle('is-active-card', i === index);
+                    });
                 };
 
-                const positionCards = () => {
+                const positionCards = (swipedCard = null) => {
                     cards.forEach((card, i) => {
                         let zIndex = cards.length - i;
-                        let scale = 1 - (i - activeIndex) * 0.1;
+                        let scale = 1 - (i - activeIndex) * 0.05;
                         let y = (i - activeIndex) * 15;
-                        let opacity = (i === activeIndex) ? 1 : 0;
-                        
-                        if(i > activeIndex) {
-                           scale = 1 - (i - activeIndex) * 0.1;
-                           y = (i-activeIndex) * 15;
-                           opacity = 1;
-                        } else if (i < activeIndex) {
-                           scale = 0;
-                           y = 0;
-                           opacity = 0;
-                        }
+                        let opacity = 1;
 
-                        gsap.set(card, { 
-                            y: y, 
-                            scale: scale, 
-                            zIndex: zIndex,
-                            opacity: opacity,
-                        });
+                        if (i < activeIndex) {
+                           // Cards that have been swiped away
+                           gsap.to(card, {
+                               x: -500,
+                               opacity: 0,
+                               duration: 0.5,
+                               ease: "power3.in"
+                           });
+                        } else {
+                           // Active and upcoming cards
+                           gsap.to(card, {
+                               x: 0,
+                               y: y,
+                               scale: scale,
+                               zIndex: zIndex,
+                               opacity: 1,
+                               duration: 0.4,
+                               ease: "power3.out"
+                           });
+                        }
                     });
                     updateDots(activeIndex);
                 };
@@ -1086,15 +1098,21 @@
                 cards.forEach((card, i) => {
                     Draggable.create(card, {
                         type: "x",
-                        bounds: { minX: -500, maxX: 500 },
+                        bounds: { minX: -window.innerWidth, maxX: window.innerWidth },
+                        onDrag: function() {
+                           gsap.to(this.target, { rotation: this.x / 40, duration: 0.1 });
+                        },
                         onDragEnd: function() {
-                            if (this.x > 100 && activeIndex > 0) { // Swipe Right
+                            if (this.x > 120 && activeIndex > 0) { // Swipe Right
                                 activeIndex--;
-                            } else if (this.x < -100 && activeIndex < cards.length - 1) { // Swipe Left
+                                positionCards(card);
+                            } else if (this.x < -120 && activeIndex < cards.length - 1) { // Swipe Left
                                 activeIndex++;
+                                positionCards(card);
+                            } else {
+                                // Snap back
+                                gsap.to(this.target, { x: 0, rotation: 0, duration: 0.4, ease: "power3.out" });
                             }
-                            gsap.to(card, { x: 0, y: 0, duration: 0.3 });
-                            positionCards();
                         }
                     });
                 });
