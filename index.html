@@ -317,19 +317,15 @@
             background-clip: text;
             color: transparent;
         }
+        /* Desktop Scroll Stepper */
         .scroll-stepper-container {
             position: relative;
             width: 100%;
         }
         .scroll-stepper-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 4rem;
-        }
-        @media (min-width: 1024px) {
-            .scroll-stepper-grid {
-                grid-template-columns: 1fr 1fr;
-            }
         }
         .scroll-stepper-left {
             position: relative;
@@ -366,14 +362,9 @@
             position: sticky;
             top: 0;
             height: 100vh;
-            display: none; /* Hidden on mobile */
-        }
-        @media (min-width: 1024px) {
-            .scroll-stepper-right {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .visual-panel {
             position: relative;
@@ -409,6 +400,57 @@
              .visual-panel .step-visual i {
                 font-size: 12rem;
             }
+        }
+        /* Mobile Click Stepper */
+        .mobile-stepper-outer-container {
+            width: 100%;
+            max-width: 42rem;
+            margin: auto;
+            border-radius: 1.5rem;
+            background-color: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        .mobile-stepper-indicator-row { display: flex; width: 100%; align-items: center; padding: 1.5rem; }
+        .mobile-stepper-content-wrapper { position: relative; overflow: hidden; min-height: 150px; }
+        .mobile-stepper-step-content { padding: 0 1.5rem 1.5rem; position: absolute; width: 100%; }
+        .mobile-stepper-footer { padding: 0 1.5rem 1.5rem; margin-top: 1rem; display: flex; }
+        .mobile-stepper-footer.justify-between { justify-content: space-between; }
+        .mobile-stepper-footer.justify-end { justify-content: flex-end; }
+        .mobile-stepper-button {
+            transition: all 350ms ease;
+            border-radius: 9999px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .mobile-stepper-button.back { background-color: transparent; color: #a0aec0; }
+        .mobile-stepper-button.back:hover { background-color: rgba(255, 255, 255, 0.05); }
+        .mobile-stepper-button.next { background-color: #6A0FFF; color: white; }
+        .mobile-stepper-button.next:hover { background-color: #5a0eed; }
+        .mobile-step-indicator { position: relative; cursor: pointer; outline: none; }
+        .mobile-step-indicator-inner {
+            display: flex; height: 2rem; width: 2rem;
+            align-items: center; justify-content: center;
+            border-radius: 9999px; font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .mobile-step-indicator-inner.inactive { background-color: #374151; color: #9ca3af; }
+        .mobile-step-indicator-inner.active { background-color: #6A0FFF; }
+        .mobile-step-indicator-inner.complete { background-color: #6A0FFF; }
+        .mobile-active-dot { height: 0.75rem; width: 0.75rem; border-radius: 9999px; background-color: #fff; }
+        .mobile-step-number { font-size: 0.875rem; }
+        .mobile-check-icon { height: 1rem; width: 1rem; color: #fff; }
+        .mobile-step-connector {
+            position: relative; margin-left: 0.5rem; margin-right: 0.5rem;
+            height: 2px; flex: 1;
+            border-radius: 0.25rem; background-color: #374151;
+        }
+        .mobile-step-connector-inner {
+            position: absolute; left: 0; top: 0;
+            height: 100%; width: 0%;
+            background-color: #6A0FFF;
+            transition: width 0.4s ease;
         }
 
 
@@ -667,42 +709,52 @@
             <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
         </div>
 
-        <div class="scroll-stepper-container">
-            <div class="scroll-stepper-grid">
-                <!-- Left Column: Step Content -->
-                <div class="scroll-stepper-left">
-                    <div class="scroll-stepper-progress">
-                        <div id="progress-bar" class="scroll-stepper-progress-bar"></div>
+        <!-- Desktop: Scroll-driven Stepper -->
+        <div class="hidden lg:block">
+            <div class="scroll-stepper-container">
+                <div class="scroll-stepper-grid">
+                    <!-- Left Column: Step Content -->
+                    <div class="scroll-stepper-left">
+                        <div class="scroll-stepper-progress">
+                            <div id="progress-bar" class="scroll-stepper-progress-bar"></div>
+                        </div>
+                        <div class="step-content-item" data-step="1">
+                            <h3 class="font-bold text-3xl text-white mb-3">1. Tell Us Your Goal</h3>
+                            <p class="text-brand-gray font-medium text-lg">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
+                        </div>
+                        <div class="step-content-item" data-step="2">
+                            <h3 class="font-bold text-3xl text-white mb-3">2. We Build & Train</h3>
+                            <p class="text-brand-gray font-medium text-lg">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
+                        </div>
+                        <div class="step-content-item" data-step="3">
+                            <h3 class="font-bold text-3xl text-white mb-3">3. You Launch</h3>
+                            <p class="text-brand-gray font-medium text-lg">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
+                        </div>
                     </div>
-                    <div class="step-content-item" data-step="1">
-                        <h3 class="font-bold text-3xl text-white mb-3">1. Tell Us Your Goal</h3>
-                        <p class="text-brand-gray font-medium text-lg">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
-                    </div>
-                    <div class="step-content-item" data-step="2">
-                        <h3 class="font-bold text-3xl text-white mb-3">2. We Build & Train</h3>
-                        <p class="text-brand-gray font-medium text-lg">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
-                    </div>
-                    <div class="step-content-item" data-step="3">
-                        <h3 class="font-bold text-3xl text-white mb-3">3. You Launch</h3>
-                        <p class="text-brand-gray font-medium text-lg">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
-                    </div>
-                </div>
 
-                <!-- Right Column: Visual Panel -->
-                <div class="scroll-stepper-right">
-                    <div class="visual-panel">
-                        <div class="step-visual" data-visual-step="1">
-                            <i class="fa-solid fa-comments"></i>
-                        </div>
-                        <div class="step-visual" data-visual-step="2">
-                            <i class="fa-solid fa-cogs"></i>
-                        </div>
-                        <div class="step-visual" data-visual-step="3">
-                            <i class="fa-solid fa-rocket"></i>
+                    <!-- Right Column: Visual Panel -->
+                    <div class="scroll-stepper-right">
+                        <div class="visual-panel">
+                            <div class="step-visual" data-visual-step="1">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div class="step-visual" data-visual-step="2">
+                                <i class="fa-solid fa-cogs"></i>
+                            </div>
+                            <div class="step-visual" data-visual-step="3">
+                                <i class="fa-solid fa-rocket"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Mobile: Click-through Stepper -->
+        <div id="mobile-stepper" class="lg:hidden mobile-stepper-outer-container">
+            <div class="mobile-stepper-indicator-row"></div>
+            <div class="mobile-stepper-content-wrapper"></div>
+            <div class="mobile-stepper-footer"></div>
         </div>
     </section>
 
@@ -902,16 +954,17 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // --- How It Works Section - Scroll-Driven Logic ---
+            // --- How It Works Section ---
+            
+            // DESKTOP: Scroll-Driven Logic
             const howItWorksSection = document.getElementById('how-it-works');
-            if (howItWorksSection && window.innerWidth >= 1024) { // Only run on desktop
+            if (howItWorksSection && window.innerWidth >= 1024) { 
                 gsap.registerPlugin(ScrollTrigger);
 
                 const steps = gsap.utils.toArray(".step-content-item");
                 const visuals = gsap.utils.toArray(".step-visual");
                 const progressBar = document.getElementById("progress-bar");
 
-                // Set up the main timeline for the progress bar
                 gsap.to(progressBar, {
                     height: "100%",
                     ease: "none",
@@ -934,24 +987,68 @@
                     });
                 });
                 
-                // Initial state
-                if (steps.length > 0) {
-                    steps[0].classList.add('is-active');
-                }
-                if (visuals.length > 0) {
-                     visuals[0].classList.add('is-active');
-                }
-
+                if (steps.length > 0) steps[0].classList.add('is-active');
+                if (visuals.length > 0) visuals[0].classList.add('is-active');
 
                 function updateVisual(index) {
                     visuals.forEach((visual, i) => {
-                        if ((i + 1) === index) {
-                            visual.classList.add('is-active');
-                        } else {
-                            visual.classList.remove('is-active');
-                        }
+                        visual.classList.toggle('is-active', (i + 1) === index);
                     });
                 }
+            }
+
+            // MOBILE: Click-through Logic
+            const mobileStepperEl = document.getElementById('mobile-stepper');
+            if (mobileStepperEl) {
+                const steps = [
+                    { icon: 'fa-solid fa-comments', title: '1. Tell Us Your Goal', content: 'We start with a deep dive into your business objectives to understand exactly what you want to achieve.' },
+                    { icon: 'fa-solid fa-cogs', title: '2. We Build & Train', content: "Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand." },
+                    { icon: 'fa-solid fa-rocket', title: '3. You Launch', content: 'We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.' }
+                ];
+                let currentStep = 1;
+                const totalSteps = steps.length;
+                const indicatorRow = mobileStepperEl.querySelector('.mobile-stepper-indicator-row');
+                const contentWrapper = mobileStepperEl.querySelector('.mobile-stepper-content-wrapper');
+                const footer = mobileStepperEl.querySelector('.mobile-stepper-footer');
+                
+                const render = () => {
+                    indicatorRow.innerHTML = '';
+                    for (let i = 0; i < totalSteps; i++) {
+                        const stepNum = i + 1;
+                        const status = currentStep === stepNum ? 'active' : currentStep < stepNum ? 'inactive' : 'complete';
+                        const indicator = document.createElement('div');
+                        indicator.className = 'mobile-step-indicator';
+                        indicator.innerHTML = `<div class="mobile-step-indicator-inner ${status}">${status === 'complete' ? '<svg class="mobile-check-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : status === 'active' ? '<div class="mobile-active-dot"></div>' : `<span class="mobile-step-number">${stepNum}</span>`}</div>`;
+                        indicator.onclick = () => goToStep(stepNum);
+                        indicatorRow.appendChild(indicator);
+                        if (i < totalSteps - 1) {
+                            const connector = document.createElement('div');
+                            connector.className = 'mobile-step-connector';
+                            connector.innerHTML = `<div class="mobile-step-connector-inner" style="width: ${currentStep > stepNum ? '100%' : '0%'}"></div>`;
+                            indicatorRow.appendChild(connector);
+                        }
+                    }
+                    const oldContent = contentWrapper.querySelector('.mobile-stepper-step-content');
+                    const newContent = document.createElement('div');
+                    newContent.className = 'mobile-stepper-step-content';
+                    const currentStepData = steps[currentStep - 1];
+                    newContent.innerHTML = `<div class="flex flex-col items-center text-center gap-4"><i class="${currentStepData.icon} text-4xl text-brand-highlight mb-2"></i><div><h3 class="font-bold text-2xl text-white mb-2">${currentStepData.title}</h3><p class="text-brand-gray font-medium">${currentStepData.content}</p></div></div>`;
+                    if (oldContent) {
+                        gsap.to(oldContent, { x: currentStep > oldContent.dataset.step ? '-50%' : '50%', opacity: 0, duration: 0.3, onComplete: () => oldContent.remove() });
+                    }
+                    newContent.dataset.step = currentStep;
+                    contentWrapper.appendChild(newContent);
+                    gsap.fromTo(newContent, { x: currentStep > (oldContent?.dataset.step || 0) ? '100%' : '-100%', opacity: 0 }, { x: '0%', opacity: 1, duration: 0.4 });
+                    setTimeout(() => { gsap.to(contentWrapper, { height: newContent.offsetHeight, duration: 0.4 }); }, 50);
+                    footer.className = `mobile-stepper-footer ${currentStep > 1 ? 'justify-between' : 'justify-end'}`;
+                    footer.innerHTML = `${currentStep > 1 ? '<button class="mobile-stepper-button back">Previous</button>' : ''}<button class="mobile-stepper-button next">${currentStep === totalSteps ? 'Complete' : 'Next'}</button>`;
+                    footer.querySelector('.next').onclick = handleNext;
+                    if (currentStep > 1) footer.querySelector('.back').onclick = handleBack;
+                };
+                const goToStep = (step) => { if (step >= 1 && step <= totalSteps) { currentStep = step; render(); } };
+                const handleNext = () => goToStep(currentStep + 1 > totalSteps ? totalSteps : currentStep + 1);
+                const handleBack = () => goToStep(currentStep - 1 < 1 ? 1 : currentStep - 1);
+                render();
             }
 
 
