@@ -14,18 +14,18 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <!-- OGL Library for Orb Animation -->
+    <script type="module">
+        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
+        window.ogl = { Renderer, Program, Mesh, Triangle, Vec3 };
+    </script>
+
     <!-- Custom Fonts -->
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- OGL Library for Orb Animation -->
-    <script type="module">
-        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
-        window.ogl = { Renderer, Program, Mesh, Triangle, Vec3 };
-    </script>
 
     <!-- Merged Tailwind Configuration -->
     <script>
@@ -201,46 +201,33 @@
             transition: max-height 0.3s ease-in-out;
         }
 
-        /* --- Industries Section Styles --- */
+        /* --- Industries Section Styles (Grid Layout) --- */
         .heading-gradient-text {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        #industries-section-wrapper {
+        .industry-card {
             position: relative;
-        }
-        .scroll-stack-container {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            border-radius: 40px;
             overflow: hidden;
-        }
-        .card-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            border-radius: 20px;
-            overflow: hidden;
-            transform-origin: center center;
-            will-change: transform;
-            height: auto;
-            width: 90%;
-            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
             box-sizing: border-box;
             padding: 2px;
             background: transparent;
+            display: block; 
+            text-decoration: none;
+            transition: transform 0.3s ease;
         }
-         @media (min-width: 768px) {
-            .card-wrapper {
-                height: 25rem;
-                width: 80%;
-                 border-radius: 40px;
-            }
+        .industry-card:hover {
+            transform: translateY(-10px) scale(1.02);
         }
-        .card-wrapper::before {
+        .industry-card::before {
             content: '';
             position: absolute;
             top: 50%; left: 50%;
@@ -251,48 +238,28 @@
             transition: animation-duration 0.3s ease;
             z-index: 0;
         }
-        .card-wrapper:hover::before { animation-duration: 2s; }
-        .card-wrapper::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 0;
-            width: 100px; height: 400%;
-            background: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 30px 20px rgba(255, 255, 255, 0.3);
-            animation: shine-effect 5s linear infinite;
-            z-index: 1;
-        }
+        .industry-card:hover::before { animation-duration: 2s; }
         .inner-content {
             position: relative;
             background: #000;
-            color: white;
-            padding: 1.5rem;
-            border-radius: 18px;
+            border-radius: 38px;
             z-index: 2;
             height: 100%;
             transition: transform 0.3s ease;
+            overflow: hidden;
         }
-         @media (min-width: 768px) {
-            .inner-content {
-                padding: 3rem;
-                border-radius: 38px;
-            }
+        .industry-card:hover .inner-content { transform: scale(0.98); }
+        .card-bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1;
+            transition: transform 0.4s ease;
         }
-        .card-wrapper:hover .inner-content { transform: scale(0.98); }
-        .industry-button {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-            background-image: linear-gradient(to right, var(--color1), var(--color2));
-            color: white;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1), 0 0 15px var(--color1), 0 0 25px var(--color2);
-            will-change: transform, box-shadow;
-        }
-        .industry-button:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px var(--color1), 0 0 40px var(--color2);
+        .industry-card:hover .card-bg-image {
+            transform: scale(1.05);
         }
 
         /* --- Features Section Styles --- */
@@ -567,7 +534,7 @@
                 <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 hidden md:inline-block">
                     Get Started
                 </a>
-                 <!-- Mobile Menu Button -->
+                  <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-white text-2xl">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -624,7 +591,7 @@
         </div>
         <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3">
             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
-                                        transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                                         transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                 Book a Free Demo
             </a>
         </div>
@@ -642,7 +609,7 @@
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
             </div>
-             <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
+              <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
@@ -655,70 +622,7 @@
     </div>
 
     <!-- Industries Served Section -->
-    <div id="industries-section-wrapper">
-        <div class="text-center py-16 md:py-24 px-4 max-w-2xl mx-auto">
-            <h2 class="font-bold text-3xl md:text-5xl text-white mb-4">
-                A Perfect Fit for <span class="heading-gradient-text">Your Industry.</span>
-            </h2>
-            <p class="text-base md:text-lg text-brand-gray font-medium">Seamless automation where it matters most.</p>
-        </div>
-        <div class="scroll-stack-container">
-            <!-- Card 1: Retail -->
-            <div class="card-wrapper" style="--color1: #6A0FFF; --color2: #F4A3FF;">
-                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
-                    <img src="https://placehold.co/600x400/000000/ffffff?text=Retail" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern retail store">
-                    <div class="text-left text-white">
-                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Retail</a>
-                        <p class="text-base md:text-xl font-medium mt-4">Transform your customer experience with 24/7 AI assistance. From instant order tracking to personalized recommendations, <span class="font-bold">NOYO Ai</span> empowers your brand to build lasting loyalty.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2: Real Estate -->
-            <div class="card-wrapper" style="--color1: #66CDFF; --color2: #001B6B;">
-                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
-                    <img src="https://placehold.co/600x400/000000/ffffff?text=Real+Estate" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern house exterior">
-                    <div class="text-left text-white">
-                         <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Real Estate</a>
-                        <p class="text-base md:text-xl font-medium mt-4">Capture and qualify every lead, day or night. <span class="font-bold">NOYO Ai</span> schedules viewings and answers property inquiries instantly, freeing your agents to focus on what they do best: closing deals.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3: Salons -->
-            <div class="card-wrapper" style="--color1: #F4A3FF; --color2: #6A0FFF;">
-                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
-                     <img src="https://placehold.co/600x400/000000/ffffff?text=Salons" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Serene salon interior">
-                    <div class="text-left text-white">
-                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Salons</a>
-                        <p class="text-base md:text-xl font-medium mt-4">Streamline your appointment management. <span class="font-bold">NOYO Ai</span> handles bookings and sends intelligent reminders, reducing no-shows and allowing you to focus on providing exceptional client care.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Card 4: Clinics -->
-            <div class="card-wrapper" style="--color1: #001B6B; --color2: #66CDFF;">
-                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
-                     <img src="https://placehold.co/600x400/000000/ffffff?text=Clinics" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Modern clinic interior">
-                    <div class="text-left text-white">
-                        <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">Clinics</a>
-                        <p class="text-base md:text-xl font-medium mt-4">Elevate the patient experience. <span class="font-bold">NOYO Ai</span> automates appointment scheduling, sends crucial pre-visit information, and manages follow-up care, ensuring seamless communication.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 5: eCommerce -->
-            <div class="card-wrapper" style="--color1: #6A0FFF; --color2: #F4A3FF;">
-                <div class="inner-content flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center h-full">
-                     <img src="https://placehold.co/600x400/000000/ffffff?text=eCommerce" class="w-full h-auto rounded-xl md:rounded-3xl" alt="Person shopping online">
-                    <div class="text-left text-white">
-                         <a href="#" class="industry-button font-bold text-2xl md:text-4xl mb-4">eCommerce</a>
-                        <p class="text-base md:text-xl font-medium mt-4">Turn conversations into conversions. <span class="font-bold">NOYO Ai</span> re-engages customers, recovers abandoned carts, and provides expert product support to drive sales and elevate your online store.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="industries-root"></div>
     
     <!-- Features Section -->
     <div id="features-root"></div>
@@ -936,60 +840,6 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // --- Industries Section Logic ---
-            const industriesWrapper = document.getElementById('industries-section-wrapper');
-            if (industriesWrapper) {
-                const cards = Array.from(industriesWrapper.querySelectorAll('.card-wrapper'));
-                if (cards.length > 0) {
-                    const container = industriesWrapper.querySelector('.scroll-stack-container');
-                    const titleDiv = industriesWrapper.querySelector('.text-center');
-                    
-                    // Set the height of the wrapper to create scroll space
-                    // A larger multiplier here (e.g., 150) means more scrolling is needed for the animation.
-                    industriesWrapper.style.height = `${100 + cards.length * 150}vh`;
-
-                    const updateCardTransforms = () => {
-                        const wrapperTop = industriesWrapper.offsetTop;
-                        const wrapperHeight = industriesWrapper.offsetHeight;
-                        const containerHeight = container.offsetHeight;
-                        const scrollY = window.scrollY;
-                        const titleHeight = titleDiv.offsetHeight;
-
-                        // Start the animation calculation only after the title has been scrolled past
-                        const animationStartTop = wrapperTop + titleHeight;
-
-                        // Calculate how far we've scrolled through the animation zone
-                        const scrollableHeight = wrapperHeight - containerHeight - titleHeight;
-                        const scrollProgress = Math.max(0, Math.min(1, (scrollY - animationStartTop) / scrollableHeight));
-                        
-                        // Determine which card should be "active" based on progress
-                        const activeCardIndex = Math.floor(scrollProgress * cards.length);
-
-                        cards.forEach((card, i) => {
-                            const progressForCard = Math.max(0, Math.min(1, (scrollProgress * cards.length) - i));
-                            
-                            const yTranslate = -50 + progressForCard * 50; // Starts at -50% (centered) and moves to 0
-                            const scale = 1 - (i * 0.03) + (progressForCard * 0.03);
-                            
-                            let opacity = 1;
-                            if (i < activeCardIndex) {
-                                opacity = 0; // Hide cards that have been scrolled past
-                            } else if (i === activeCardIndex) {
-                                opacity = 1 - ( (scrollProgress * cards.length) - i);
-                            }
-
-                            card.style.transform = `translate(-50%, -50%) scale(${Math.min(1, scale)})`;
-                            card.style.opacity = opacity;
-                            card.style.zIndex = cards.length - i;
-                        });
-                    };
-
-                    window.addEventListener('scroll', updateCardTransforms);
-                    window.addEventListener('resize', updateCardTransforms);
-                    updateCardTransforms(); // Initial call
-                }
-            }
-
             // --- How It Works Section Logic ---
             const stepperEl = document.getElementById('stepper');
             if (stepperEl) {
@@ -1126,6 +976,52 @@
     <script type="text/babel">
         const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
         const InertiaPlugin = window.InertiaPlugin;
+
+        // --- Industries Section Component ---
+        function IndustriesApp() {
+            const cardsData = [
+                { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
+                { title: "REAL ESTATE", href: "/real-estate", description: "Capture and qualify every lead, day or night, freeing your agents to close deals.", src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop", colors: ['#66CDFF', '#001B6B'] },
+                { title: "SALONS", href: "/salons", description: "Streamline your appointment management and reduce no-shows.", src: "https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", colors: ['#F4A3FF', '#6A0FFF'] },
+                { title: "HEALTHCARE", href: "/healthcare", description: "Elevate the patient experience and ensure seamless communication.", src: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'] },
+                { title: "ECOMMERCE", href: "/ecommerce", description: "Turn conversations into conversions and drive sales around the clock.", src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] }
+            ];
+
+            return (
+                <section className="py-24 relative">
+                    <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start px-6">
+                        <div className="space-y-8">
+                            {cardsData.map((card, index) => (
+                                <a href={card.href} key={index} className="industry-card" style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
+                                    <div className="inner-content">
+                                        <img src={card.src} alt={card.title} className="card-bg-image" />
+                                        <div className="absolute inset-0 bg-black/60 z-10"></div>
+                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8">
+                                            <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
+                                            <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                        <div className="lg:sticky top-32">
+                            <div className="text-left">
+                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
+                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
+                                </h2>
+                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        const industriesContainer = document.getElementById('industries-root');
+        if (industriesContainer) {
+            const industriesRoot = ReactDOM.createRoot(industriesContainer);
+            industriesRoot.render(<IndustriesApp />);
+        }
 
         // --- Features Section Component ---
         const Card = forwardRef(
