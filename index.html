@@ -461,30 +461,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* NEW: Styles for Reveal Effect */
-        .reveal-panel {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            border-radius: 1rem;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .reveal-overlay {
-            position: absolute;
-            inset: 0;
-            background-color: #111;
-            z-index: 2;
-        }
-        .reveal-text {
-            position: relative;
-            z-index: 3;
-            opacity: 0;
-        }
 
         /* --- Testimonials Section Styles --- */
         .testimonials-container {
@@ -795,7 +771,9 @@
                             <div class="mobile-timeline-dot"></div>
                         </div>
                         <div class="mobile-timeline-content">
-                            <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_v4isjbj5.json" background="transparent" speed="1" style="width: 150px; height: 150px; margin-left: -20px;" loop></lottie-player>
+                            <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
+                                <i class="fa-solid fa-comments text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                            </div>
                             <h3 class="font-bold text-2xl text-white mb-2">1. Tell Us Your Goal</h3>
                             <p class="text-brand-gray font-medium">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
                         </div>
@@ -806,24 +784,24 @@
                             <div class="mobile-timeline-dot"></div>
                         </div>
                         <div class="mobile-timeline-content">
-                            <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_x1gjdldd.json" background="transparent" speed="1" style="width: 150px; height: 150px; margin-left: -20px;" loop></lottie-player>
+                             <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
+                                <i class="fa-solid fa-cogs text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                            </div>
                             <h3 class="font-bold text-2xl text-white mb-2">2. We Build & Train</h3>
                             <p class="text-brand-gray font-medium">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
                         </div>
                     </div>
                     <!-- Step 3 -->
-                    <div class="mobile-timeline-step" id="reveal-step">
+                    <div class="mobile-timeline-step">
                         <div class="mobile-timeline-dot-container">
                             <div class="mobile-timeline-dot"></div>
                         </div>
                         <div class="mobile-timeline-content">
-                             <div class="reveal-panel" style="background-image: url('https://images.unsplash.com/photo-1534237916939-183e3e84a2d1?q=80&w=1974&auto=format&fit=crop');">
-                                 <div class="reveal-overlay"></div>
-                                 <div class="reveal-text text-center p-4">
-                                     <h3 class="font-bold text-2xl text-white mb-2">3. You Launch</h3>
-                                     <p class="text-gray-200 font-medium">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
-                                 </div>
-                             </div>
+                            <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
+                                <i class="fa-solid fa-rocket text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                            </div>
+                            <h3 class="font-bold text-2xl text-white mb-2">3. You Launch</h3>
+                            <p class="text-brand-gray font-medium">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
                         </div>
                     </div>
                 </div>
@@ -1088,62 +1066,20 @@
                 });
 
                 steps.forEach((step, i) => {
-                    const lottiePlayer = step.querySelector('lottie-player');
-                    const revealStep = document.getElementById('reveal-step');
-                    
-                    let stConfig = {
+                    ScrollTrigger.create({
                         trigger: step,
                         start: "top center",
                         end: "bottom center",
                         toggleClass: "is-active",
-                    };
-
-                    if (lottiePlayer) {
-                        stConfig.onEnter = () => lottiePlayer.play();
-                        stConfig.onEnterBack = () => lottiePlayer.play();
-                    }
-
-                    if (step === revealStep) {
-                        const overlay = revealStep.querySelector('.reveal-overlay');
-                        const text = revealStep.querySelector('.reveal-text');
-                        
-                        stConfig.onEnter = () => {
-                            gsap.to(overlay, { 
-                                clipPath: 'circle(100% at 50% 50%)', 
-                                duration: 0.8, 
-                                ease: 'power2.inOut' 
-                            });
-                            gsap.to(text, { opacity: 1, duration: 0.5, delay: 0.4 });
-                        };
-                        stConfig.onEnterBack = () => {
-                            gsap.to(overlay, { 
-                                clipPath: 'circle(100% at 50% 50%)', 
-                                duration: 0.8, 
-                                ease: 'power2.inOut' 
-                            });
-                             gsap.to(text, { opacity: 1, duration: 0.5, delay: 0.4 });
-                        };
-                        stConfig.onLeave = () => {
-                             gsap.to(overlay, { 
-                                clipPath: 'circle(0% at 50% 50%)', 
-                                duration: 0.8, 
-                                ease: 'power2.inOut' 
-                            });
-                            gsap.to(text, { opacity: 0, duration: 0.3 });
-                        };
-                        stConfig.onLeaveBack = () => {
-                             gsap.to(overlay, { 
-                                clipPath: 'circle(0% at 50% 50%)', 
-                                duration: 0.8, 
-                                ease: 'power2.inOut' 
-                            });
-                             gsap.to(text, { opacity: 0, duration: 0.3 });
-                        };
-
-                        gsap.set(overlay, { clipPath: 'circle(0% at 50% 50%)' });
-                    }
-
-                    ScrollTrigger.create(stConfig);
+                        onEnter: () => {
+                            const lottiePlayer = step.querySelector('lottie-player');
+                            if(lottiePlayer) lottiePlayer.play();
+                        },
+                        onEnterBack: () => {
+                             const lottiePlayer = step.querySelector('lottie-player');
+                            if(lottiePlayer) lottiePlayer.play();
+                        }
+                    });
                 });
             }
 
