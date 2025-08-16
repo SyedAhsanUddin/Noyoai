@@ -407,7 +407,7 @@
         .mobile-card-stack-container {
             position: relative;
             width: 100%;
-            height: 450px; /* Adjust height as needed */
+            height: 450px;
             perspective: 1000px;
             margin-bottom: 2rem;
         }
@@ -418,11 +418,10 @@
             height: 400px;
             top: 0;
             left: 50%;
-            transform: translateX(-50%);
             border-radius: 1.5rem;
-            background: rgba(29, 29, 31, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(29, 29, 31, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             padding: 2rem;
             display: flex;
             flex-direction: column;
@@ -433,6 +432,7 @@
             user-select: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            will-change: transform, opacity;
         }
         .mobile-step-card::before {
             content: '';
@@ -441,12 +441,16 @@
             border-radius: inherit;
             background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
             z-index: -1;
-            opacity: 0.5;
-            filter: blur(5px);
+            opacity: 0;
+            filter: blur(10px);
+            transition: opacity 0.4s ease;
+        }
+        .mobile-step-card.is-active-card::before {
+            opacity: 0.7;
         }
         .mobile-step-card i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
             background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
             -webkit-background-clip: text;
             background-clip: text;
@@ -462,11 +466,12 @@
             height: 10px;
             border-radius: 50%;
             background-color: #4b5563; /* gray-600 */
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         }
         .mobile-progress-dot.is-active {
             background-color: var(--brand-highlight);
             transform: scale(1.2);
+            box-shadow: 0 0 10px var(--brand-highlight), 0 0 15px var(--brand-highlight);
         }
 
         /* --- Testimonials Section Styles --- */
@@ -768,10 +773,27 @@
         <!-- Mobile: Swipeable Card Stack -->
         <div id="mobile-card-stepper" class="lg:hidden">
             <div class="mobile-card-stack-container">
-                <!-- Cards will be injected here by JS -->
+                <!-- Cards are hardcoded now for stability -->
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-comments"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">1. Tell Us Your Goal</h3>
+                    <p class="text-brand-gray font-medium">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
+                </div>
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-cogs"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">2. We Build & Train</h3>
+                    <p class="text-brand-gray font-medium">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
+                </div>
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-rocket"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">3. You Launch</h3>
+                    <p class="text-brand-gray font-medium">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
+                </div>
             </div>
             <div class="mobile-progress-dots">
-                <!-- Dots will be injected here by JS -->
+                <div class="mobile-progress-dot"></div>
+                <div class="mobile-progress-dot"></div>
+                <div class="mobile-progress-dot"></div>
             </div>
         </div>
     </section>
@@ -1018,83 +1040,72 @@
             // MOBILE: Swipeable Card Stack Logic
             const mobileStepperEl = document.getElementById('mobile-card-stepper');
             if (mobileStepperEl && window.innerWidth < 1024) {
-                const stepsData = [
-                    { icon: 'fa-solid fa-comments', title: '1. Tell Us Your Goal', content: 'We start with a deep dive into your business objectives to understand exactly what you want to achieve.' },
-                    { icon: 'fa-solid fa-cogs', title: '2. We Build & Train', content: "Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand." },
-                    { icon: 'fa-solid fa-rocket', title: '3. You Launch', content: 'We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.' }
-                ];
-                
-                const stackContainer = mobileStepperEl.querySelector('.mobile-card-stack-container');
-                const dotsContainer = mobileStepperEl.querySelector('.mobile-progress-dots');
-                let cards = [];
+                const cards = gsap.utils.toArray(".mobile-step-card");
+                const dots = gsap.utils.toArray(".mobile-progress-dot");
                 let activeIndex = 0;
 
-                // Create cards and dots
-                stepsData.forEach((step, i) => {
-                    const card = document.createElement('div');
-                    card.className = 'mobile-step-card';
-                    card.innerHTML = `
-                        <i class="${step.icon}"></i>
-                        <h3 class="font-bold text-2xl text-white mb-2">${step.title}</h3>
-                        <p class="text-brand-gray font-medium">${step.content}</p>
-                    `;
-                    stackContainer.appendChild(card);
-                    cards.push(card);
-
-                    const dot = document.createElement('div');
-                    dot.className = 'mobile-progress-dot';
-                    dotsContainer.appendChild(dot);
-                });
-
-                const dots = gsap.utils.toArray(".mobile-progress-dot");
-
                 const updateDots = (index) => {
-                    dots.forEach((dot, i) => {
-                        dot.classList.toggle('is-active', i === index);
-                    });
+                    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+                    cards.forEach((card, i) => card.classList.toggle('is-active-card', i === index));
                 };
 
                 const positionCards = () => {
                     cards.forEach((card, i) => {
                         let zIndex = cards.length - i;
-                        let scale = 1 - (i - activeIndex) * 0.1;
                         let y = (i - activeIndex) * 15;
-                        let opacity = (i === activeIndex) ? 1 : 0;
-                        
-                        if(i > activeIndex) {
-                           scale = 1 - (i - activeIndex) * 0.1;
-                           y = (i-activeIndex) * 15;
-                           opacity = 1;
-                        } else if (i < activeIndex) {
-                           scale = 0;
-                           y = 0;
-                           opacity = 0;
-                        }
+                        let scale = 1 - (i - activeIndex) * 0.05;
+                        let opacity = 1;
 
-                        gsap.set(card, { 
-                            y: y, 
-                            scale: scale, 
-                            zIndex: zIndex,
-                            opacity: opacity,
-                        });
+                        if (i < activeIndex) {
+                           // Instantly hide swiped cards
+                           gsap.set(card, { opacity: 0, zIndex: zIndex });
+                        } else {
+                           // Animate active and upcoming cards
+                           gsap.to(card, {
+                               x: 0,
+                               y: y,
+                               scale: scale,
+                               zIndex: zIndex,
+                               opacity: 1,
+                               duration: 0.4,
+                               ease: "power3.out"
+                           });
+                        }
                     });
                     updateDots(activeIndex);
                 };
                 
-                positionCards();
+                positionCards(); // Set initial positions
 
                 cards.forEach((card, i) => {
                     Draggable.create(card, {
                         type: "x",
-                        bounds: { minX: -500, maxX: 500 },
+                        bounds: { minX: -window.innerWidth, maxX: window.innerWidth },
+                        onDrag: function() {
+                           gsap.to(this.target, { rotation: this.x / 40, duration: 0.1 });
+                        },
                         onDragEnd: function() {
                             if (this.x > 100 && activeIndex > 0) { // Swipe Right
                                 activeIndex--;
                             } else if (this.x < -100 && activeIndex < cards.length - 1) { // Swipe Left
                                 activeIndex++;
                             }
-                            gsap.to(card, { x: 0, y: 0, duration: 0.3 });
-                            positionCards();
+                            
+                            // Animate the swiped card off-screen before repositioning
+                            if (this.x > 100 || this.x < -100) {
+                                gsap.to(this.target, {
+                                    x: this.x > 100 ? 500 : -500,
+                                    opacity: 0,
+                                    duration: 0.3,
+                                    onComplete: () => {
+                                        positionCards();
+                                        gsap.set(this.target, { rotation: 0 }); // Reset rotation after animation
+                                    }
+                                });
+                            } else {
+                                // Snap back if not swiped far enough
+                                gsap.to(this.target, { x: 0, rotation: 0, duration: 0.4, ease: "power3.out" });
+                            }
                         }
                     });
                 });
