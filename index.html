@@ -10,6 +10,8 @@
     
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -310,77 +312,166 @@
         }
         
         /* --- How It Works Section Styles --- */
-        .how-it-works-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
         .how-it-works-heading {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .animated-section {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .animated-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .stepper-outer-container {
+        /* Desktop Scroll Stepper */
+        .scroll-stepper-container {
+            position: relative;
             width: 100%;
-            max-width: 42rem;
-            margin: auto;
-            border-radius: 1.5rem;
-            background-color: #1a1a1a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }
-        .stepper-indicator-row { display: flex; width: 100%; align-items: center; padding: 1.5rem; }
-        .stepper-content-wrapper { position: relative; overflow: hidden; min-height: 150px; }
-        .stepper-step-content { padding: 0 1.5rem 1.5rem; position: absolute; width: 100%; }
-        .stepper-footer { padding: 0 1.5rem 1.5rem; margin-top: 1rem; display: flex; }
-        .stepper-footer.justify-between { justify-content: space-between; }
-        .stepper-footer.justify-end { justify-content: flex-end; }
-        .stepper-button {
-            transition: all 350ms ease;
-            border-radius: 9999px;
-            padding: 0.5rem 1.25rem;
-            font-weight: 500;
-            cursor: pointer;
+        .scroll-stepper-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
         }
-        .stepper-button.back { background-color: transparent; color: #a0aec0; }
-        .stepper-button.back:hover { background-color: rgba(255, 255, 255, 0.05); }
-        .stepper-button.next { background-color: #6A0FFF; color: white; }
-        .stepper-button.next:hover { background-color: #5a0eed; }
-        .step-indicator { position: relative; cursor: pointer; outline: none; }
-        .step-indicator-inner {
-            display: flex; height: 2rem; width: 2rem;
-            align-items: center; justify-content: center;
-            border-radius: 9999px; font-weight: 600;
-            transition: background-color 0.3s, color 0.3s;
+        .scroll-stepper-left {
+            position: relative;
+            padding-top: 2rem;
         }
-        .step-indicator-inner.inactive { background-color: #374151; color: #9ca3af; }
-        .step-indicator-inner.active { background-color: #6A0FFF; }
-        .step-indicator-inner.complete { background-color: #6A0FFF; }
-        .active-dot { height: 0.75rem; width: 0.75rem; border-radius: 9999px; background-color: #fff; }
-        .step-number { font-size: 0.875rem; }
-        .check-icon { height: 1rem; width: 1rem; color: #fff; }
-        .step-connector {
-            position: relative; margin-left: 0.5rem; margin-right: 0.5rem;
-            height: 2px; flex: 1;
-            border-radius: 0.25rem; background-color: #374151;
+        .scroll-stepper-progress {
+            position: absolute;
+            left: 20px;
+            top: 4rem;
+            bottom: 4rem;
+            width: 4px;
+            background-color: #374151;
+            border-radius: 2px;
         }
-        .step-connector-inner {
-            position: absolute; left: 0; top: 0;
-            height: 100%; width: 0%;
+        .scroll-stepper-progress-bar {
+            width: 100%;
+            height: 0%;
             background-color: #6A0FFF;
-            transition: width 0.4s ease;
+            border-radius: 2px;
+        }
+        .step-content-item {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.3;
+            transition: opacity 0.4s ease-in-out;
+            padding-left: 50px;
+        }
+        .step-content-item.is-active {
+            opacity: 1;
+        }
+        .scroll-stepper-right {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .visual-panel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 450px;
+        }
+        .step-visual {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .step-visual.is-active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        .visual-panel .step-visual i {
+            font-size: 10rem;
+            background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
+        }
+        @media (min-width: 1280px) {
+             .visual-panel .step-visual i {
+                font-size: 12rem;
+            }
+        }
+        
+        /* Mobile Swipeable Card Stack */
+        .mobile-card-stack-container {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            perspective: 1000px;
+            margin-bottom: 2rem;
+        }
+        .mobile-step-card {
+            position: absolute;
+            width: 90%;
+            max-width: 350px;
+            height: 400px;
+            top: 0;
+            left: 50%;
+            border-radius: 1.5rem;
+            background: rgba(29, 29, 31, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            will-change: transform, opacity;
+        }
+        .mobile-step-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
+            z-index: -1;
+            opacity: 0;
+            filter: blur(10px);
+            transition: opacity 0.4s ease;
+        }
+        .mobile-step-card.is-active-card::before {
+            opacity: 0.7;
+        }
+        .mobile-step-card i {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--brand-highlight), var(--brand-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .mobile-progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        .mobile-progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4b5563; /* gray-600 */
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .mobile-progress-dot.is-active {
+            background-color: var(--brand-highlight);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--brand-highlight), 0 0 15px var(--brand-highlight);
         }
 
         /* --- Testimonials Section Styles --- */
@@ -630,21 +721,82 @@
     <div id="features-root"></div>
 
     <!-- How It Works Section -->
-    <div class="how-it-works-container">
-        <section id="how-it-works" class="py-24 container mx-auto px-6 animated-section stepper-section">
-            <div class="text-center mb-16 px-4">
-                <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
-                    Launch in <span class="how-it-works-heading">Three Simple Steps.</span>
-                </h2>
-                <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
+    <section id="how-it-works" class="py-24 container mx-auto px-6">
+        <div class="text-center mb-16 px-4">
+            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                Launch in <span class="how-it-works-heading">Three Simple Steps.</span>
+            </h2>
+            <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
+        </div>
+
+        <!-- Desktop: Scroll-driven Stepper -->
+        <div class="hidden lg:block">
+            <div class="scroll-stepper-container">
+                <div class="scroll-stepper-grid">
+                    <!-- Left Column: Step Content -->
+                    <div class="scroll-stepper-left">
+                        <div class="scroll-stepper-progress">
+                            <div id="progress-bar" class="scroll-stepper-progress-bar"></div>
+                        </div>
+                        <div class="step-content-item" data-step="1">
+                            <h3 class="font-bold text-3xl text-white mb-3">1. Tell Us Your Goal</h3>
+                            <p class="text-brand-gray font-medium text-lg">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
+                        </div>
+                        <div class="step-content-item" data-step="2">
+                            <h3 class="font-bold text-3xl text-white mb-3">2. We Build & Train</h3>
+                            <p class="text-brand-gray font-medium text-lg">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
+                        </div>
+                        <div class="step-content-item" data-step="3">
+                            <h3 class="font-bold text-3xl text-white mb-3">3. You Launch</h3>
+                            <p class="text-brand-gray font-medium text-lg">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Visual Panel -->
+                    <div class="scroll-stepper-right">
+                        <div class="visual-panel">
+                            <div class="step-visual" data-visual-step="1">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div class="step-visual" data-visual-step="2">
+                                <i class="fa-solid fa-cogs"></i>
+                            </div>
+                            <div class="step-visual" data-visual-step="3">
+                                <i class="fa-solid fa-rocket"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="stepper" class="stepper-outer-container">
-                <div class="stepper-indicator-row"></div>
-                <div class="stepper-content-wrapper"></div>
-                <div class="stepper-footer"></div>
+        </div>
+
+        <!-- Mobile: Swipeable Card Stack -->
+        <div id="mobile-card-stepper" class="lg:hidden">
+            <div class="mobile-card-stack-container">
+                <!-- Cards are hardcoded now for stability -->
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-comments"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">1. Tell Us Your Goal</h3>
+                    <p class="text-brand-gray font-medium">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
+                </div>
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-cogs"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">2. We Build & Train</h3>
+                    <p class="text-brand-gray font-medium">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
+                </div>
+                <div class="mobile-step-card">
+                    <i class="fa-solid fa-rocket"></i>
+                    <h3 class="font-bold text-2xl text-white mb-2">3. You Launch</h3>
+                    <p class="text-brand-gray font-medium">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
+                </div>
             </div>
-        </section>
-    </div>
+            <div class="mobile-progress-dots">
+                <div class="mobile-progress-dot"></div>
+                <div class="mobile-progress-dot"></div>
+                <div class="mobile-progress-dot"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- Testimonials Section -->
     <div class="testimonials-container">
@@ -842,70 +994,123 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // --- How It Works Section Logic ---
-            const stepperEl = document.getElementById('stepper');
-            if (stepperEl) {
-                const steps = [
-                    { icon: 'fa-solid fa-comments', title: '1. Tell Us Your Goal', content: 'We start with a deep dive into your business objectives to understand exactly what you want to achieve.' },
-                    { icon: 'fa-solid fa-cogs', title: '2. We Build & Train', content: "Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand." },
-                    { icon: 'fa-solid fa-rocket', title: '3. You Launch', content: 'We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.' }
-                ];
-                let currentStep = 1;
-                const totalSteps = steps.length;
-                const indicatorRow = stepperEl.querySelector('.stepper-indicator-row');
-                const contentWrapper = stepperEl.querySelector('.stepper-content-wrapper');
-                const footer = stepperEl.querySelector('.stepper-footer');
-                const render = () => {
-                    indicatorRow.innerHTML = '';
-                    for (let i = 0; i < totalSteps; i++) {
-                        const stepNum = i + 1;
-                        const status = currentStep === stepNum ? 'active' : currentStep < stepNum ? 'inactive' : 'complete';
-                        const indicator = document.createElement('div');
-                        indicator.className = 'step-indicator';
-                        indicator.innerHTML = `<div class="step-indicator-inner ${status}">${status === 'complete' ? '<svg class="check-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : status === 'active' ? '<div class="active-dot"></div>' : `<span class="step-number">${stepNum}</span>`}</div>`;
-                        indicator.onclick = () => goToStep(stepNum);
-                        indicatorRow.appendChild(indicator);
-                        if (i < totalSteps - 1) {
-                            const connector = document.createElement('div');
-                            connector.className = 'step-connector';
-                            connector.innerHTML = `<div class="step-connector-inner" style="width: ${currentStep > stepNum ? '100%' : '0%'}"></div>`;
-                            indicatorRow.appendChild(connector);
-                        }
+            gsap.registerPlugin(ScrollTrigger, Draggable);
+
+            // --- How It Works Section ---
+            const howItWorksSection = document.getElementById('how-it-works');
+            
+            // DESKTOP: Scroll-Driven Logic
+            if (howItWorksSection && window.innerWidth >= 1024) { 
+                const steps = gsap.utils.toArray(".step-content-item");
+                const visuals = gsap.utils.toArray(".step-visual");
+                const progressBar = document.getElementById("progress-bar");
+
+                gsap.to(progressBar, {
+                    height: "100%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".scroll-stepper-container",
+                        start: "top center",
+                        end: "bottom center",
+                        scrub: true
                     }
-                    const oldContent = contentWrapper.querySelector('.stepper-step-content');
-                    const newContent = document.createElement('div');
-                    newContent.className = 'stepper-step-content';
-                    const currentStepData = steps[currentStep - 1];
-                    newContent.innerHTML = `<div class="flex flex-col items-center text-center gap-4"><i class="${currentStepData.icon} text-4xl text-brand-highlight mb-2"></i><div><h3 class="font-bold text-2xl text-white mb-2">${currentStepData.title}</h3><p class="text-brand-gray font-medium">${currentStepData.content}</p></div></div>`;
-                    if (oldContent) {
-                        gsap.to(oldContent, { x: currentStep > oldContent.dataset.step ? '-50%' : '50%', opacity: 0, duration: 0.3, onComplete: () => oldContent.remove() });
-                    }
-                    newContent.dataset.step = currentStep;
-                    contentWrapper.appendChild(newContent);
-                    gsap.fromTo(newContent, { x: currentStep > (oldContent?.dataset.step || 0) ? '100%' : '-100%', opacity: 0 }, { x: '0%', opacity: 1, duration: 0.4 });
-                    setTimeout(() => { gsap.to(contentWrapper, { height: newContent.offsetHeight, duration: 0.4 }); }, 50);
-                    footer.className = `stepper-footer ${currentStep > 1 ? 'justify-between' : 'justify-end'}`;
-                    footer.innerHTML = `${currentStep > 1 ? '<button class="stepper-button back">Previous</button>' : ''}<button class="stepper-button next">${currentStep === totalSteps ? 'Complete' : 'Next'}</button>`;
-                    footer.querySelector('.next').onclick = handleNext;
-                    if (currentStep > 1) footer.querySelector('.back').onclick = handleBack;
+                });
+
+                steps.forEach((step, i) => {
+                    ScrollTrigger.create({
+                        trigger: step,
+                        start: "top center",
+                        end: "bottom center",
+                        toggleClass: "is-active",
+                        onEnter: () => updateVisual(i + 1),
+                        onEnterBack: () => updateVisual(i + 1),
+                    });
+                });
+                
+                if (steps.length > 0) steps[0].classList.add('is-active');
+                if (visuals.length > 0) visuals[0].classList.add('is-active');
+
+                function updateVisual(index) {
+                    visuals.forEach((visual, i) => {
+                        visual.classList.toggle('is-active', (i + 1) === index);
+                    });
+                }
+            }
+
+            // MOBILE: Swipeable Card Stack Logic
+            const mobileStepperEl = document.getElementById('mobile-card-stepper');
+            if (mobileStepperEl && window.innerWidth < 1024) {
+                const cards = gsap.utils.toArray(".mobile-step-card");
+                const dots = gsap.utils.toArray(".mobile-progress-dot");
+                let activeIndex = 0;
+
+                const updateDots = (index) => {
+                    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+                    cards.forEach((card, i) => card.classList.toggle('is-active-card', i === index));
                 };
-                const goToStep = (step) => { if (step >= 1 && step <= totalSteps) { currentStep = step; render(); } };
-                const handleNext = () => goToStep(currentStep + 1 > totalSteps ? totalSteps : currentStep + 1);
-                const handleBack = () => goToStep(currentStep - 1 < 1 ? 1 : currentStep - 1);
-                render();
+
+                const positionCards = () => {
+                    cards.forEach((card, i) => {
+                        let zIndex = cards.length - i;
+                        let y = (i - activeIndex) * 15;
+                        let scale = 1 - (i - activeIndex) * 0.05;
+                        let opacity = 1;
+
+                        if (i < activeIndex) {
+                           // Instantly hide swiped cards
+                           gsap.set(card, { opacity: 0, zIndex: zIndex });
+                        } else {
+                           // Animate active and upcoming cards
+                           gsap.to(card, {
+                               x: 0,
+                               y: y,
+                               scale: scale,
+                               zIndex: zIndex,
+                               opacity: 1,
+                               duration: 0.4,
+                               ease: "power3.out"
+                           });
+                        }
+                    });
+                    updateDots(activeIndex);
+                };
+                
+                positionCards(); // Set initial positions
+
+                cards.forEach((card, i) => {
+                    Draggable.create(card, {
+                        type: "x",
+                        bounds: { minX: -window.innerWidth, maxX: window.innerWidth },
+                        onDrag: function() {
+                           gsap.to(this.target, { rotation: this.x / 40, duration: 0.1 });
+                        },
+                        onDragEnd: function() {
+                            if (this.x > 100 && activeIndex > 0) { // Swipe Right
+                                activeIndex--;
+                            } else if (this.x < -100 && activeIndex < cards.length - 1) { // Swipe Left
+                                activeIndex++;
+                            }
+                            
+                            // Animate the swiped card off-screen before repositioning
+                            if (this.x > 100 || this.x < -100) {
+                                gsap.to(this.target, {
+                                    x: this.x > 100 ? 500 : -500,
+                                    opacity: 0,
+                                    duration: 0.3,
+                                    onComplete: () => {
+                                        positionCards();
+                                        gsap.set(this.target, { rotation: 0 }); // Reset rotation after animation
+                                    }
+                                });
+                            } else {
+                                // Snap back if not swiped far enough
+                                gsap.to(this.target, { x: 0, rotation: 0, duration: 0.4, ease: "power3.out" });
+                            }
+                        }
+                    });
+                });
             }
-            const animatedSection = document.querySelector('.animated-section');
-            if ("IntersectionObserver" in window && animatedSection) {
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) {
-                        animatedSection.classList.add('is-visible');
-                        observer.unobserve(animatedSection);
-                    }
-                }, { threshold: 0.2 });
-                observer.observe(animatedSection);
-            } else if (animatedSection) {
-                animatedSection.classList.add('is-visible');
-            }
+
 
             // --- Testimonials Section Logic ---
             const testimonialsData = [
