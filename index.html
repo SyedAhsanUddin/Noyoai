@@ -990,7 +990,15 @@
             return (
                 <section className="py-24 relative">
                     <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start px-6">
-                        <div className="space-y-8">
+                        <div className="lg:order-2 lg:sticky top-32">
+                            <div className="text-left">
+                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
+                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
+                                </h2>
+                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
+                            </div>
+                        </div>
+                        <div className="space-y-8 lg:order-1">
                             {cardsData.map((card, index) => (
                                 <a href={card.href} key={index} className="industry-card" style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
                                     <div className="inner-content">
@@ -1003,14 +1011,6 @@
                                     </div>
                                 </a>
                             ))}
-                        </div>
-                        <div className="lg:sticky top-32">
-                            <div className="text-left">
-                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
-                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
-                                </h2>
-                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
-                            </div>
                         </div>
                     </div>
                 </section>
