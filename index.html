@@ -290,7 +290,7 @@
         }
         #blueprint-container {
             background-color: #0d0d0d;
-            background-image: 
+            background-image:  
                 linear-gradient(rgba(106, 15, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(106, 15, 255, 0.1) 1px, transparent 1px);
             background-size: 2rem 2rem;
@@ -303,19 +303,18 @@
             transition: transform 0.8s;
             transform-style: preserve-3d;
             position: relative; 
+            display: grid; /* Use grid for layering to ensure cross-browser consistency */
         }
         .blueprint-node.is-resolved .node-flipper {
             transform: rotateY(180deg);
         }
         .node-front, .node-back {
-            -webkit-backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Safari */
             backface-visibility: hidden;
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             transition: box-shadow 0.3s ease;
+            grid-area: 1 / 1; /* Place both front and back in the same grid cell */
         }
         .node-back {
             transform: rotateY(180deg);
@@ -382,7 +381,7 @@
             border-radius: 2px;
         }
         .step-content-item {
-            min-height: 60vh; /* MODIFIED: Reduced from 100vh to 60vh */
+            min-height: 60vh; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -394,8 +393,7 @@
             opacity: 1;
         }
         .scroll-stepper-right {
-            position: sticky;
-            top: 0;
+            /* CSS `position: sticky` can be buggy in Safari, so we let GSAP handle the pinning via JavaScript */
             height: 100vh;
             display: flex;
             align-items: center;
@@ -437,7 +435,7 @@
             }
         }
         
-        /* NEW: Mobile Vertical Scrollytelling Timeline */
+        /* Mobile Vertical Scrollytelling Timeline */
         .mobile-timeline-container {
             position: relative;
             padding: 2rem 0;
@@ -703,7 +701,7 @@
         </div>
         <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3">
             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
-                                         transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                                             transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                 Book a Free Demo
             </a>
         </div>
@@ -808,7 +806,7 @@
             </div>
         </div>
 
-        <!-- NEW: Mobile Vertical Scrollytelling Timeline -->
+        <!-- Mobile Vertical Scrollytelling Timeline -->
         <div id="mobile-timeline-stepper" class="lg:hidden">
             <div class="mobile-timeline-container">
                 <div class="mobile-timeline-progress">
@@ -822,7 +820,7 @@
                         </div>
                         <div class="mobile-timeline-content">
                             <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
-                                <i class="fa-solid fa-comments text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                                <i class="fa-solid fa-comments text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
                             </div>
                             <h3 class="font-bold text-2xl text-white mb-2">1. Tell Us Your Goal</h3>
                             <p class="text-brand-gray font-medium">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
@@ -835,7 +833,7 @@
                         </div>
                         <div class="mobile-timeline-content">
                              <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
-                                <i class="fa-solid fa-cogs text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                                <i class="fa-solid fa-cogs text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
                             </div>
                             <h3 class="font-bold text-2xl text-white mb-2">2. We Build & Train</h3>
                             <p class="text-brand-gray font-medium">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
@@ -848,7 +846,7 @@
                         </div>
                         <div class="mobile-timeline-content">
                             <div class="w-[150px] h-[150px] flex items-center justify-center -ml-5">
-                                <i class="fa-solid fa-rocket text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text;"></i>
+                                <i class="fa-solid fa-rocket text-7xl" style="background-image: linear-gradient(to bottom right, var(--brand-highlight), var(--brand-accent)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
                             </div>
                             <h3 class="font-bold text-2xl text-white mb-2">3. You Launch</h3>
                             <p class="text-brand-gray font-medium">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
@@ -1054,8 +1052,8 @@
     </script>
     
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            gsap.registerPlugin(ScrollTrigger, Draggable);
+        function initializeAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
 
             // --- How It Works Section ---
             const howItWorksSection = document.getElementById('how-it-works');
@@ -1065,17 +1063,18 @@
                 const steps = gsap.utils.toArray(".step-content-item");
                 const visuals = gsap.utils.toArray(".step-visual");
                 const progressBar = document.getElementById("progress-bar");
+                const stepperContainer = document.querySelector(".scroll-stepper-container");
 
-                gsap.to(progressBar, {
-                    height: "100%",
-                    ease: "none",
+                gsap.timeline({
                     scrollTrigger: {
-                        trigger: ".scroll-stepper-container",
-                        start: "top center",
-                        end: "bottom center",
-                        scrub: true
+                        trigger: stepperContainer,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: true,
+                        pin: ".scroll-stepper-right",
                     }
-                });
+                })
+                .to(progressBar, { height: "100%", ease: "none" });
 
                 steps.forEach((step, i) => {
                     ScrollTrigger.create({
@@ -1083,8 +1082,7 @@
                         start: "top center",
                         end: "bottom center",
                         toggleClass: "is-active",
-                        onEnter: () => updateVisual(i + 1),
-                        onEnterBack: () => updateVisual(i + 1),
+                        onToggle: self => self.isActive && updateVisual(i + 1)
                     });
                 });
                 
@@ -1098,7 +1096,7 @@
                 }
             }
 
-            // NEW: MOBILE Vertical Scrollytelling Timeline Logic
+            // MOBILE Vertical Scrollytelling Timeline Logic
             const mobileStepperEl = document.getElementById('mobile-timeline-stepper');
             if (mobileStepperEl && window.innerWidth < 1024) {
                 const steps = gsap.utils.toArray(".mobile-timeline-step");
@@ -1274,7 +1272,15 @@
                 prevButton.addEventListener('click', handlePrev);
                 initTestimonials();
             }
-        });
+            
+            // FINAL FIX: Refresh ScrollTrigger after a short delay to ensure all dynamic content (like React) is loaded
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 500); // A 500ms delay should be sufficient for the React component to render.
+        }
+
+        // Run the animation initialization function
+        window.addEventListener('load', initializeAnimations);
     </script>
     
     <!-- React Babel Script for Industries Section -->
