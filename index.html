@@ -71,6 +71,16 @@
                         shine: {
                             '0%': { transform: 'translateX(-150%) translateY(-50%) rotate(35deg)' },
                             '100%': { transform: 'translateX(150%) translateY(-50%) rotate(35deg)' },
+                        },
+                        blink: {
+                            '50%': { opacity: 0 }
+                        },
+                        glitch: {
+                            '0%, 100%': { transform: 'translate(0, 0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
                         }
                     },
                     animation: {
@@ -81,6 +91,8 @@
                         scroll: 'scroll 30s linear infinite',
                         'border-rotate': 'rotate 6s linear infinite',
                         'shine-effect': 'shine 5s linear infinite',
+                        'blink': 'blink 1s step-end infinite',
+                        'glitch': 'glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite'
                     }
                 }
             }
@@ -269,49 +281,59 @@
             transform: scale(1.05);
         }
 
-        /* --- Features Section Styles --- */
-        #features-root {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden; /* Prevent content spill */
-        }
+        /* --- Interactive Blueprint Section --- */
         .features-heading-gradient {
             background-image: linear-gradient(to right, #50c3f0, #ee4b89);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .card-swap-container {
-            position: relative;
-            width: 100%; height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1200px;
+        #blueprint-container {
+            background-color: #0d0d0d;
+            background-image: 
+                linear-gradient(rgba(106, 15, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(106, 15, 255, 0.1) 1px, transparent 1px);
+            background-size: 2rem 2rem;
+            border: 1px solid rgba(106, 15, 255, 0.3);
         }
-        .card {
-            position: absolute;
-            top: 50%; left: 50%;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: #1a1a1a;
+        .blueprint-node {
+            perspective: 1000px;
+        }
+        .node-flipper {
+            transition: transform 0.8s;
             transform-style: preserve-3d;
-            will-change: transform;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 90%;
-            height: auto;
+            position: relative; 
         }
-         @media (min-width: 640px) {
-            .card {
-                width: 450px;
-                height: 300px;
-            }
+        .blueprint-node.is-resolved .node-flipper {
+            transform: rotateY(180deg);
+        }
+        .node-front, .node-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: box-shadow 0.3s ease;
+        }
+        .node-back {
+            transform: rotateY(180deg);
+        }
+        .problem-node:hover .glitch-icon {
+            animation: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
+        }
+        .blueprint-node:hover .node-front,
+        .blueprint-node:hover .node-back {
+             box-shadow: 0 0 25px 5px rgba(102, 205, 255, 0.4); /* Glow effect */
+        }
+        .solution-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        .blueprint-node.is-resolved .solution-path {
+            stroke-dashoffset: 0;
         }
         
         /* --- How It Works Section Styles --- */
@@ -705,8 +727,27 @@
     <!-- Industries Served Section -->
     <div id="industries-root"></div>
     
-    <!-- Features Section -->
-    <div id="features-root"></div>
+    <!-- Interactive Blueprint Section -->
+    <section id="features" class="py-24 bg-black px-6 md:px-12 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                From Chaos to <span class="features-heading-gradient">Clarity.</span>
+            </h2>
+            <p class="text-lg text-gray-400 mx-auto font-medium">
+                Your workflow is a blueprint. Click on the system errors to see how NOYOAI re-engineers your process for maximum efficiency.
+            </p>
+        </div>
+
+        <div id="blueprint-container" class="relative p-8 rounded-2xl max-w-6xl mx-auto aspect-[2/1]">
+            <!-- SVG for connection lines -->
+            <svg class="absolute inset-0 w-full h-full" id="blueprint-svg"></svg>
+
+            <!-- Grid for nodes -->
+            <div class="relative grid grid-cols-3 grid-rows-2 h-full gap-8" id="blueprint-grid">
+                <!-- Nodes will be injected here by JS -->
+            </div>
+        </div>
+    </section>
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="py-24 container mx-auto px-6">
@@ -1083,6 +1124,82 @@
                 });
             }
 
+            // --- Interactive Blueprint Logic ---
+            const blueprintGrid = document.getElementById('blueprint-grid');
+            const blueprintSvg = document.getElementById('blueprint-svg');
+            if (blueprintGrid && blueprintSvg) {
+                const features = [
+                    { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset', position: 'row-start-1 col-start-1' },
+                    { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar', position: 'row-start-1 col-start-2' },
+                    { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check', position: 'row-start-1 col-start-3' },
+                    { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question', position: 'row-start-2 col-start-1' },
+                    { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass', position: 'row-start-2 col-start-2' },
+                    { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke', position: 'row-start-2 col-start-3' },
+                ];
+
+                features.forEach(feature => {
+                    const nodeHTML = `
+                        <div id="${feature.id}" class="blueprint-node ${feature.position}">
+                            <div class="node-flipper w-full h-full">
+                                <!-- Front (Problem) -->
+                                <div class="node-front problem-node w-full h-full flex flex-col items-center justify-center text-center p-4 bg-red-900/20 border-2 border-dashed border-red-500/50 rounded-lg cursor-pointer">
+                                    <div class="glitch-icon text-4xl text-red-500 mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <h4 class="font-semibold text-red-400">${feature.problem}</h4>
+                                </div>
+                                <!-- Back (Solution) -->
+                                <div class="node-back w-full h-full flex flex-col items-center justify-center text-center p-4 bg-brand-cta/20 border border-brand-highlight/50 rounded-lg cursor-pointer">
+                                    <div class="text-4xl text-brand-highlight mb-2"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h4 class="font-bold text-white">${feature.solution}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    blueprintGrid.innerHTML += nodeHTML;
+                });
+                
+                const connections = [ ['f1', 'f2'], ['f2', 'f3'], ['f1', 'f4'], ['f1', 'f5'], ['f3', 'f6'] ];
+                connections.forEach(([startId, endId]) => {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('class', 'solution-path');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#66CDFF');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('data-start', startId);
+                    path.setAttribute('data-end', endId);
+                    blueprintSvg.appendChild(path);
+                });
+
+                function updateLines() {
+                    const gridRect = blueprintGrid.getBoundingClientRect();
+                    document.querySelectorAll('.solution-path').forEach(path => {
+                        const startNode = document.getElementById(path.dataset.start);
+                        const endNode = document.getElementById(path.dataset.end);
+                        if (!startNode || !endNode) return;
+                        const startRect = startNode.getBoundingClientRect();
+                        const endRect = endNode.getBoundingClientRect();
+
+                        const startX = (startRect.left + startRect.width / 2) - gridRect.left;
+                        const startY = (startRect.top + startRect.height / 2) - gridRect.top;
+                        const endX = (endRect.left + endRect.width / 2) - gridRect.left;
+                        const endY = (endRect.top + endRect.height / 2) - gridRect.top;
+                        
+                        path.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
+                        const length = path.getTotalLength();
+                        path.style.strokeDasharray = length;
+                        path.style.strokeDashoffset = length;
+                    });
+                }
+
+                document.querySelectorAll('.blueprint-node').forEach(node => {
+                    node.addEventListener('click', () => {
+                        node.classList.toggle('is-resolved');
+                    });
+                });
+                
+                updateLines();
+                window.addEventListener('resize', updateLines);
+            }
+
 
             // --- Testimonials Section Logic ---
             const testimonialsData = [
@@ -1151,10 +1268,9 @@
         });
     </script>
     
-    <!-- React Babel Script for Features & DotGrid Sections -->
+    <!-- React Babel Script for Industries Section -->
     <script type="text/babel">
         const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
-        const InertiaPlugin = window.InertiaPlugin;
 
         // --- Industries Section Component ---
         function IndustriesApp() {
@@ -1200,148 +1316,6 @@
         if (industriesContainer) {
             const industriesRoot = ReactDOM.createRoot(industriesContainer);
             industriesRoot.render(<IndustriesApp />);
-        }
-
-        // --- Features Section Component ---
-        const Card = forwardRef(
-            ({ customClass, ...rest }, ref) => (
-                <div
-                    ref={ref}
-                    {...rest}
-                    className={`card ${customClass ?? ""} ${rest.className ?? ""}`.trim()}
-                />
-            )
-        );
-        Card.displayName = "Card";
-
-        const makeSlot = (i, distX, distY, total) => ({
-            x: i * distX, y: -i * distY, z: -i * distX * 1.5,
-            zIndex: total - i,
-        });
-        
-        const placeNow = (el, slot, skew) =>
-            gsap.set(el, {
-                x: slot.x, y: slot.y, z: slot.z,
-                xPercent: -50, yPercent: -50,
-                skewY: skew,
-                transformOrigin: "center center",
-                zIndex: slot.zIndex,
-                force3D: true,
-            });
-
-        const CardSwap = ({
-            width = "90%", height = 300, cardDistance = 20, verticalDistance = 20,
-            delay = 4000, skewAmount = 2, easing = "elastic", children,
-        }) => {
-            const isMobile = window.innerWidth < 640;
-            const cardWidth = isMobile ? '90vw' : 450;
-            const cardHeight = isMobile ? 'auto' : 300;
-
-
-            const config = easing === "elastic"
-                ? { ease: "elastic.out(0.6,0.9)", durDrop: 2, durMove: 2, durReturn: 2, promoteOverlap: 0.9, returnDelay: 0.05 }
-                : { ease: "power1.inOut", durDrop: 0.8, durMove: 0.8, durReturn: 0.8, promoteOverlap: 0.45, returnDelay: 0.2 };
-
-            const childArr = useMemo(() => Children.toArray(children), [children]);
-            const refs = useMemo(() => childArr.map(() => React.createRef()), [childArr.length]);
-            const order = useRef(Array.from({ length: childArr.length }, (_, i) => i));
-            const tlRef = useRef(null);
-            const container = useRef(null);
-
-            useEffect(() => {
-                const total = refs.length;
-                refs.forEach((r, i) => placeNow(r.current, makeSlot(i, cardDistance, verticalDistance, total), skewAmount));
-
-                const swap = () => {
-                    if (tlRef.current && tlRef.current.isActive()) return;
-                    if (order.current.length < 2) return;
-                    
-                    const [front, ...rest] = order.current;
-                    const elFront = refs[front].current;
-                    
-                    const tl = gsap.timeline();
-                    tlRef.current = tl;
-
-                    tl.to(elFront, { y: "+=600", duration: config.durDrop, ease: config.ease });
-                    tl.addLabel("promote", `-=${config.durDrop * config.promoteOverlap}`);
-                    
-                    rest.forEach((idx, i) => {
-                        const el = refs[idx].current;
-                        const slot = makeSlot(i, cardDistance, verticalDistance, refs.length);
-                        tl.set(el, { zIndex: slot.zIndex }, "promote");
-                        tl.to(el, { x: slot.x, y: slot.y, z: slot.z, duration: config.durMove, ease: config.ease }, `promote+=${i * 0.15}`);
-                    });
-
-                    const backSlot = makeSlot(refs.length - 1, cardDistance, verticalDistance, refs.length);
-                    tl.addLabel("return", `promote+=${config.durMove * config.returnDelay}`);
-                    tl.call(() => { gsap.set(elFront, { zIndex: backSlot.zIndex }); }, undefined, "return");
-                    tl.set(elFront, { x: backSlot.x, z: backSlot.z }, "return");
-                    tl.to(elFront, { y: backSlot.y, duration: config.durReturn, ease: config.ease }, "return");
-                    tl.call(() => { order.current = [...rest, front]; });
-                };
-
-                const intervalId = window.setInterval(swap, delay);
-
-                return () => {
-                    clearInterval(intervalId);
-                    if (tlRef.current) tlRef.current.kill();
-                };
-            }, [cardDistance, verticalDistance, delay, skewAmount, easing, childArr.length, config, refs]);
-
-            const rendered = childArr.map((child, i) =>
-                isValidElement(child)
-                    ? cloneElement(child, { key: i, ref: refs[i], style: { width: cardWidth, height: cardHeight, ...(child.props.style ?? {}) } })
-                    : child
-            );
-
-            return (
-                <div ref={container} className="card-swap-container">
-                    {rendered}
-                </div>
-            );
-        };
-
-        function FeaturesApp() {
-            const features = [
-                { icon: 'fa-comments', title: '24/7 Automated Chat', description: 'Provide instantaneous, intelligent support 24/7. Your AI ensures you never miss a customer inquiry or a potential lead.' },
-                { icon: 'fa-calendar-check', title: 'Appointment Booking', description: 'Streamline your scheduling. Allow clients to book, reschedule, and receive reminders effortlessly with your AI.' },
-                { icon: 'fa-chart-line', title: 'Lead Qualification', description: 'Focus on your most promising opportunities. Your AI intelligently qualifies leads, delivering them to your sales team.' },
-                { icon: 'fa-cart-shopping', title: 'eCommerce Integration', description: 'Elevate your online store. Your AI turns conversations into conversions by recovering abandoned carts and providing instant order updates.' },
-                { icon: 'fa-file-invoice-dollar', title: 'Instant Quotes', description: 'Deliver value instantly. Your AI generates personalized quotes in real-time, accelerating your sales cycle.' },
-                { icon: 'fa-brain', title: 'Custom AI Training', description: 'A true extension of your brand. Your AI is trained on your unique data, ensuring every interaction is accurate and on-brand.' }
-            ];
-
-            return (
-                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center p-4 md:p-8 gap-8 md:gap-16">
-                    <div className="text-center lg:text-left max-w-lg">
-                        <h1 className="font-bold text-4xl md:text-5xl text-white mb-4">
-                            Everything You Need. <span className="features-heading-gradient">Nothing You Don't.</span>
-                        </h1>
-                        <p className="text-lg text-gray-400 mx-auto font-medium">Powerful features to drive growth and improve customer satisfaction.</p>
-                    </div>
-                    <div className="w-full max-w-xl h-[500px] lg:h-[600px] flex-shrink-0">
-                        <CardSwap>
-                            {features.map((feature, index) => (
-                                <Card key={index}>
-                                    <div className="flex flex-col h-full">
-                                        <div className="w-12 h-12 mb-4 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                                            <i className={`fa-solid ${feature.icon} text-2xl text-blue-400`}></i>
-                                        </div>
-                                        <h3 className="font-bold text-xl md:text-2xl mb-2 text-white">{feature.title}</h3>
-                                        <p className="text-gray-400 font-medium text-base md:text-lg">{feature.description}</p>
-                                    </div>
-                                </Card>
-                            ))}
-                        </CardSwap>
-                    </div>
-                </div>
-            );
-        }
-
-        const featuresContainer = document.getElementById('features-root');
-        if (featuresContainer) {
-            const featuresRoot = ReactDOM.createRoot(featuresContainer);
-            featuresRoot.render(<FeaturesApp />);
         }
     </script>
 
