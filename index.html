@@ -336,6 +336,15 @@
             stroke-dashoffset: 0;
         }
         
+        @media (min-width: 768px) {
+            #f1 { grid-area: 1 / 1 / 2 / 2; }
+            #f2 { grid-area: 1 / 2 / 2 / 3; }
+            #f3 { grid-area: 1 / 3 / 2 / 4; }
+            #f4 { grid-area: 2 / 1 / 3 / 2; }
+            #f5 { grid-area: 2 / 2 / 3 / 3; }
+            #f6 { grid-area: 2 / 3 / 3 / 4; }
+        }
+
         /* --- How It Works Section Styles --- */
         .how-it-works-heading {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
@@ -738,12 +747,12 @@
             </p>
         </div>
 
-        <div id="blueprint-container" class="relative p-8 rounded-2xl max-w-6xl mx-auto aspect-[2/1]">
+        <div id="blueprint-container" class="relative p-8 rounded-2xl max-w-6xl mx-auto aspect-[1/1.2] md:aspect-[2/1]">
             <!-- SVG for connection lines -->
             <svg class="absolute inset-0 w-full h-full" id="blueprint-svg"></svg>
 
             <!-- Grid for nodes -->
-            <div class="relative grid grid-cols-3 grid-rows-2 h-full gap-8" id="blueprint-grid">
+            <div class="relative grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 h-full gap-8" id="blueprint-grid">
                 <!-- Nodes will be injected here by JS -->
             </div>
         </div>
@@ -1129,17 +1138,17 @@
             const blueprintSvg = document.getElementById('blueprint-svg');
             if (blueprintGrid && blueprintSvg) {
                 const features = [
-                    { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset', position: 'row-start-1 col-start-1' },
-                    { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar', position: 'row-start-1 col-start-2' },
-                    { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check', position: 'row-start-1 col-start-3' },
-                    { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question', position: 'row-start-2 col-start-1' },
-                    { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass', position: 'row-start-2 col-start-2' },
-                    { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke', position: 'row-start-2 col-start-3' },
+                    { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset' },
+                    { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar' },
+                    { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check' },
+                    { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question' },
+                    { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass' },
+                    { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke' },
                 ];
 
                 features.forEach(feature => {
                     const nodeHTML = `
-                        <div id="${feature.id}" class="blueprint-node ${feature.position}">
+                        <div id="${feature.id}" class="blueprint-node">
                             <div class="node-flipper w-full h-full">
                                 <!-- Front (Problem) -->
                                 <div class="node-front problem-node w-full h-full flex flex-col items-center justify-center text-center p-4 bg-red-900/20 border-2 border-dashed border-red-500/50 rounded-lg cursor-pointer">
