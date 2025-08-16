@@ -10,6 +10,7 @@
     
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -34,7 +35,7 @@
                 extend: {
                     colors: {
                         'brand-primary': '#001B6B',  // Deep Navy Blue
-                        'brand-cta': '#6A0FFF',     // Vibrant Purple
+                        'brand-cta': '#6A0FFF',    // Vibrant Purple
                         'brand-highlight': '#66CDFF', // Sky Blue
                         'brand-accent': '#F4A3FF',   // Light Pink
                         'brand-dark': '#1d1d1f',
@@ -98,7 +99,9 @@
 
         body {
             font-family: 'General Sans', 'Satoshi', sans-serif;
-            background-color: #000000;
+            background-color: #000000; /* Fallback for the gradient */
+            background-image: linear-gradient(to bottom, #0F2027, #000000);
+            background-attachment: fixed; /* Makes the gradient stay in place while scrolling */
             color: #ffffff;
             overflow-x: hidden;
         }
@@ -220,7 +223,7 @@
             box-sizing: border-box;
             padding: 2px;
             background: transparent;
-            display: block; 
+            display: block;  
             text-decoration: none;
             transition: transform 0.3s ease;
         }
@@ -308,78 +311,106 @@
         }
         
         /* --- How It Works Section Styles --- */
-        .how-it-works-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
         .how-it-works-heading {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .animated-section {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .animated-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .stepper-outer-container {
+        .scroll-stepper-container {
+            position: relative;
             width: 100%;
-            max-width: 42rem;
-            margin: auto;
-            border-radius: 1.5rem;
-            background-color: #1a1a1a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }
-        .stepper-indicator-row { display: flex; width: 100%; align-items: center; padding: 1.5rem; }
-        .stepper-content-wrapper { position: relative; overflow: hidden; min-height: 150px; }
-        .stepper-step-content { padding: 0 1.5rem 1.5rem; position: absolute; width: 100%; }
-        .stepper-footer { padding: 0 1.5rem 1.5rem; margin-top: 1rem; display: flex; }
-        .stepper-footer.justify-between { justify-content: space-between; }
-        .stepper-footer.justify-end { justify-content: flex-end; }
-        .stepper-button {
-            transition: all 350ms ease;
-            border-radius: 9999px;
-            padding: 0.5rem 1.25rem;
-            font-weight: 500;
-            cursor: pointer;
+        .scroll-stepper-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
         }
-        .stepper-button.back { background-color: transparent; color: #a0aec0; }
-        .stepper-button.back:hover { background-color: rgba(255, 255, 255, 0.05); }
-        .stepper-button.next { background-color: #6A0FFF; color: white; }
-        .stepper-button.next:hover { background-color: #5a0eed; }
-        .step-indicator { position: relative; cursor: pointer; outline: none; }
-        .step-indicator-inner {
-            display: flex; height: 2rem; width: 2rem;
-            align-items: center; justify-content: center;
-            border-radius: 9999px; font-weight: 600;
-            transition: background-color 0.3s, color 0.3s;
+        @media (min-width: 1024px) {
+            .scroll-stepper-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
-        .step-indicator-inner.inactive { background-color: #374151; color: #9ca3af; }
-        .step-indicator-inner.active { background-color: #6A0FFF; }
-        .step-indicator-inner.complete { background-color: #6A0FFF; }
-        .active-dot { height: 0.75rem; width: 0.75rem; border-radius: 9999px; background-color: #fff; }
-        .step-number { font-size: 0.875rem; }
-        .check-icon { height: 1rem; width: 1rem; color: #fff; }
-        .step-connector {
-            position: relative; margin-left: 0.5rem; margin-right: 0.5rem;
-            height: 2px; flex: 1;
-            border-radius: 0.25rem; background-color: #374151;
+        .scroll-stepper-left {
+            position: relative;
+            padding-top: 2rem;
         }
-        .step-connector-inner {
-            position: absolute; left: 0; top: 0;
-            height: 100%; width: 0%;
+        .scroll-stepper-progress {
+            position: absolute;
+            left: 20px;
+            top: 4rem;
+            bottom: 4rem;
+            width: 4px;
+            background-color: #374151;
+            border-radius: 2px;
+        }
+        .scroll-stepper-progress-bar {
+            width: 100%;
+            height: 0%;
             background-color: #6A0FFF;
-            transition: width 0.4s ease;
+            border-radius: 2px;
         }
+        .step-content-item {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.3;
+            transition: opacity 0.4s ease-in-out;
+            padding-left: 50px;
+        }
+        .step-content-item.is-active {
+            opacity: 1;
+        }
+        .scroll-stepper-right {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: none; /* Hidden on mobile */
+        }
+        @media (min-width: 1024px) {
+            .scroll-stepper-right {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        .visual-panel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 450px;
+        }
+        .step-visual {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .step-visual.is-active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        .visual-panel .step-visual i {
+            font-size: 10rem;
+            background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
+        }
+        @media (min-width: 1280px) {
+             .visual-panel .step-visual i {
+                font-size: 12rem;
+            }
+        }
+
 
         /* --- Testimonials Section Styles --- */
         .testimonials-container {
@@ -495,7 +526,7 @@
         }
     </style>
 </head>
-<body class="bg-black text-white">
+<body class="text-white">
 
     <!-- HEADER -->
     <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/10 font-display transition-all duration-300 ease-in-out">
@@ -598,7 +629,7 @@
     </section>
 
     <!-- Infinite Benefits Belt -->
-    <div class="w-full overflow-hidden py-8 bg-black border-t border-b border-white/10">
+    <div class="w-full overflow-hidden py-8 bg-black/20 border-t border-b border-white/10">
          <div class="flex animate-scroll hover:[animation-play-state:paused]">
             <div class="flex-shrink-0 flex items-center pr-8 space-x-8">
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
@@ -628,21 +659,52 @@
     <div id="features-root"></div>
 
     <!-- How It Works Section -->
-    <div class="how-it-works-container">
-        <section id="how-it-works" class="py-24 container mx-auto px-6 animated-section stepper-section">
-            <div class="text-center mb-16 px-4">
-                <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
-                    Launch in <span class="how-it-works-heading">Three Simple Steps.</span>
-                </h2>
-                <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
+    <section id="how-it-works" class="py-24 container mx-auto px-6">
+        <div class="text-center mb-16 px-4">
+            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                Launch in <span class="how-it-works-heading">Three Simple Steps.</span>
+            </h2>
+            <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
+        </div>
+
+        <div class="scroll-stepper-container">
+            <div class="scroll-stepper-grid">
+                <!-- Left Column: Step Content -->
+                <div class="scroll-stepper-left">
+                    <div class="scroll-stepper-progress">
+                        <div id="progress-bar" class="scroll-stepper-progress-bar"></div>
+                    </div>
+                    <div class="step-content-item" data-step="1">
+                        <h3 class="font-bold text-3xl text-white mb-3">1. Tell Us Your Goal</h3>
+                        <p class="text-brand-gray font-medium text-lg">We start with a deep dive into your business objectives to understand exactly what you want to achieve.</p>
+                    </div>
+                    <div class="step-content-item" data-step="2">
+                        <h3 class="font-bold text-3xl text-white mb-3">2. We Build & Train</h3>
+                        <p class="text-brand-gray font-medium text-lg">Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand.</p>
+                    </div>
+                    <div class="step-content-item" data-step="3">
+                        <h3 class="font-bold text-3xl text-white mb-3">3. You Launch</h3>
+                        <p class="text-brand-gray font-medium text-lg">We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Visual Panel -->
+                <div class="scroll-stepper-right">
+                    <div class="visual-panel">
+                        <div class="step-visual" data-visual-step="1">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div class="step-visual" data-visual-step="2">
+                            <i class="fa-solid fa-cogs"></i>
+                        </div>
+                        <div class="step-visual" data-visual-step="3">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="stepper" class="stepper-outer-container">
-                <div class="stepper-indicator-row"></div>
-                <div class="stepper-content-wrapper"></div>
-                <div class="stepper-footer"></div>
-            </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
     <!-- Testimonials Section -->
     <div class="testimonials-container">
@@ -840,70 +902,58 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // --- How It Works Section Logic ---
-            const stepperEl = document.getElementById('stepper');
-            if (stepperEl) {
-                const steps = [
-                    { icon: 'fa-solid fa-comments', title: '1. Tell Us Your Goal', content: 'We start with a deep dive into your business objectives to understand exactly what you want to achieve.' },
-                    { icon: 'fa-solid fa-cogs', title: '2. We Build & Train', content: "Our team configures, customizes, and trains your AI on your specific data to ensure it's a true extension of your brand." },
-                    { icon: 'fa-solid fa-rocket', title: '3. You Launch', content: 'We deploy your AI chatbot, providing you with a powerful new tool to engage customers and drive growth, 24/7.' }
-                ];
-                let currentStep = 1;
-                const totalSteps = steps.length;
-                const indicatorRow = stepperEl.querySelector('.stepper-indicator-row');
-                const contentWrapper = stepperEl.querySelector('.stepper-content-wrapper');
-                const footer = stepperEl.querySelector('.stepper-footer');
-                const render = () => {
-                    indicatorRow.innerHTML = '';
-                    for (let i = 0; i < totalSteps; i++) {
-                        const stepNum = i + 1;
-                        const status = currentStep === stepNum ? 'active' : currentStep < stepNum ? 'inactive' : 'complete';
-                        const indicator = document.createElement('div');
-                        indicator.className = 'step-indicator';
-                        indicator.innerHTML = `<div class="step-indicator-inner ${status}">${status === 'complete' ? '<svg class="check-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : status === 'active' ? '<div class="active-dot"></div>' : `<span class="step-number">${stepNum}</span>`}</div>`;
-                        indicator.onclick = () => goToStep(stepNum);
-                        indicatorRow.appendChild(indicator);
-                        if (i < totalSteps - 1) {
-                            const connector = document.createElement('div');
-                            connector.className = 'step-connector';
-                            connector.innerHTML = `<div class="step-connector-inner" style="width: ${currentStep > stepNum ? '100%' : '0%'}"></div>`;
-                            indicatorRow.appendChild(connector);
+            // --- How It Works Section - Scroll-Driven Logic ---
+            const howItWorksSection = document.getElementById('how-it-works');
+            if (howItWorksSection && window.innerWidth >= 1024) { // Only run on desktop
+                gsap.registerPlugin(ScrollTrigger);
+
+                const steps = gsap.utils.toArray(".step-content-item");
+                const visuals = gsap.utils.toArray(".step-visual");
+                const progressBar = document.getElementById("progress-bar");
+
+                // Set up the main timeline for the progress bar
+                gsap.to(progressBar, {
+                    height: "100%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".scroll-stepper-container",
+                        start: "top center",
+                        end: "bottom center",
+                        scrub: true
+                    }
+                });
+
+                steps.forEach((step, i) => {
+                    ScrollTrigger.create({
+                        trigger: step,
+                        start: "top center",
+                        end: "bottom center",
+                        toggleClass: "is-active",
+                        onEnter: () => updateVisual(i + 1),
+                        onEnterBack: () => updateVisual(i + 1),
+                    });
+                });
+                
+                // Initial state
+                if (steps.length > 0) {
+                    steps[0].classList.add('is-active');
+                }
+                if (visuals.length > 0) {
+                     visuals[0].classList.add('is-active');
+                }
+
+
+                function updateVisual(index) {
+                    visuals.forEach((visual, i) => {
+                        if ((i + 1) === index) {
+                            visual.classList.add('is-active');
+                        } else {
+                            visual.classList.remove('is-active');
                         }
-                    }
-                    const oldContent = contentWrapper.querySelector('.stepper-step-content');
-                    const newContent = document.createElement('div');
-                    newContent.className = 'stepper-step-content';
-                    const currentStepData = steps[currentStep - 1];
-                    newContent.innerHTML = `<div class="flex flex-col items-center text-center gap-4"><i class="${currentStepData.icon} text-4xl text-brand-highlight mb-2"></i><div><h3 class="font-bold text-2xl text-white mb-2">${currentStepData.title}</h3><p class="text-brand-gray font-medium">${currentStepData.content}</p></div></div>`;
-                    if (oldContent) {
-                        gsap.to(oldContent, { x: currentStep > oldContent.dataset.step ? '-50%' : '50%', opacity: 0, duration: 0.3, onComplete: () => oldContent.remove() });
-                    }
-                    newContent.dataset.step = currentStep;
-                    contentWrapper.appendChild(newContent);
-                    gsap.fromTo(newContent, { x: currentStep > (oldContent?.dataset.step || 0) ? '100%' : '-100%', opacity: 0 }, { x: '0%', opacity: 1, duration: 0.4 });
-                    setTimeout(() => { gsap.to(contentWrapper, { height: newContent.offsetHeight, duration: 0.4 }); }, 50);
-                    footer.className = `stepper-footer ${currentStep > 1 ? 'justify-between' : 'justify-end'}`;
-                    footer.innerHTML = `${currentStep > 1 ? '<button class="stepper-button back">Previous</button>' : ''}<button class="stepper-button next">${currentStep === totalSteps ? 'Complete' : 'Next'}</button>`;
-                    footer.querySelector('.next').onclick = handleNext;
-                    if (currentStep > 1) footer.querySelector('.back').onclick = handleBack;
-                };
-                const goToStep = (step) => { if (step >= 1 && step <= totalSteps) { currentStep = step; render(); } };
-                const handleNext = () => goToStep(currentStep + 1 > totalSteps ? totalSteps : currentStep + 1);
-                const handleBack = () => goToStep(currentStep - 1 < 1 ? 1 : currentStep - 1);
-                render();
+                    });
+                }
             }
-            const animatedSection = document.querySelector('.animated-section');
-            if ("IntersectionObserver" in window && animatedSection) {
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) {
-                        animatedSection.classList.add('is-visible');
-                        observer.unobserve(animatedSection);
-                    }
-                }, { threshold: 0.2 });
-                observer.observe(animatedSection);
-            } else if (animatedSection) {
-                animatedSection.classList.add('is-visible');
-            }
+
 
             // --- Testimonials Section Logic ---
             const testimonialsData = [
@@ -1054,7 +1104,7 @@
             width = "90%", height = 300, cardDistance = 20, verticalDistance = 20,
             delay = 4000, skewAmount = 2, easing = "elastic", children,
         }) => {
-             const isMobile = window.innerWidth < 640;
+            const isMobile = window.innerWidth < 640;
             const cardWidth = isMobile ? '90vw' : 450;
             const cardHeight = isMobile ? 'auto' : 300;
 
@@ -1133,7 +1183,7 @@
             ];
 
             return (
-                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center bg-black p-4 md:p-8 gap-8 md:gap-16">
+                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center p-4 md:p-8 gap-8 md:gap-16">
                     <div className="text-center lg:text-left max-w-lg">
                         <h1 className="font-bold text-4xl md:text-5xl text-white mb-4">
                             Everything You Need. <span className="features-heading-gradient">Nothing You Don't.</span>
