@@ -665,50 +665,61 @@
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
         }
 
-        /* --- Footer Section Styles (Glass Bar) --- */
-        .footer-glass-bar {
-            padding: 1rem 1.5rem;
-            margin: 2rem auto;
-            max-width: 900px; /* Adjust width as needed */
-
-            /* Glassmorphism Effect */
-            background-color: rgba(29, 29, 31, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-
-            /* Styling */
-            border-radius: 9999px; /* Pill shape */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        /* --- Footer Section Styles (Spotlight) --- */
+        .spotlight-footer {
+            position: relative;
+            padding: 5rem 2rem;
+            margin-top: 6rem;
+            background-color: #020408;
+            overflow: hidden;
+            --spotlight-color: rgba(106, 15, 255, 0.15); /* brand-cta with alpha */
         }
 
-        .footer-glass-bar .footer-container {
+        .spotlight-footer::before {
+            content: '';
+            position: absolute;
+            top: var(--y);
+            left: var(--x);
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background-image: radial-gradient(circle, var(--spotlight-color) 0%, transparent 60%);
+            transition: background-image 0.3s ease;
+            pointer-events: none;
+        }
+
+        .spotlight-footer .footer-grid {
+            position: relative; /* Ensure content is above the spotlight */
+            z-index: 2;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            color: #888;
+        }
+
+        .spotlight-footer .footer-column {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .footer-glass-bar .copyright-text {
-            font-size: 0.875rem;
-            color: var(--brand-gray);
-            font-family: 'Satoshi', sans-serif;
+        .spotlight-footer h4 {
+            font-family: 'General Sans', sans-serif;
+            font-weight: 700;
+            color: #eee;
+            margin-bottom: 0.5rem;
         }
 
-        .footer-glass-bar .social-links {
-            display: flex;
-            gap: 1.5rem;
+        .spotlight-footer a, .spotlight-footer p {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
-        .footer-glass-bar .social-links a {
-            color: var(--brand-gray);
-            transition: color 0.3s ease, transform 0.3s ease;
-            font-size: 1.125rem;
-        }
-
-        .footer-glass-bar .social-links a:hover {
-            color: var(--brand-highlight); /* Sky Blue */
-            transform: scale(1.2);
+        .spotlight-footer a:hover {
+            color: white;
         }
     </style>
 </head>
@@ -1125,13 +1136,29 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer-glass-bar">
-        <div class="footer-container">
-            <p class="copyright-text">&copy; 2024 NOYOAI. All rights reserved.</p>
-            <div class="social-links">
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    <footer id="spotlight-footer" class="spotlight-footer">
+        <div class="footer-grid">
+            <div class="footer-column">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+                <p>&copy; 2024 NOYOAI</p>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <a href="#">About</a>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+            </div>
+            <div class="footer-column">
+                <h4>Product</h4>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">Book a Demo</a>
+            </div>
+            <div class="footer-column">
+                <h4>Social</h4>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">GitHub</a>
             </div>
         </div>
     </footer>
@@ -1610,6 +1637,17 @@
                 });
             }
             
+            // --- Spotlight Footer Logic ---
+            const footer = document.getElementById('spotlight-footer');
+            if (footer) {
+                footer.addEventListener('mousemove', e => {
+                    const rect = footer.getBoundingClientRect();
+                    footer.style.setProperty('--x', e.clientX - rect.left + 'px');
+                    footer.style.setProperty('--y', e.clientY - rect.top + 'px');
+                });
+            }
+
+
             // FINAL FIX: Refresh ScrollTrigger after a short delay to ensure all dynamic content (like React) is loaded
             setTimeout(() => {
                 ScrollTrigger.refresh();
