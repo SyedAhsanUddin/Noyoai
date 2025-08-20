@@ -312,7 +312,7 @@
         .node-flipper {
             transition: transform 0.8s;
             transform-style: preserve-3d;
-            position: relative; 
+            position: relative;  
             display: grid; /* Use grid for layering to ensure cross-browser consistency */
         }
         .blueprint-node.is-resolved .node-flipper {
@@ -391,7 +391,7 @@
             border-radius: 2px;
         }
         .step-content-item {
-            min-height: 60vh; 
+            min-height: 60vh;  
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -663,6 +663,81 @@
         }
         .checkmark-path {
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
+        }
+
+        /* --- Footer Section Styles (Aurora) --- */
+        .footer-aurora-wrapper {
+            position: relative;
+            padding: 3px; /* Controls the border thickness */
+            margin-top: 6rem;
+            overflow: hidden;
+        }
+
+        .footer-aurora-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250%; /* Make it large enough to cover the area */
+            height: 250%;
+            background: conic-gradient(from 0deg, var(--brand-cta), var(--brand-highlight), var(--brand-accent), var(--brand-cta));
+            animation: border-rotate 8s linear infinite;
+        }
+
+        .footer-aurora-content {
+            position: relative;
+            background-color: #05080a; /* A very dark color to make the border pop */
+            padding: 3rem 2rem 1.5rem;
+            color: var(--brand-gray);
+            font-family: 'Satoshi', sans-serif;
+        }
+
+        .footer-aurora-content .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-aurora-content .tagline {
+            font-size: 0.9rem;
+            max-width: 200px;
+        }
+
+        .footer-aurora-content .column-heading {
+            font-family: 'General Sans', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-aurora-content .links-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-aurora-content .links-column a {
+            color: var(--brand-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-aurora-content .links-column a:hover {
+            color: var(--brand-highlight);
+        }
+
+        .footer-aurora-content .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.875rem;
         }
     </style>
 </head>
@@ -1079,9 +1154,38 @@
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-white/10 py-8">
-        <div class="container mx-auto px-6 text-center text-brand-gray">
-            <p>&copy; 2024 NOYOAI. All rights reserved.</p>
+    <footer class="footer-aurora-wrapper">
+        <div class="footer-aurora-content">
+            <div class="grid-container">
+                <!-- Column 1: Brand -->
+                <div class="brand-column">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+                    <p class="tagline">Smarter Conversations. Built For Business.</p>
+                </div>
+    
+                <!-- Column 2: Links -->
+                <div class="links-column">
+                    <h4 class="column-heading">Explore</h4>
+                    <ul>
+                        <li><a href="#">Solutions</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Column 3: Legal -->
+                <div class="links-column">
+                    <h4 class="column-heading">Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NOYOAI. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
