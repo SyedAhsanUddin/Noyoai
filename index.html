@@ -665,62 +665,61 @@
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
         }
 
-        /* --- Footer Section Styles (Spotlight) --- */
-        .spotlight-footer {
+        /* --- Footer Section Styles (AI Synapse) --- */
+        .synapse-footer {
             position: relative;
-            padding: 5rem 2rem;
             margin-top: 6rem;
             background-color: #020408;
             overflow: hidden;
-            --spotlight-color: rgba(106, 15, 255, 0.15); /* brand-cta with alpha */
+            border-top: 1px solid rgba(106, 15, 255, 0.2);
         }
 
-        .spotlight-footer::before {
-            content: '';
+        #synapse-canvas {
             position: absolute;
-            top: var(--y);
-            left: var(--x);
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background-image: radial-gradient(circle, var(--spotlight-color) 0%, transparent 60%);
-            transition: background-image 0.3s ease;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
-        .spotlight-footer .footer-grid {
-            position: relative; /* Ensure content is above the spotlight */
+        .synapse-content {
+            position: relative;
             z-index: 2;
+            padding: 5rem 2rem;
+        }
+
+        .synapse-footer .footer-grid {
             max-width: 1100px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 2rem;
-            color: #888;
         }
 
-        .spotlight-footer .footer-column {
+        .synapse-footer .footer-column {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
 
-        .spotlight-footer h4 {
+        .synapse-footer h4 {
             font-family: 'General Sans', sans-serif;
             font-weight: 700;
             color: #eee;
             margin-bottom: 0.5rem;
         }
 
-        .spotlight-footer a, .spotlight-footer p {
+        .synapse-footer a, .synapse-footer p {
             color: #888;
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
-        .spotlight-footer a:hover {
+        .synapse-footer a:hover {
             color: white;
         }
+
     </style>
 </head>
 <body class="text-white">
@@ -1136,29 +1135,32 @@
     </section>
 
     <!-- Footer -->
-    <footer id="spotlight-footer" class="spotlight-footer">
-        <div class="footer-grid">
-            <div class="footer-column">
-                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
-                <p>&copy; 2024 NOYOAI</p>
-            </div>
-            <div class="footer-column">
-                <h4>Company</h4>
-                <a href="#">About</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-            </div>
-            <div class="footer-column">
-                <h4>Product</h4>
-                <a href="#">Features</a>
-                <a href="#">Pricing</a>
-                <a href="#">Book a Demo</a>
-            </div>
-            <div class="footer-column">
-                <h4>Social</h4>
-                <a href="#">Twitter</a>
-                <a href="#">LinkedIn</a>
-                <a href="#">GitHub</a>
+    <footer class="synapse-footer">
+        <canvas id="synapse-canvas"></canvas>
+        <div class="synapse-content">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+                    <p>&copy; 2024 NOYOAI</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <a href="#">Features</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">Book a Demo</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Social</h4>
+                    <a href="#">Twitter</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">GitHub</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -1637,14 +1639,110 @@
                 });
             }
             
-            // --- Spotlight Footer Logic ---
-            const footer = document.getElementById('spotlight-footer');
-            if (footer) {
-                footer.addEventListener('mousemove', e => {
-                    const rect = footer.getBoundingClientRect();
-                    footer.style.setProperty('--x', e.clientX - rect.left + 'px');
-                    footer.style.setProperty('--y', e.clientY - rect.top + 'px');
+            // --- AI Synapse Footer Logic ---
+            const synapseCanvas = document.getElementById('synapse-canvas');
+            if (synapseCanvas) {
+                const ctx = synapseCanvas.getContext('2d');
+                let particles = [];
+                let mouse = { x: null, y: null, radius: 150 };
+
+                function resizeSynapse() {
+                    synapseCanvas.width = synapseCanvas.offsetWidth;
+                    synapseCanvas.height = synapseCanvas.offsetHeight;
+                    initParticles();
+                }
+
+                class Particle {
+                    constructor(x, y, directionX, directionY, size, color) {
+                        this.x = x;
+                        this.y = y;
+                        this.directionX = directionX;
+                        this.directionY = directionY;
+                        this.size = size;
+                        this.color = color;
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                    }
+                    update() {
+                        if (this.x > synapseCanvas.width || this.x < 0) {
+                            this.directionX = -this.directionX;
+                        }
+                        if (this.y > synapseCanvas.height || this.y < 0) {
+                            this.directionY = -this.directionY;
+                        }
+                        this.x += this.directionX;
+                        this.y += this.directionY;
+                        this.draw();
+                    }
+                }
+
+                function initParticles() {
+                    particles = [];
+                    let numberOfParticles = (synapseCanvas.height * synapseCanvas.width) / 9000;
+                    for (let i = 0; i < numberOfParticles; i++) {
+                        let size = (Math.random() * 2) + 1;
+                        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                        let directionX = (Math.random() * .4) - .2;
+                        let directionY = (Math.random() * .4) - .2;
+                        let color = 'rgba(102, 205, 255, 0.5)';
+                        particles.push(new Particle(x, y, directionX, directionY, size, color));
+                    }
+                }
+
+                function connect() {
+                    let opacityValue = 1;
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
+                                         + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+                            
+                            if (distance < (synapseCanvas.width / 7) * (synapseCanvas.height / 7)) {
+                                opacityValue = 1 - (distance / 20000);
+                                let dx = mouse.x - particles[a].x;
+                                let dy = mouse.y - particles[a].y;
+                                let mouseDistance = Math.sqrt(dx*dx+dy*dy);
+                                if(mouseDistance < mouse.radius){
+                                     ctx.strokeStyle = `rgba(106, 15, 255, ${opacityValue})`;
+                                } else {
+                                     ctx.strokeStyle = `rgba(102, 205, 255, ${opacityValue})`;
+                                }
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function animateSynapse() {
+                    requestAnimationFrame(animateSynapse);
+                    ctx.clearRect(0, 0, innerWidth, innerHeight);
+                    for (let i = 0; i < particles.length; i++) {
+                        particles[i].update();
+                    }
+                    connect();
+                }
+
+                window.addEventListener('resize', resizeSynapse);
+                synapseCanvas.parentElement.addEventListener('mousemove', (event) => {
+                    const rect = synapseCanvas.getBoundingClientRect();
+                    mouse.x = event.clientX - rect.left;
+                    mouse.y = event.clientY - rect.top;
                 });
+                synapseCanvas.parentElement.addEventListener('mouseleave', () => {
+                    mouse.x = null;
+                    mouse.y = null;
+                });
+                
+                resizeSynapse();
+                animateSynapse();
             }
 
 
