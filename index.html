@@ -615,6 +615,9 @@
         }
         
         /* --- Contact Section Styles --- */
+        #contact {
+             margin-bottom: 150px; /* Added space for the footer to slide up into */
+        }
         .contact-card-container {
             position: relative;
             min-height: 500px; /* Adjust as needed */
@@ -1634,8 +1637,8 @@
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
                 ScrollTrigger.create({
-                    trigger: "body",
-                    start: "bottom bottom-=100px", // Trigger when the bottom of the body is 100px from the bottom of the viewport
+                    trigger: "#contact",
+                    start: "bottom bottom-=100px", // Trigger when the bottom of the contact section is 100px from the bottom of the viewport
                     onEnter: () => auroraFooter.classList.add('is-visible'),
                     onLeaveBack: () => auroraFooter.classList.remove('is-visible')
                 });
@@ -1675,12 +1678,11 @@
                         this.x += this.velocity.x;
                         this.y += this.velocity.y;
 
-                        if (this.x - this.radius > canvas.width || this.x + this.radius < 0) {
-                            this.x = -this.radius;
-                        }
-                        if (this.y - this.radius > canvas.height || this.y + this.radius < 0) {
-                            this.y = -this.radius;
-                        }
+                        if (this.x - this.radius > canvas.width) this.x = -this.radius;
+                        if (this.x + this.radius < 0) this.x = canvas.width + this.radius;
+                        if (this.y - this.radius > canvas.height) this.y = -this.radius;
+                        if (this.y + this.radius < 0) this.y = canvas.height + this.radius;
+
 
                         // Mouse interaction
                         if (mouse.x !== undefined && mouse.y !== undefined) {
