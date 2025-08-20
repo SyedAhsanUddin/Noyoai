@@ -11,11 +11,19 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lottie Player -->
+    <!-- Lottie Player for Mobile Animations -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+
+    <!-- OGL Library for Orb Animation -->
+    <script type="module">
+        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
+        window.ogl = { Renderer, Program, Mesh, Triangle, Vec3 };
+    </script>
 
     <!-- Custom Fonts -->
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
@@ -212,6 +220,16 @@
             transition: max-height 0.3s ease-in-out;
         }
 
+        /* --- AI in Action Section (NEW) --- */
+        #explainerCanvas {
+            display: block;
+            border-radius: 1.5rem; /* 24px */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(106, 15, 255, 0.3);
+            width: 100%;
+            /* Height will be set by JS to maintain aspect ratio */
+        }
+
         /* --- Industries Section Styles (Grid Layout) --- */
         .heading-gradient-text {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
@@ -272,7 +290,7 @@
         .industry-card:hover .card-bg-image {
             transform: scale(1.05);
         }
-        
+
         /* --- Interactive Blueprint Section --- */
         .features-heading-gradient {
             background-image: linear-gradient(to right, #50c3f0, #ee4b89);
@@ -294,7 +312,7 @@
         .node-flipper {
             transition: transform 0.8s;
             transform-style: preserve-3d;
-            position: relative;  
+            position: relative; 
             display: grid; /* Use grid for layering to ensure cross-browser consistency */
         }
         .blueprint-node.is-resolved .node-flipper {
@@ -343,53 +361,260 @@
             background-clip: text;
             color: transparent;
         }
-        .scroll-stepper-container { position: relative; width: 100%; }
-        .scroll-stepper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-        .scroll-stepper-left { position: relative; padding-top: 2rem; }
-        .scroll-stepper-progress { position: absolute; left: 20px; top: 4rem; bottom: 4rem; width: 4px; background-color: #374151; border-radius: 2px; }
-        .scroll-stepper-progress-bar { width: 100%; height: 0%; background-color: #6A0FFF; border-radius: 2px; }
-        .step-content-item { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; opacity: 0.3; transition: opacity 0.4s ease-in-out; padding-left: 50px; }
-        .step-content-item.is-active { opacity: 1; }
-        .scroll-stepper-right { height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .visual-panel { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 450px; }
-        .step-visual { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; opacity: 0; transform: scale(0.95); pointer-events: none; }
-        .step-visual.is-active { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .visual-panel .step-visual i { font-size: 10rem; background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 20px rgba(102, 205, 255, 0.5); }
-        @media (min-width: 1280px) { .visual-panel .step-visual i { font-size: 12rem; } }
+        /* Desktop Scroll Stepper */
+        .scroll-stepper-container {
+            position: relative;
+            width: 100%;
+        }
+        .scroll-stepper-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+        .scroll-stepper-left {
+            position: relative;
+            padding-top: 2rem;
+        }
+        .scroll-stepper-progress {
+            position: absolute;
+            left: 20px;
+            top: 4rem;
+            bottom: 4rem;
+            width: 4px;
+            background-color: #374151;
+            border-radius: 2px;
+        }
+        .scroll-stepper-progress-bar {
+            width: 100%;
+            height: 0%;
+            background-color: #6A0FFF;
+            border-radius: 2px;
+        }
+        .step-content-item {
+            min-height: 60vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.3;
+            transition: opacity 0.4s ease-in-out;
+            padding-left: 50px;
+        }
+        .step-content-item.is-active {
+            opacity: 1;
+        }
+        .scroll-stepper-right {
+            /* CSS `position: sticky` can be buggy in Safari, so we let GSAP handle the pinning via JavaScript */
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .visual-panel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 450px;
+        }
+        .step-visual {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .step-visual.is-active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        .visual-panel .step-visual i {
+            font-size: 10rem;
+            background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
+        }
+        @media (min-width: 1280px) {
+             .visual-panel .step-visual i {
+                font-size: 12rem;
+            }
+        }
         
-        .mobile-timeline-container { position: relative; padding: 2rem 0; }
-        .mobile-timeline-progress { position: absolute; left: 20px; top: 0; bottom: 0; width: 3px; background-color: #374151; }
-        .mobile-timeline-progress-bar { width: 100%; height: 0%; background-color: var(--brand-highlight); }
-        .mobile-timeline-step { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: 1rem; min-height: 350px; align-items: center; }
-        .mobile-timeline-dot-container { position: relative; height: 100%; display: flex; justify-content: center; }
-        .mobile-timeline-dot { position: sticky; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 9999px; background-color: #374151; border: 3px solid #000; transition: background-color 0.3s ease; }
-        .mobile-timeline-step.is-active .mobile-timeline-dot { background-color: var(--brand-highlight); }
-        .mobile-timeline-content { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
-        .mobile-timeline-step.is-active .mobile-timeline-content { opacity: 1; transform: translateY(0); }
+        /* Mobile Vertical Scrollytelling Timeline */
+        .mobile-timeline-container {
+            position: relative;
+            padding: 2rem 0;
+        }
+        .mobile-timeline-progress {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: #374151; /* gray-700 */
+        }
+        .mobile-timeline-progress-bar {
+            width: 100%;
+            height: 0%;
+            background-color: var(--brand-highlight);
+        }
+        .mobile-timeline-step {
+            position: relative;
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            gap: 1rem;
+            min-height: 350px;
+            align-items: center;
+        }
+        .mobile-timeline-dot-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .mobile-timeline-dot {
+            position: sticky;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            background-color: #374151; /* gray-700 */
+            border: 3px solid #000;
+            transition: background-color 0.3s ease;
+        }
+        .mobile-timeline-step.is-active .mobile-timeline-dot {
+            background-color: var(--brand-highlight);
+        }
+        .mobile-timeline-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .mobile-timeline-step.is-active .mobile-timeline-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* --- Testimonials Section Styles --- */
-        .testimonials-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .main-section { width: 100%; max-width: 64rem; padding: 2rem; box-sizing: border-box; text-align: center; }
-        .main-section h2 { font-weight: 700; font-size: 2.5rem; color: white; margin-bottom: 1rem; }
-        .main-section p.subtitle { font-size: 1.125rem; color: var(--color-designation); max-width: 42rem; margin: 0 auto 4rem auto; }
-        .testimonial-container { width: 100%; max-width: 56rem; margin: 0 auto; }
+        .testimonials-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-section {
+            width: 100%;
+            max-width: 64rem;
+            padding: 2rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .main-section h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .main-section p.subtitle {
+            font-size: 1.125rem;
+            color: var(--color-designation);
+            max-width: 42rem;
+            margin: 0 auto 4rem auto;
+        }
+        .testimonial-container {
+            width: 100%;
+            max-width: 56rem;
+            margin: 0 auto;
+        }
         .testimonial-grid { display: grid; gap: 2rem; align-items: center; }
-        .image-container { position: relative; width: 100%; height: 18rem; perspective: 1000px; display: flex; justify-content: center; align-items: center; }
-        @media (min-width: 768px) { .image-container { height: 24rem; } }
-        .testimonial-image { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 1.5rem; box-shadow: 0 10px 40px rgba(106, 15, 255, 0.2); background-color: #1d1d1f; }
-        .testimonial-content { display: flex; flex-direction: column; min-height: 24rem; justify-content: space-between; text-align: left; }
-        .name { font-weight: bold; margin-bottom: 0.25rem; font-size: 1.5rem; color: var(--color-name); }
-        .designation { margin-bottom: 2rem; font-size: 1rem; color: var(--color-designation); }
-        .quote { line-height: 1.75; font-size: 1.125rem; color: var(--color-testimony); flex-grow: 1; }
-        .quote .word-span { display: inline-block; opacity: 0; filter: blur(10px); transform: translateY(5px); transition: opacity 0.22s ease-in-out, filter 0.22s ease-in-out, transform 0.22s ease-in-out; }
-        .quote .word-span.visible { opacity: 1; filter: blur(0px); transform: translateY(0px); }
+        .image-container {
+            position: relative;
+            width: 100%; height: 18rem;
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+         @media (min-width: 768px) {
+            .image-container {
+                height: 24rem;
+            }
+        }
+        .testimonial-image {
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(106, 15, 255, 0.2);
+            background-color: #1d1d1f;
+        }
+        .testimonial-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 24rem;
+            justify-content: space-between;
+            text-align: left;
+        }
+        .name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            font-size: 1.5rem; /* Adjusted for consistency */
+            color: var(--color-name);
+        }
+        .designation {
+            margin-bottom: 2rem;
+            font-size: 1rem; /* Adjusted for consistency */
+            color: var(--color-designation);
+        }
+        .quote {
+            line-height: 1.75;
+            font-size: 1.125rem; /* Adjusted for consistency */
+            color: var(--color-testimony);
+            flex-grow: 1;
+        }
+        .quote .word-span {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(5px);
+            transition: opacity 0.22s ease-in-out, filter 0.22s ease-in-out, transform 0.22s ease-in-out;
+        }
+        .quote .word-span.visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0px);
+        }
         .arrow-buttons { display: flex; gap: 1.5rem; padding-top: 3rem; }
-        .arrow-button { width: 2.7rem; height: 2.7rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.3s; border: 1px solid #374151; background-color: var(--color-arrow-bg); }
-        .arrow-button:hover { background-color: var(--color-arrow-hover-bg); border-color: var(--color-arrow-hover-bg); }
+        .arrow-button {
+            width: 2.7rem; height: 2.7rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 1px solid #374151;
+            background-color: var(--color-arrow-bg);
+        }
+        .arrow-button:hover {
+            background-color: var(--color-arrow-hover-bg);
+            border-color: var(--color-arrow-hover-bg);
+        }
         .arrow-button svg { fill: var(--color-arrow-fg); }
-        @media (min-width: 768px) { .main-section h2 { font-size: 3rem; } .testimonial-grid { grid-template-columns: 1fr 1fr; gap: 5rem;} .arrow-buttons { padding-top: 0; } }
-
-        /* --- NEW: Interactive Contact Form Styles --- */
+        @media (min-width: 768px) {
+            .main-section h2 { font-size: 3rem; }
+            .testimonial-grid { grid-template-columns: 1fr 1fr; gap: 5rem;}
+            .arrow-buttons { padding-top: 0; }
+        }
+        
+        /* --- Contact Section Styles --- */
         .contact-card-container {
             position: relative;
             min-height: 500px; /* Adjust as needed */
@@ -439,7 +664,6 @@
         .checkmark-path {
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
         }
-
     </style>
 </head>
 <body class="text-white">
@@ -481,7 +705,7 @@
                 <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 hidden md:inline-block">
                     Get Started
                 </a>
-                  <!-- Mobile Menu Button -->
+                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-white text-2xl">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -567,6 +791,28 @@
             </div>
         </div>
     </div>
+
+    <!-- AI in Action Section -->
+    <section id="ai-in-action" class="py-24 px-6 md:px-12">
+        <div class="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center">
+            <!-- Right Column: Explainer Text -->
+            <div class="text-center lg:text-left lg:order-1">
+                <h2 class="font-bold text-4xl md:text-5xl text-white mb-6">
+                    Conversations, <span class="heading-gradient-text">Reimagined.</span>
+                </h2>
+                <p class="text-lg text-gray-300 mb-8 font-medium">
+                    Watch how our AI navigates real-world scenarios—from booking appointments to qualifying leads. It's not just a chatbot; it's your most efficient employee, always on, always learning, and always on-brand.
+                </p>
+                <a href="#contact" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                    Discover the Potential
+                </a>
+            </div>
+            <!-- Left Column: Canvas Animation -->
+            <div class="w-full max-w-md mx-auto lg:mx-0 lg:order-2">
+                 <canvas id="explainerCanvas"></canvas>
+            </div>
+        </div>
+    </section>
 
     <!-- Industries Served Section -->
     <div id="industries-root"></div>
@@ -832,299 +1078,502 @@
         </div>
     </section>
 
-    <!-- Main Application Script -->
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-8">
+        <div class="container mx-auto px-6 text-center text-brand-gray">
+            <p>&copy; 2024 NOYOAI. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- Merged Scripts -->
     <script type="module">
-        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- Header & Hero Logic ---
-            function initHeader() {
-                const mainHeader = document.getElementById('main-header');
-                if (mainHeader) {
-                    window.addEventListener('scroll', () => {
-                        mainHeader.classList.toggle('header-scrolled', window.scrollY > 50);
-                    });
+        // --- Main Header & Hero Logic ---
+        // Scroll-based Header Change
+        const mainHeader = document.getElementById('main-header');
+        if (mainHeader) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.classList.add('header-scrolled');
+                } else {
+                    mainHeader.classList.remove('header-scrolled');
                 }
+            });
+        }
 
-                document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
-                    const button = dropdown.querySelector('[data-dropdown-button]');
-                    const menu = dropdown.querySelector('[data-dropdown-menu]');
-                    let hideTimeout;
-                    const showMenu = () => { clearTimeout(hideTimeout); menu.classList.remove('hidden'); setTimeout(() => menu.classList.add('is-visible'), 10); };
-                    const hideMenu = () => { hideTimeout = setTimeout(() => { menu.classList.remove('is-visible'); setTimeout(() => menu.classList.add('hidden'), 300); }, 200); };
-                    dropdown.addEventListener('mouseenter', showMenu);
-                    dropdown.addEventListener('mouseleave', hideMenu);
+        // Header Dropdown Logic
+        document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
+            const button = dropdown.querySelector('[data-dropdown-button]');
+            const menu = dropdown.querySelector('[data-dropdown-menu]');
+            const icon = button.querySelector('i');
+            let hideTimeout;
+
+            const showMenu = () => {
+                clearTimeout(hideTimeout);
+                menu.classList.remove('hidden');
+                if(icon) icon.style.transform = 'rotate(180deg)';
+                setTimeout(() => menu.classList.add('is-visible'), 10);
+            };
+            const hideMenu = () => {
+                hideTimeout = setTimeout(() => {
+                    menu.classList.remove('is-visible');
+                    if(icon) icon.style.transform = 'rotate(0deg)';
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }, 400);
+            };
+            
+            dropdown.addEventListener('mouseenter', showMenu);
+            dropdown.addEventListener('mouseleave', hideMenu);
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const openMenu = () => {
+             mobileMenu.classList.remove('-translate-x-full');
+        }
+        const closeMenu = () => {
+            mobileMenu.classList.add('-translate-x-full');
+        }
+
+        mobileMenuButton.addEventListener('click', openMenu);
+        mobileMenuCloseButton.addEventListener('click', closeMenu);
+
+        document.querySelectorAll('[data-mobile-submenu-button]').forEach(button => {
+            button.addEventListener('click', () => {
+                const submenu = button.nextElementSibling;
+                const icon = button.querySelector('i');
+                if (submenu.style.maxHeight) {
+                    submenu.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                    icon.style.transform = 'rotate(180deg)';
+                } 
+            });
+        });
+
+
+        // Tubelight Nav Bar Logic
+        const nav = document.querySelector('#desktop-nav');
+        if (nav) {
+            const navItems = nav.querySelectorAll('a.nav-link, div[data-dropdown]');
+            const tubelight = document.createElement('div');
+            tubelight.style.position = 'absolute';
+            tubelight.style.bottom = '-2px';
+            tubelight.style.height = '3px';
+            tubelight.style.backgroundColor = '#66CDFF';
+            tubelight.style.borderRadius = '9999px';
+            tubelight.style.boxShadow = '0 0 10px #66CDFF, 0 0 15px #6A0FFF';
+            tubelight.style.transition = 'left 0.3s ease, width 0.3s ease, opacity 0.3s ease';
+            tubelight.style.pointerEvents = 'none';
+            tubelight.style.opacity = '0';
+            nav.classList.add('relative');
+            nav.appendChild(tubelight);
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const { offsetLeft, offsetWidth } = item;
+                    tubelight.style.left = `${offsetLeft}px`;
+                    tubelight.style.width = `${offsetWidth}px`;
+                    tubelight.style.opacity = '1';
                 });
+            });
+            nav.addEventListener('mouseleave', () => {
+                tubelight.style.opacity = '0';
+            });
+        }
 
-                const mobileMenuButton = document.getElementById('mobile-menu-button');
-                const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
-                const mobileMenu = document.getElementById('mobile-menu');
-                mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('-translate-x-full'));
-                mobileMenuCloseButton.addEventListener('click', () => mobileMenu.classList.add('-translate-x-full'));
-                document.querySelectorAll('[data-mobile-submenu-button]').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const submenu = button.nextElementSibling;
-                        submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + "px";
-                    });
-                });
-            }
-
-            // --- OGL Orb Animation (Restored Original) ---
-            function initOrbAnimation() {
-                const orbContainer = document.getElementById('orb-container');
+        // Orb Animation Logic
+        const { Renderer, Program, Mesh, Triangle, Vec3 } = window.ogl;
+        const orbContainer = document.getElementById('orb-container');
+        if (orbContainer) {
+            const vert = `precision highp float; attribute vec2 position; attribute vec2 uv; varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 0.0, 1.0); }`;
+            const frag = `precision highp float; uniform float iTime; uniform vec3 iResolution; uniform float hue; uniform float hover; uniform float rot; uniform float hoverIntensity; varying vec2 vUv; vec3 rgb2yiq(vec3 c){return vec3(dot(c,vec3(.299,.587,.114)),dot(c,vec3(.596,-.274,-.322)),dot(c,vec3(.211,-.523,.312)));} vec3 yiq2rgb(vec3 c){return vec3(c.x+.956*c.y+.621*c.z,c.x-.272*c.y-.647*c.z,c.x-1.106*c.y+1.703*c.z);} vec3 adjustHue(vec3 color,float hueDeg){float hueRad=hueDeg*3.14159265/180.;vec3 yiq=rgb2yiq(color);float cosA=cos(hueRad);float sinA=sin(hueRad);float i=yiq.y*cosA-yiq.z*sinA;float q=yiq.y*sinA+yiq.z*cosA;yiq.y=i;yiq.z=q;return yiq2rgb(yiq);} vec3 hash33(vec3 p3){p3=fract(p3*vec3(.1031,.11369,.13787));p3+=dot(p3,p3.yxz+19.19);return-1.+2.*fract(vec3(p3.x+p3.y,p3.x+p3.z,p3.y+p3.z)*p3.zyx);} float snoise3(vec3 p){const float K1=.333333333;const float K2=.166666667;vec3 i=floor(p+(p.x+p.y+p.z)*K1);vec3 d0=p-(i-(i.x+i.y+i.z)*K2);vec3 e=step(vec3(0.),d0-d0.yzx);vec3 i1=e*(1.-e.zxy);vec3 i2=1.-e.zxy*(1.-e);vec3 d1=d0-(i1-K2);vec3 d2=d0-(i2-K1);vec3 d3=d0-.5;vec4 h=max(.6-vec4(dot(d0,d0),dot(d1,d1),dot(d2,d2),dot(d3,d3)),0.);vec4 n=h*h*h*h*vec4(dot(d0,hash33(i)),dot(d1,hash33(i+i1)),dot(d2,hash33(i+i2)),dot(d3,hash33(i+1.)));return dot(vec4(31.316),n);} vec4 extractAlpha(vec3 colorIn){float a=max(max(colorIn.r,colorIn.g),colorIn.b);return vec4(colorIn.rgb/(a+1e-5),a);} const vec3 baseColor1 = vec3(0.415, 0.062, 1.0); const vec3 baseColor2 = vec3(0.4, 0.803, 1.0); const vec3 baseColor3 = vec3(0.0, 0.105, 0.419); const float innerRadius=.6; const float noiseScale=.65; float light1(float intensity,float attenuation,float dist){return intensity/(1.+dist*attenuation);} float light2(float intensity,float attenuation,float dist){return intensity/(1.+dist*dist*attenuation);} vec4 draw(vec2 uv){vec3 color1=adjustHue(baseColor1,hue);vec3 color2=adjustHue(baseColor2,hue);vec3 color3=adjustHue(baseColor3,hue);float ang=atan(uv.y,uv.x);float len=length(uv);float invLen=len>0.?1./len:0.;float n0=snoise3(vec3(uv*noiseScale,iTime*.5))*.5+.5;float r0=mix(mix(innerRadius,1.,.4),mix(innerRadius,1.,.6),n0);float d0=distance(uv,(r0*invLen)*uv);float v0=light1(1.,10.,d0);v0*=smoothstep(r0*1.05,r0,len);float cl=cos(ang+iTime*2.)*.5+.5;float a=iTime*-1.;vec2 pos=vec2(cos(a),sin(a))*r0;float d=distance(uv,pos);float v1=light2(1.5,5.,d);v1*=light1(1.,50.,d0);float v2=smoothstep(1.,mix(innerRadius,1.,n0*.5),len);float v3=smoothstep(innerRadius,mix(innerRadius,1.,.5),len);vec3 col=mix(color1,color2,cl);col=mix(color3,col,v0);col=(col+v1)*v2*v3;col=clamp(col,0.,1.);return extractAlpha(col);} vec4 mainImage(vec2 fragCoord){vec2 center=iResolution.xy*.5;float size=min(iResolution.x,iResolution.y);vec2 uv=(fragCoord-center)/size*2.;float angle=rot;float s=sin(angle);float c=cos(angle);uv=vec2(c*uv.x-s*uv.y,s*uv.x+c*uv.y);uv.x+=hover*hoverIntensity*.1*sin(uv.y*10.+iTime);uv.y+=hover*hoverIntensity*.1*sin(uv.x*10.+iTime);return draw(uv);} void main(){vec2 fragCoord=vUv*iResolution.xy;vec4 col=mainImage(fragCoord);gl_FragColor=vec4(col.rgb,col.a*0.8);}`;
+            const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+            const gl = renderer.gl;
+            gl.clearColor(0, 0, 0, 0);
+            orbContainer.appendChild(gl.canvas);
+            const geometry = new Triangle(gl);
+            const program = new Program(gl, {
+                vertex: vert, fragment: frag,
+                uniforms: {
+                    iTime: { value: 0 },
+                    iResolution: { value: new Vec3(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+                    hue: { value: 0 }, hover: { value: 0 }, rot: { value: 0 }, hoverIntensity: { value: 0.5 },
+                },
+            });
+            const mesh = new Mesh(gl, { geometry, program });
+            function resize() {
                 if (!orbContainer) return;
+                const dpr = window.devicePixelRatio || 1;
+                const width = orbContainer.clientWidth;
+                const height = orbContainer.clientHeight;
+                renderer.setSize(width * dpr, height * dpr);
+                gl.canvas.style.width = width + "px";
+                gl.canvas.style.height = height + "px";
+                program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+            }
+            window.addEventListener("resize", resize);
+            resize();
+            let targetHover = 0, lastTime = 0, currentRot = 0;
+            const rotationSpeed = 0.3;
+            const handleMouseMove = (e) => {
+                const rect = orbContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const width = rect.width, height = rect.height;
+                const size = Math.min(width, height);
+                const centerX = width / 2, centerY = height / 2;
+                const uvX = ((x - centerX) / size) * 2.0, uvY = ((y - centerY) / size) * 2.0;
+                targetHover = Math.sqrt(uvX * uvX + uvY * uvY) < 0.8 ? 1 : 0;
+            };
+            orbContainer.addEventListener("mousemove", handleMouseMove);
+            orbContainer.addEventListener("mouseleave", () => { targetHover = 0; });
+            let rafId;
+            const update = (t) => {
+                rafId = requestAnimationFrame(update);
+                const dt = (t - lastTime) * 0.001;
+                lastTime = t;
+                program.uniforms.iTime.value = t * 0.001;
+                program.uniforms.hover.value += (targetHover - program.uniforms.hover.value) * 0.1;
+                if (targetHover > 0.5) { currentRot += dt * rotationSpeed; }
+                program.uniforms.rot.value = currentRot;
+                renderer.render({ scene: mesh });
+            };
+            rafId = requestAnimationFrame(update);
+        }
+    </script>
+    
+    <script>
+        function initializeAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
 
-                const vert = `precision highp float; attribute vec2 position; attribute vec2 uv; varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 0.0, 1.0); }`;
-                const frag = `precision highp float; uniform float iTime; uniform vec3 iResolution; uniform float hue; uniform float hover; uniform float rot; uniform float hoverIntensity; varying vec2 vUv; vec3 rgb2yiq(vec3 c){return vec3(dot(c,vec3(.299,.587,.114)),dot(c,vec3(.596,-.274,-.322)),dot(c,vec3(.211,-.523,.312)));} vec3 yiq2rgb(vec3 c){return vec3(c.x+.956*c.y+.621*c.z,c.x-.272*c.y-.647*c.z,c.x-1.106*c.y+1.703*c.z);} vec3 adjustHue(vec3 color,float hueDeg){float hueRad=hueDeg*3.14159265/180.;vec3 yiq=rgb2yiq(color);float cosA=cos(hueRad);float sinA=sin(hueRad);float i=yiq.y*cosA-yiq.z*sinA;float q=yiq.y*sinA+yiq.z*cosA;yiq.y=i;yiq.z=q;return yiq2rgb(yiq);} vec3 hash33(vec3 p3){p3=fract(p3*vec3(.1031,.11369,.13787));p3+=dot(p3,p3.yxz+19.19);return-1.+2.*fract(vec3(p3.x+p3.y,p3.x+p3.z,p3.y+p3.z)*p3.zyx);} float snoise3(vec3 p){const float K1=.333333333;const float K2=.166666667;vec3 i=floor(p+(p.x+p.y+p.z)*K1);vec3 d0=p-(i-(i.x+i.y+i.z)*K2);vec3 e=step(vec3(0.),d0-d0.yzx);vec3 i1=e*(1.-e.zxy);vec3 i2=1.-e.zxy*(1.-e);vec3 d1=d0-(i1-K2);vec3 d2=d0-(i2-K1);vec3 d3=d0-.5;vec4 h=max(.6-vec4(dot(d0,d0),dot(d1,d1),dot(d2,d2),dot(d3,d3)),0.);vec4 n=h*h*h*h*vec4(dot(d0,hash33(i)),dot(d1,hash33(i+i1)),dot(d2,hash33(i+i2)),dot(d3,hash33(i+1.)));return dot(vec4(31.316),n);} vec4 extractAlpha(vec3 colorIn){float a=max(max(colorIn.r,colorIn.g),colorIn.b);return vec4(colorIn.rgb/(a+1e-5),a);} const vec3 baseColor1 = vec3(0.415, 0.062, 1.0); const vec3 baseColor2 = vec3(0.4, 0.803, 1.0); const vec3 baseColor3 = vec3(0.0, 0.105, 0.419); const float innerRadius=.6; const float noiseScale=.65; float light1(float intensity,float attenuation,float dist){return intensity/(1.+dist*attenuation);} float light2(float intensity,float attenuation,float dist){return intensity/(1.+dist*dist*attenuation);} vec4 draw(vec2 uv){vec3 color1=adjustHue(baseColor1,hue);vec3 color2=adjustHue(baseColor2,hue);vec3 color3=adjustHue(baseColor3,hue);float ang=atan(uv.y,uv.x);float len=length(uv);float invLen=len>0.?1./len:0.;float n0=snoise3(vec3(uv*noiseScale,iTime*.5))*.5+.5;float r0=mix(mix(innerRadius,1.,.4),mix(innerRadius,1.,.6),n0);float d0=distance(uv,(r0*invLen)*uv);float v0=light1(1.,10.,d0);v0*=smoothstep(r0*1.05,r0,len);float cl=cos(ang+iTime*2.)*.5+.5;float a=iTime*-1.;vec2 pos=vec2(cos(a),sin(a))*r0;float d=distance(uv,pos);float v1=light2(1.5,5.,d);v1*=light1(1.,50.,d0);float v2=smoothstep(1.,mix(innerRadius,1.,n0*.5),len);float v3=smoothstep(innerRadius,mix(innerRadius,1.,.5),len);vec3 col=mix(color1,color2,cl);col=mix(color3,col,v0);col=(col+v1)*v2*v3;col=clamp(col,0.,1.);return extractAlpha(col);} vec4 mainImage(vec2 fragCoord){vec2 center=iResolution.xy*.5;float size=min(iResolution.x,iResolution.y);vec2 uv=(fragCoord-center)/size*2.;float angle=rot;float s=sin(angle);float c=cos(angle);uv=vec2(c*uv.x-s*uv.y,s*uv.x+c*uv.y);uv.x+=hover*hoverIntensity*.1*sin(uv.y*10.+iTime);uv.y+=hover*hoverIntensity*.1*sin(uv.x*10.+iTime);return draw(uv);} void main(){vec2 fragCoord=vUv*iResolution.xy;vec4 col=mainImage(fragCoord);gl_FragColor=vec4(col.rgb,col.a*0.8);}`;
+            // --- How It Works Section ---
+            const howItWorksSection = document.getElementById('how-it-works');
+            
+            // DESKTOP: Scroll-Driven Logic
+            if (howItWorksSection && window.innerWidth >= 1024) { 
+                const steps = gsap.utils.toArray(".step-content-item");
+                const visuals = gsap.utils.toArray(".step-visual");
+                const progressBar = document.getElementById("progress-bar");
+                const stepperContainer = document.querySelector(".scroll-stepper-container");
+
+                gsap.timeline({
+                    scrollTrigger: {
+                        trigger: stepperContainer,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: true,
+                        pin: ".scroll-stepper-right",
+                    }
+                })
+                .to(progressBar, { height: "100%", ease: "none" });
+
+                steps.forEach((step, i) => {
+                    ScrollTrigger.create({
+                        trigger: step,
+                        start: "top center",
+                        end: "bottom center",
+                        toggleClass: "is-active",
+                        onToggle: self => self.isActive && updateVisual(i + 1)
+                    });
+                });
                 
-                const renderer = new Renderer({ alpha: true });
-                const gl = renderer.gl;
-                orbContainer.appendChild(gl.canvas);
-                const geometry = new Triangle(gl);
-                const program = new Program(gl, { vertex: vert, fragment: frag, uniforms: { iTime: { value: 0 }, iResolution: { value: new Vec3() }, hue: { value: 0 }, hover: { value: 0 }, rot: { value: 0 }, hoverIntensity: { value: 0.5 } } });
-                const mesh = new Mesh(gl, { geometry, program });
-                
-                function resize() {
-                    if (!orbContainer) return;
-                    const { clientWidth, clientHeight } = orbContainer;
-                    renderer.setSize(clientWidth, clientHeight);
-                    program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 1);
+                if (steps.length > 0) steps[0].classList.add('is-active');
+                if (visuals.length > 0) visuals[0].classList.add('is-active');
+
+                function updateVisual(index) {
+                    visuals.forEach((visual, i) => {
+                        visual.classList.toggle('is-active', (i + 1) === index);
+                    });
                 }
-                window.addEventListener("resize", resize, false);
-                resize();
+            }
 
-                let targetHover = 0;
-                orbContainer.addEventListener("mousemove", () => { targetHover = 1; });
-                orbContainer.addEventListener("mouseleave", () => { targetHover = 0; });
+            // MOBILE Vertical Scrollytelling Timeline Logic
+            const mobileStepperEl = document.getElementById('mobile-timeline-stepper');
+            if (mobileStepperEl && window.innerWidth < 1024) {
+                const steps = gsap.utils.toArray(".mobile-timeline-step");
+                const progressBar = document.getElementById("mobile-progress-bar");
 
-                requestAnimationFrame(function update(t) {
-                    requestAnimationFrame(update);
-                    program.uniforms.iTime.value = t * 0.001;
-                    program.uniforms.hover.value += (targetHover - program.uniforms.hover.value) * 0.1;
-                    renderer.render({ scene: mesh });
+                gsap.to(progressBar, {
+                    height: "100%",
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: ".mobile-timeline-container",
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: true
+                    }
+                });
+
+                steps.forEach((step, i) => {
+                    ScrollTrigger.create({
+                        trigger: step,
+                        start: "top center",
+                        end: "bottom center",
+                        toggleClass: "is-active",
+                        onEnter: () => {
+                            const lottiePlayer = step.querySelector('lottie-player');
+                            if(lottiePlayer) lottiePlayer.play();
+                        },
+                        onEnterBack: () => {
+                             const lottiePlayer = step.querySelector('lottie-player');
+                            if(lottiePlayer) lottiePlayer.play();
+                        }
+                    });
                 });
             }
 
-            // --- GSAP and other animations ---
-            function initPageAnimations() {
-                gsap.registerPlugin(ScrollTrigger);
-                
-                // Interactive Blueprint Section
-                const blueprintGrid = document.getElementById('blueprint-grid');
-                const blueprintSvg = document.getElementById('blueprint-svg');
-                if (blueprintGrid && blueprintSvg) {
-                    const features = [
-                        { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset' },
-                        { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar' },
-                        { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check' },
-                        { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question' },
-                        { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass' },
-                        { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke' },
-                    ];
+            // --- Interactive Blueprint Logic ---
+            const blueprintGrid = document.getElementById('blueprint-grid');
+            const blueprintSvg = document.getElementById('blueprint-svg');
+            if (blueprintGrid && blueprintSvg) {
+                const features = [
+                    { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset' },
+                    { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar' },
+                    { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check' },
+                    { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question' },
+                    { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass' },
+                    { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke' },
+                ];
 
-                    features.forEach(feature => {
-                        const nodeHTML = `
-                            <div id="${feature.id}" class="blueprint-node">
-                                <div class="node-flipper w-full h-full">
-                                    <div class="node-front problem-node w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-red-900/20 border-2 border-dashed border-red-500/50 rounded-lg cursor-pointer">
-                                        <div class="glitch-icon text-2xl md:text-4xl text-red-500 mb-1 md:mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                                        <h4 class="font-semibold text-xs md:text-base text-red-400">${feature.problem}</h4>
-                                    </div>
-                                    <div class="node-back w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-brand-cta/20 border border-brand-highlight/50 rounded-lg cursor-pointer">
-                                        <div class="text-2xl md:text-4xl text-brand-highlight mb-1 md:mb-2"><i class="fa-solid ${feature.icon}"></i></div>
-                                        <h4 class="font-bold text-xs md:text-base text-white">${feature.solution}</h4>
-                                    </div>
+                features.forEach(feature => {
+                    const nodeHTML = `
+                        <div id="${feature.id}" class="blueprint-node">
+                            <div class="node-flipper w-full h-full">
+                                <!-- Front (Problem) -->
+                                <div class="node-front problem-node w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-red-900/20 border-2 border-dashed border-red-500/50 rounded-lg cursor-pointer">
+                                    <div class="glitch-icon text-2xl md:text-4xl text-red-500 mb-1 md:mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <h4 class="font-semibold text-xs md:text-base text-red-400">${feature.problem}</h4>
+                                </div>
+                                <!-- Back (Solution) -->
+                                <div class="node-back w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-brand-cta/20 border border-brand-highlight/50 rounded-lg cursor-pointer">
+                                    <div class="text-2xl md:text-4xl text-brand-highlight mb-1 md:mb-2"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h4 class="font-bold text-xs md:text-base text-white">${feature.solution}</h4>
                                 </div>
                             </div>
-                        `;
-                        blueprintGrid.innerHTML += nodeHTML;
-                    });
-                    
-                    const connections = [ ['f1', 'f2'], ['f2', 'f3'], ['f1', 'f4'], ['f1', 'f5'], ['f3', 'f6'] ];
-                    connections.forEach(([startId, endId]) => {
-                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        path.setAttribute('class', 'solution-path');
-                        path.setAttribute('fill', 'none');
-                        path.setAttribute('stroke', '#66CDFF');
-                        path.setAttribute('stroke-width', '2');
-                        path.setAttribute('data-start', startId);
-                        path.setAttribute('data-end', endId);
-                        blueprintSvg.appendChild(path);
-                    });
+                        </div>
+                    `;
+                    blueprintGrid.innerHTML += nodeHTML;
+                });
+                
+                const connections = [ ['f1', 'f2'], ['f2', 'f3'], ['f1', 'f4'], ['f1', 'f5'], ['f3', 'f6'] ];
+                connections.forEach(([startId, endId]) => {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('class', 'solution-path');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', '#66CDFF');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('data-start', startId);
+                    path.setAttribute('data-end', endId);
+                    blueprintSvg.appendChild(path);
+                });
 
-                    function updateLines() {
-                        const gridRect = blueprintGrid.getBoundingClientRect();
-                        document.querySelectorAll('.solution-path').forEach(path => {
-                            const startNode = document.getElementById(path.dataset.start);
-                            const endNode = document.getElementById(path.dataset.end);
-                            if (!startNode || !endNode) return;
-                            const startRect = startNode.getBoundingClientRect();
-                            const endRect = endNode.getBoundingClientRect();
-                            const startX = (startRect.left + startRect.width / 2) - gridRect.left;
-                            const startY = (startRect.top + startRect.height / 2) - gridRect.top;
-                            const endX = (endRect.left + endRect.width / 2) - gridRect.left;
-                            const endY = (endRect.top + endRect.height / 2) - gridRect.top;
-                            path.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
-                            const length = path.getTotalLength();
-                            path.style.strokeDasharray = length;
-                            path.style.strokeDashoffset = length;
-                        });
-                    }
+                function updateLines() {
+                    const gridRect = blueprintGrid.getBoundingClientRect();
+                    document.querySelectorAll('.solution-path').forEach(path => {
+                        const startNode = document.getElementById(path.dataset.start);
+                        const endNode = document.getElementById(path.dataset.end);
+                        if (!startNode || !endNode) return;
+                        const startRect = startNode.getBoundingClientRect();
+                        const endRect = endNode.getBoundingClientRect();
 
-                    document.querySelectorAll('.blueprint-node').forEach(node => {
-                        node.addEventListener('click', () => {
-                            node.classList.toggle('is-resolved');
-                        });
-                    });
-                    
-                    updateLines();
-                    window.addEventListener('resize', updateLines);
-                }
-
-
-                // How It Works Section
-                if (document.getElementById('how-it-works') && window.innerWidth >= 1024) { 
-                    const steps = gsap.utils.toArray(".step-content-item");
-                    const visuals = gsap.utils.toArray(".step-visual");
-                    gsap.timeline({ scrollTrigger: { trigger: ".scroll-stepper-container", start: "top top", end: "bottom bottom", scrub: true, pin: ".scroll-stepper-right" } }).to("#progress-bar", { height: "100%", ease: "none" });
-                    steps.forEach((step, i) => { ScrollTrigger.create({ trigger: step, start: "top center", end: "bottom center", toggleClass: "is-active", onToggle: self => self.isActive && visuals.forEach((v, vi) => v.classList.toggle('is-active', (vi === i))) }); });
-                }
-                if (document.getElementById('mobile-timeline-stepper') && window.innerWidth < 1024) {
-                    gsap.to("#mobile-progress-bar", { height: "100%", ease: 'none', scrollTrigger: { trigger: ".mobile-timeline-container", start: "top top", end: "bottom bottom", scrub: true } });
-                    gsap.utils.toArray(".mobile-timeline-step").forEach(step => { ScrollTrigger.create({ trigger: step, start: "top center", end: "bottom center", toggleClass: "is-active" }); });
-                }
-
-                // Testimonials Section
-                const testimonialsData = [
-                    { quote: "Deploying the NOYOAI chatbot on WhatsApp was the best decision we've made. Our lead qualification is now fully automated, saving our sales team countless hours every week.", name: "Ayesha Khan", designation: "Marketing Head", src: "" },
-                    { quote: "We needed 24/7 support without the high cost. NOYOAI delivered an intelligent chatbot that handles 80% of customer queries instantly. Our satisfaction scores have never been higher.", name: "Ali Raza", designation: "CEO", src: "" },
-                    { quote: "The ease of deployment was incredible. We went from signup to a fully functional AI chatbot on our WhatsApp in just a day. The elegant interface is a huge plus.", name: "Fatima Ahmed", designation: "Lead Developer", src: "" }
-                ];
-                const testimonialImageContainer = document.getElementById("image-container");
-                if(testimonialImageContainer){
-                    const nameEl = document.getElementById("testimonial-name"), designationEl = document.getElementById("testimonial-designation"), quoteEl = document.getElementById("testimonial-quote");
-                    const nextButton = document.getElementById("next-button"), prevButton = document.getElementById("prev-button");
-                    let activeIndex = 0;
-                    const updateTestimonial = () => {
-                        const active = testimonialsData[activeIndex];
-                        nameEl.textContent = active.name;
-                        designationEl.textContent = active.designation;
-                        quoteEl.innerHTML = '';
-                        active.quote.split(' ').forEach((word, i) => {
-                            const span = document.createElement('span');
-                            span.className = 'word-span';
-                            span.innerHTML = word + '&nbsp;';
-                            quoteEl.appendChild(span);
-                            setTimeout(() => span.classList.add('visible'), 25 * i);
-                        });
-                        testimonialImageContainer.querySelectorAll('.testimonial-image').forEach((img, index) => {
-                            img.style.opacity = index === activeIndex ? '1' : '0';
-                            img.style.transform = index === activeIndex ? 'scale(1)' : 'scale(0.8)';
-                        });
-                    };
-                    testimonialsData.forEach(t => { const img = document.createElement('img'); img.src = t.src; img.alt = t.name; img.className = 'testimonial-image'; img.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; img.onerror = () => img.src = `https://placehold.co/600x400/1d1d1f/a0aec0?text=?`; testimonialImageContainer.appendChild(img); });
-                    nextButton.addEventListener('click', () => { activeIndex = (activeIndex + 1) % testimonialsData.length; updateTestimonial(); });
-                    prevButton.addEventListener('click', () => { activeIndex = (activeIndex - 1 + testimonialsData.length) % testimonialsData.length; updateTestimonial(); });
-                    updateTestimonial();
-                }
-
-                // Interactive Contact Form
-                const contactFormEl = document.getElementById('contact-form');
-                if (contactFormEl) {
-                    const steps = [document.getElementById('contact-step-1'), document.getElementById('contact-step-2'), document.getElementById('contact-step-3')];
-                    const nextBtns = [document.getElementById('next-step-1'), document.getElementById('next-step-2')];
-                    const backBtns = document.querySelectorAll('[data-nav="back"]');
-                    const confirmationScreen = document.getElementById('confirmation-screen');
-                    let currentStep = 0;
-
-                    const showStep = (stepIndex) => {
-                        steps.forEach((step, index) => {
-                            step.classList.toggle('active', index === stepIndex);
-                        });
-                        currentStep = stepIndex;
-                    };
-
-                    nextBtns.forEach((btn, index) => {
-                        btn.addEventListener('click', () => {
-                            if (index === 1) {
-                                const name = document.getElementById('contact-name').value;
-                                const email = document.getElementById('contact-email').value;
-                                if (!name || !email) {
-                                    alert('Please fill in your name and email.');
-                                    return;
-                                }
-                            }
-                            showStep(currentStep + 1);
-                        });
-                    });
-
-                    backBtns.forEach(btn => {
-                        btn.addEventListener('click', () => showStep(currentStep - 1));
-                    });
-
-                    const interestOptions = ['Sales Inquiry', 'Pricing Details', 'Request a Demo', 'Partnerships', 'Press & Media'];
-                    const helpOptions = ['Customer Support', 'Billing Questions', 'Technical Assistance', 'General Feedback', 'Careers'];
-                    const interestContainer = document.getElementById('interest-options');
-                    const helpContainer = document.getElementById('help-options');
-                    const createOption = (text) => { const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = text; btn.className = 'w-full text-left p-3 bg-black/30 border border-gray-700 rounded-lg service-option hover:bg-brand-cta/20 hover:border-brand-cta'; btn.dataset.value = text; return btn; };
-                    interestOptions.forEach(opt => interestContainer.appendChild(createOption(opt)));
-                    helpOptions.forEach(opt => helpContainer.appendChild(createOption(opt)));
-
-                    let selectedServices = [];
-                    document.querySelectorAll('.service-option').forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            btn.classList.toggle('selected');
-                            const value = btn.dataset.value;
-                            if (selectedServices.includes(value)) {
-                                selectedServices = selectedServices.filter(s => s !== value);
-                            } else {
-                                selectedServices.push(value);
-                            }
-                            nextBtns[0].disabled = selectedServices.length === 0;
-                            nextBtns[0].classList.toggle('opacity-50', selectedServices.length === 0);
-                            nextBtns[0].classList.toggle('cursor-not-allowed', selectedServices.length === 0);
-                        });
-                    });
-
-                    contactFormEl.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        document.getElementById('services-selected-input').value = selectedServices.join(', ');
-                        const data = new FormData(contactFormEl);
+                        const startX = (startRect.left + startRect.width / 2) - gridRect.left;
+                        const startY = (startRect.top + startRect.height / 2) - gridRect.top;
+                        const endX = (endRect.left + endRect.width / 2) - gridRect.left;
+                        const endY = (endRect.top + endRect.height / 2) - gridRect.top;
                         
-                        contactFormEl.style.display = 'none';
-                        confirmationScreen.style.display = 'flex';
-                        
-                        const checkmarkPath = confirmationScreen.querySelector('.checkmark-path');
-                        if (checkmarkPath) {
-                            checkmarkPath.style.animation = 'none';
-                            setTimeout(() => { checkmarkPath.style.animation = ''; }, 10);
-                        }
-
-                        if (contactFormEl.action.includes('formspree')) {
-                             try {
-                                await fetch(contactFormEl.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-                            } catch (error) {
-                                console.error('Form submission error:', error);
-                            }
-                        } else {
-                            console.log('Form submitted (simulation). Data:', Object.fromEntries(data));
-                        }
+                        path.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
+                        const length = path.getTotalLength();
+                        path.style.strokeDasharray = length;
+                        path.style.strokeDashoffset = length;
                     });
                 }
 
-                setTimeout(() => { ScrollTrigger.refresh(); }, 500);
+                document.querySelectorAll('.blueprint-node').forEach(node => {
+                    node.addEventListener('click', () => {
+                        node.classList.toggle('is-resolved');
+                    });
+                });
+                
+                updateLines();
+                window.addEventListener('resize', updateLines);
             }
 
-            // Initialize all scripts
-            initHeader();
-            initOrbAnimation();
-            initPageAnimations();
-        });
+
+            // --- Testimonials Section Logic ---
+            const testimonialsData = [
+                { quote: "Deploying the NOYOAI chatbot on WhatsApp was the best decision we've made. Our lead qualification is now fully automated, saving our sales team countless hours every week.", name: "Ayesha Khan", designation: "Marketing Head", src: "" },
+                { quote: "We needed 24/7 support without the high cost. NOYOAI delivered an intelligent chatbot that handles 80% of customer queries instantly. Our satisfaction scores have never been higher.", name: "Ali Raza", designation: "CEO", src: "" },
+                { quote: "The ease of deployment was incredible. We went from signup to a fully functional AI chatbot on our WhatsApp in just a day. The elegant interface is a huge plus.", name: "Fatima Ahmed", designation: "Lead Developer", src: "" },
+                { quote: "Our online sales have increased by 30% since using the NOYOAI bot to engage customers on WhatsApp. It guides them through products and answers questions, closing sales around the clock.", name: "Bilal Hassan", designation: "Product Manager", src: "" },
+                { quote: "As a small team, we felt overwhelmed. NOYOAI's promise of 'Never On Your Own' is real. The chatbot acts as our primary support agent, letting us focus on growing the business.", name: "Sana Iqbal", designation: "Operations Chief", src: "" },
+                { quote: "The futuristic feel of the chatbot conversations has really impressed our clientele. It's sleek, professional, and perfectly matches our modern brand identity.", name: "Zainab Mehmood", designation: "Creative Director", src: "" },
+                { quote: "The intelligence of the NOYOAI bot is remarkable. It understands complex queries and provides accurate answers, reducing the burden on our technical support team significantly.", name: "Usman Malik", designation: "IT Specialist", src: "" },
+                { quote: "For our startup, the NOYOAI chatbot was the most cost-effective way to offer enterprise-level customer service. It's a scalable solution that grows with us.", name: "Hira Ali", designation: "Founder", src: "" }
+            ];
+            const testimonialImageContainer = document.getElementById("image-container");
+            if(testimonialImageContainer){
+                const nameEl = document.getElementById("testimonial-name"), designationEl = document.getElementById("testimonial-designation"), quoteEl = document.getElementById("testimonial-quote");
+                const nextButton = document.getElementById("next-button"), prevButton = document.getElementById("prev-button");
+                let activeIndex = 0, autoplayInterval = null;
+                const animateQuote = () => {
+                    const activeTestimonial = testimonialsData[activeIndex];
+                    quoteEl.innerHTML = '';
+                    const words = activeTestimonial.quote.split(' ');
+                    words.forEach((word, i) => {
+                        const span = document.createElement('span');
+                        span.className = 'word-span';
+                        span.innerHTML = word + '&nbsp;';
+                        quoteEl.appendChild(span);
+                        setTimeout(() => { span.classList.add('visible'); }, 25 * i);
+                    });
+                };
+                const updateTestimonial = () => {
+                    const activeTestimonial = testimonialsData[activeIndex];
+                    nameEl.textContent = activeTestimonial.name;
+                    designationEl.textContent = activeTestimonial.designation;
+                    animateQuote();
+                    const imageElements = testimonialImageContainer.querySelectorAll('.testimonial-image');
+                    imageElements.forEach((img, index) => {
+                        const isActive = index === activeIndex;
+                        img.style.opacity = isActive ? '1' : '0';
+                        img.style.transform = isActive ? 'scale(1)' : 'scale(0.8)';
+                        img.style.zIndex = isActive ? '3' : '1';
+                    });
+                };
+                const handleNext = () => { activeIndex = (activeIndex + 1) % testimonialsData.length; updateTestimonial(); resetAutoplay(); };
+                const handlePrev = () => { activeIndex = (activeIndex - 1 + testimonialsData.length) % testimonialsData.length; updateTestimonial(); resetAutoplay(); };
+                const startAutoplay = () => { if (!autoplayInterval) autoplayInterval = setInterval(handleNext, 5000); };
+                const stopAutoplay = () => { clearInterval(autoplayInterval); autoplayInterval = null; };
+                const resetAutoplay = () => { stopAutoplay(); startAutoplay(); };
+                const initTestimonials = () => {
+                    testimonialsData.forEach((testimonial, index) => {
+                        const img = document.createElement('img');
+                        img.src = testimonial.src;
+                        img.alt = testimonial.name;
+                        img.className = 'testimonial-image';
+                        img.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        img.onerror = () => { img.src = `https://placehold.co/600x400/1d1d1f/a0aec0?text=?`; };
+                        if (!testimonial.src) img.onerror();
+                        testimonialImageContainer.appendChild(img);
+                    });
+                    updateTestimonial();
+                    startAutoplay();
+                };
+                nextButton.addEventListener('click', handleNext);
+                prevButton.addEventListener('click', handlePrev);
+                initTestimonials();
+            }
+
+            // --- Interactive Contact Form Logic ---
+            const contactFormEl = document.getElementById('contact-form');
+            if (contactFormEl) {
+                const steps = [document.getElementById('contact-step-1'), document.getElementById('contact-step-2'), document.getElementById('contact-step-3')];
+                const nextBtns = [document.getElementById('next-step-1'), document.getElementById('next-step-2')];
+                const backBtns = document.querySelectorAll('[data-nav="back"]');
+                const confirmationScreen = document.getElementById('confirmation-screen');
+                let currentStep = 0;
+
+                const showStep = (stepIndex) => {
+                    steps.forEach((step, index) => {
+                        step.classList.toggle('active', index === stepIndex);
+                    });
+                    currentStep = stepIndex;
+                };
+
+                nextBtns.forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        if (index === 1) { // After step 2 (name/email)
+                            const name = document.getElementById('contact-name').value.trim();
+                            const email = document.getElementById('contact-email').value.trim();
+                            if (!name || !email) {
+                                // You might want a more sophisticated modal here instead of alert
+                                alert('Please fill in your name and email.');
+                                return;
+                            }
+                        }
+                        showStep(currentStep + 1);
+                    });
+                });
+
+                backBtns.forEach(btn => {
+                    btn.addEventListener('click', () => showStep(currentStep - 1));
+                });
+
+                const interestOptions = ['Sales Inquiry', 'Pricing Details', 'Request a Demo', 'Partnerships', 'Press & Media'];
+                const helpOptions = ['Customer Support', 'Billing Questions', 'Technical Assistance', 'General Feedback', 'Careers'];
+                const interestContainer = document.getElementById('interest-options');
+                const helpContainer = document.getElementById('help-options');
+                
+                const createOption = (text) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = text;
+                    btn.className = 'w-full text-left p-3 bg-black/30 border border-gray-700 rounded-lg service-option hover:bg-brand-cta/20 hover:border-brand-cta';
+                    btn.dataset.value = text;
+                    return btn;
+                };
+                
+                interestOptions.forEach(opt => interestContainer.appendChild(createOption(opt)));
+                helpOptions.forEach(opt => helpContainer.appendChild(createOption(opt)));
+
+                let selectedServices = [];
+                document.querySelectorAll('.service-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('selected');
+                        const value = btn.dataset.value;
+                        if (selectedServices.includes(value)) {
+                            selectedServices = selectedServices.filter(s => s !== value);
+                        } else {
+                            selectedServices.push(value);
+                        }
+                        
+                        const nextBtn = document.getElementById('next-step-1');
+                        nextBtn.disabled = selectedServices.length === 0;
+                        nextBtn.classList.toggle('opacity-50', selectedServices.length === 0);
+                        nextBtn.classList.toggle('cursor-not-allowed', selectedServices.length === 0);
+                    });
+                });
+
+                contactFormEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    document.getElementById('services-selected-input').value = selectedServices.join(', ');
+                    
+                    const data = new FormData(contactFormEl);
+                    
+                    contactFormEl.style.display = 'none';
+                    confirmationScreen.style.display = 'flex';
+                    
+                    const checkmarkPath = confirmationScreen.querySelector('.checkmark-path');
+                    if (checkmarkPath) {
+                        checkmarkPath.style.animation = 'none';
+                        // Use a timeout to re-trigger the animation
+                        setTimeout(() => { checkmarkPath.style.animation = ''; }, 10);
+                    }
+
+                    // Replace with your actual form submission logic (e.g., fetch to an API)
+                    console.log('Form submitted (simulation). Data:', Object.fromEntries(data));
+                });
+            }
+            
+            // FINAL FIX: Refresh ScrollTrigger after a short delay to ensure all dynamic content (like React) is loaded
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 500); // A 500ms delay should be sufficient for the React component to render.
+        }
+
+        // Run the animation initialization function
+        window.addEventListener('load', initializeAnimations);
     </script>
     
     <!-- React Babel Script for Industries Section -->
     <script type="text/babel">
+        const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
+
+        // --- Industries Section Component ---
         function IndustriesApp() {
             const cardsData = [
                 { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
@@ -1169,6 +1618,449 @@
             const industriesRoot = ReactDOM.createRoot(industriesContainer);
             industriesRoot.render(<IndustriesApp />);
         }
+    </script>
+    
+    <!-- NEW SCRIPT FOR CHAT ANIMATION -->
+    <script>
+        // --- Setup ---
+        const canvas = document.getElementById('explainerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Configuration ---
+        const bubbleWidth = 280;
+        const bubblePadding = 15;
+        const bubbleSpacing = 20;
+        const avatarSize = 32;
+        const headerHeight = 80;
+        const footerHeight = 70;
+
+        // --- State Management ---
+        let lastTime = 0;
+        let chatHistory = [];
+        let conversationIndex = -1;
+        let messageIndex = 0;
+        let lastStateChangeTime = 0;
+        let currentState = 'START_CONVERSATION';
+        let scrollY = 0;
+        let targetScrollY = 0;
+        
+        const conversations = [
+            [ // Conversation 1: Clinic Appointment
+                { sender: 'user', text: "Can you book me a dental check-up for tomorrow afternoon?" },
+                { sender: 'ai', text: "Certainly. Dr. Smith has an opening at 4:30 PM. The fee is $75. Shall I confirm?" },
+                { sender: 'user', text: "Yes, 4:30 PM works perfectly. Please confirm it for me." },
+                { sender: 'ai', text: "You're all set. Your appointment with Dr. Smith is confirmed for tomorrow at 4:30 PM." }
+            ],
+            [ // Conversation 2: International Shipping
+                { sender: 'user', text: "Do you offer international shipping for your products?" },
+                { sender: 'ai', text: "Yes, we ship globally via express courier. Delivery to most regions is 3-5 business days." },
+                { sender: 'user', text: "That's great. What are the charges for shipping to Europe?" },
+                { sender: 'ai', text: "Standard shipping to Europe is a flat rate of $25. It's complimentary on all orders over $100." }
+            ],
+            [ // Conversation 3: Property Search
+                { sender: 'user', text: "Show me properties in the waterfront district in the 1-2 million dollar range." },
+                { sender: 'ai', text: "I have found three 2-bedroom condos in that range. One with a city view is listed at $1.5M. Interested?" },
+                { sender: 'user', text: "The one with the city view sounds good. Can you schedule a viewing for this Saturday?" },
+                { sender: 'ai', text: "Done. The viewing is scheduled for this Saturday at 11:00 AM. I've sent the details to your calendar." }
+            ],
+            [ // Conversation 4: Promotions
+                { sender: 'user', text: "What promotions or discounts do you have active today?" },
+                { sender: 'ai', text: "Today we have 25% off all smart watches and a 'Buy One, Get One Free' offer on select wireless chargers." },
+                { sender: 'user', text: "Perfect, please add two of the 'Aura' wireless chargers to my cart." },
+                { sender: 'ai', text: "I've added them to your cart. The BOGO discount has been applied automatically. Your total is $59.99." }
+            ],
+             [ // Conversation 5: Internet Outage
+                { sender: 'user', text: "My internet has been down for an hour in the Northwood area." },
+                { sender: 'ai', text: "I see a temporary service disruption in your area due to network upgrades." },
+                { sender: 'user', text: "Is there an ETA for when it will be restored?" },
+                { sender: 'ai', text: "Yes, our team expects to have the service fully restored by 4 PM. We apologize for the inconvenience." }
+            ]
+        ];
+
+        const typingDuration = 2000;
+        const transitionDuration = 500;
+        const thinkingDuration = 1500;
+        const pauseDuration = 1000;
+        const conversationExitDuration = 1500;
+
+        // --- Canvas & Drawing Functions ---
+        
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            if (!container) return;
+            const aspectRatio = 9 / 18;
+            const width = container.clientWidth;
+            canvas.width = width;
+            canvas.height = width / aspectRatio;
+        }
+
+        function easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+        
+        function drawRoundRect(x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function drawMessageBubble(message) {
+            ctx.save();
+            
+            const textHeight = getTextHeight(message.text, bubbleWidth - bubblePadding * 2, 20);
+            const bubbleHeight = textHeight + bubblePadding * 2;
+            
+            const p = message.animationProgress || 0;
+            const scale = easeInOutQuad(p);
+            const alpha = message.alpha * p;
+
+            const finalY = message.y;
+            const avatarY = finalY + bubbleHeight / 2;
+            const avatarX = message.isUser ? canvas.width - 20 - avatarSize / 2 : 20 + avatarSize / 2;
+
+            const finalX = message.isUser ? canvas.width - bubbleWidth - 20 - avatarSize - 10 : 20 + avatarSize + 10;
+            const finalBubbleCenterX = finalX + bubbleWidth / 2;
+            const finalBubbleCenterY = finalY + bubbleHeight / 2;
+            
+            const currentBubbleCenterX = avatarX + (finalBubbleCenterX - avatarX) * p;
+            const currentBubbleCenterY = avatarY + (finalBubbleCenterY - avatarY) * p;
+            
+            const currentWidth = bubbleWidth * scale;
+            const currentHeight = bubbleHeight * scale;
+            const currentX = currentBubbleCenterX - currentWidth / 2;
+            const currentY = currentBubbleCenterY - currentHeight / 2;
+
+            ctx.globalAlpha = alpha;
+
+            // Bubble Body
+            ctx.fillStyle = message.isUser ? 'rgba(244, 163, 255, 0.15)' : 'rgba(106, 15, 255, 0.2)';
+            ctx.strokeStyle = message.isUser ? 'rgba(244, 163, 255, 0.3)' : 'rgba(130, 69, 255, 0.4)';
+            ctx.lineWidth = 1;
+            drawRoundRect(currentX, currentY, currentWidth, currentHeight, 15 * scale);
+            ctx.fill();
+            ctx.stroke();
+
+            // Avatar
+            if (message.isUser) {
+                const popScale = 1 + Math.sin(p * Math.PI) * 0.1;
+                ctx.save();
+                ctx.translate(avatarX, avatarY);
+                ctx.scale(popScale, popScale);
+                ctx.translate(-avatarX, -avatarY);
+                
+                ctx.fillStyle = '#F4A3FF';
+                ctx.beginPath();
+                ctx.arc(avatarX, avatarY - 4, avatarSize / 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(avatarX, avatarY + 10, avatarSize / 2, 0, Math.PI, false);
+                ctx.fill();
+                ctx.restore();
+            } else {
+                drawAIAvatar(avatarX, avatarY, false); // Not scanning
+            }
+
+            // Text
+            if (scale > 0.8) {
+                ctx.globalAlpha = alpha * ((scale - 0.8) * 5);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '16px Satoshi';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                wrapText(message.text, message.charLimit, currentX + bubblePadding, currentY + bubblePadding, bubbleWidth - bubblePadding * 2, 20);
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawAIAvatar(x, y, isScanning) {
+            const headWidth = 22;
+            const headHeight = 20;
+            const headX = x - headWidth / 2;
+            const headY = y - headHeight / 2;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(headX, headY + headHeight);
+            ctx.lineTo(headX, headY + 5);
+            ctx.quadraticCurveTo(headX, headY, headX + 5, headY);
+            ctx.lineTo(headX + headWidth - 5, headY);
+            ctx.quadraticCurveTo(headX + headWidth, headY, headX + headWidth, headY + 5);
+            ctx.lineTo(headX + headWidth, headY + headHeight);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, headY);
+            ctx.lineTo(x, headY - 4);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x, headY - 6, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Visor
+            ctx.fillStyle = '#66CDFF';
+            ctx.beginPath();
+            ctx.fillRect(headX + 4, headY + 4, headWidth - 8, 8);
+            ctx.fill();
+            
+            if (isScanning) {
+                const scanProgress = (Date.now() % 1500) / 1500;
+                const scanPosition = Math.sin(scanProgress * Math.PI * 2) * 0.5 + 0.5;
+                const scanX = headX + 4 + (headWidth - 8 - 4) * scanPosition;
+                
+                ctx.fillStyle = '#F4A3FF';
+                ctx.shadowColor = '#F4A3FF';
+                ctx.shadowBlur = 8;
+                ctx.fillRect(scanX, headY + 4, 4, 8);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function getTextHeight(text, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lineCount = 1;
+            ctx.font = '16px Satoshi';
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                    lineCount++;
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            return lineCount * lineHeight;
+        }
+
+        function wrapText(text, charLimit, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            let charsDrawn = 0;
+            for(let i = 0; i < lines.length; i++) {
+                let lineToDraw = lines[i].trim();
+                if (charsDrawn + lineToDraw.length + 1 > charLimit) {
+                    lineToDraw = lineToDraw.substring(0, charLimit - charsDrawn);
+                }
+                ctx.fillText(lineToDraw, x, y + i * lineHeight);
+                charsDrawn += lines[i].length;
+                if (charsDrawn >= charLimit) break;
+            }
+        }
+
+        function drawTypingIndicator(y, progress) {
+            ctx.save();
+            ctx.globalAlpha = easeInOutQuad(progress);
+            
+            const bubbleHeight = 40;
+            const x = 20 + avatarSize + 10;
+            
+            drawAIAvatar(20 + avatarSize / 2, y + bubbleHeight / 2, true);
+
+            ctx.fillStyle = 'rgba(106, 15, 255, 0.2)';
+            ctx.strokeStyle = 'rgba(130, 69, 255, 0.4)';
+            ctx.lineWidth = 1;
+            drawRoundRect(x, y, 80, bubbleHeight, 20);
+            ctx.fill();
+            ctx.stroke();
+
+            const time = Date.now();
+            for (let i = 0; i < 3; i++) {
+                const dotPulse = Math.sin(time * 0.005 + i * 0.5) * 0.5 + 0.5;
+                ctx.fillStyle = `rgba(255, 255, 255, ${dotPulse})`;
+                ctx.beginPath();
+                ctx.arc(x + 25 + i * 15, y + bubbleHeight / 2, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+        
+        function drawAndUpdateBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0F2027');
+            gradient.addColorStop(1, '#000000');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawChatUI() {
+            // Header
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, headerHeight);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, headerHeight, canvas.width, 1);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px "General Sans"';
+            ctx.textAlign = 'center';
+            ctx.fillText('NOYOAI', canvas.width / 2, headerHeight / 2 - 5);
+            
+            ctx.font = '12px Satoshi';
+            ctx.fillStyle = '#66CDFF';
+            let statusText = 'Online';
+            if (currentState === 'AI_THINKING') {
+                statusText = 'Noyo is typing...';
+            }
+            ctx.fillText(statusText, canvas.width / 2, headerHeight / 2 + 15);
+
+            // Footer
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
+            ctx.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, canvas.height - footerHeight, canvas.width, 1);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            drawRoundRect(20, canvas.height - footerHeight + 15, canvas.width - 90, 40, 20);
+            ctx.fill();
+
+            ctx.fillStyle = '#6A0FFF';
+            ctx.beginPath();
+            ctx.arc(canvas.width - 45, canvas.height - footerHeight + 35, 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // --- Main Animation Loop ---
+
+        function animate(now) {
+            if (!lastTime) lastTime = now;
+            const deltaTime = now - lastTime;
+            lastTime = now;
+            
+            const timeSinceLastState = now - lastStateChangeTime;
+
+            // State Machine Logic
+            if (currentState === 'START_CONVERSATION') {
+                conversationIndex++;
+                if (conversationIndex >= conversations.length) conversationIndex = 0;
+                messageIndex = 0;
+                chatHistory = [];
+                scrollY = 0;
+                targetScrollY = 0;
+                currentState = 'SHOW_NEXT_MESSAGE';
+            } else if (currentState === 'SHOW_NEXT_MESSAGE') {
+                const currentConvo = conversations[conversationIndex];
+                if (messageIndex >= currentConvo.length) {
+                    currentState = 'CONVERSATION_EXIT';
+                    lastStateChangeTime = now;
+                } else {
+                    const msgData = currentConvo[messageIndex];
+                    const textHeight = getTextHeight(msgData.text, bubbleWidth - bubblePadding * 2, 20);
+                    const bubbleHeight = textHeight + bubblePadding * 2;
+                    chatHistory.push({ text: msgData.text, isUser: msgData.sender === 'user', charLimit: 0, height: bubbleHeight, animationProgress: 0, alpha: 1 });
+                    currentState = 'MESSAGE_APPEARING';
+                    lastStateChangeTime = now;
+                }
+            } else if (currentState === 'MESSAGE_APPEARING' && timeSinceLastState > transitionDuration) {
+                currentState = 'MESSAGE_TYPING';
+                lastStateChangeTime = now;
+            } else if (currentState === 'MESSAGE_TYPING' && timeSinceLastState > typingDuration) {
+                messageIndex++;
+                const nextSender = conversations[conversationIndex][messageIndex]?.sender;
+                currentState = (nextSender === 'ai') ? 'AI_THINKING' : 'SHOW_NEXT_MESSAGE';
+                lastStateChangeTime = now;
+            } else if (currentState === 'AI_THINKING' && timeSinceLastState > thinkingDuration) {
+                currentState = 'SHOW_NEXT_MESSAGE';
+                lastStateChangeTime = now;
+            } else if (currentState === 'CONVERSATION_EXIT' && timeSinceLastState > conversationExitDuration) {
+                currentState = 'START_CONVERSATION';
+                lastStateChangeTime = now;
+            }
+
+            // Update scroll position
+            let totalHeight = 0;
+            chatHistory.forEach(msg => totalHeight += msg.height + bubbleSpacing);
+            if (currentState === 'AI_THINKING') totalHeight += 60;
+            targetScrollY = Math.max(0, totalHeight - (canvas.height - headerHeight - footerHeight) + 40);
+            scrollY += (targetScrollY - scrollY) * 0.1;
+
+            // Drawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawAndUpdateBackground();
+            
+            ctx.save();
+            ctx.translate(0, headerHeight - scrollY);
+
+            let currentY = 20;
+            chatHistory.forEach(msg => {
+                msg.y = currentY;
+                currentY += msg.height + bubbleSpacing;
+            });
+
+            chatHistory.forEach((msg, index) => {
+                const lastMsg = chatHistory[chatHistory.length - 1];
+                if (msg === lastMsg) {
+                    if (currentState === 'MESSAGE_APPEARING') {
+                        msg.animationProgress = easeInOutQuad(timeSinceLastState / transitionDuration);
+                    } else if (currentState === 'MESSAGE_TYPING') {
+                        msg.animationProgress = 1;
+                        msg.charLimit = Math.floor(msg.text.length * (timeSinceLastState / typingDuration));
+                    } else {
+                        msg.animationProgress = 1;
+                        msg.charLimit = msg.text.length;
+                    }
+                } else {
+                    msg.animationProgress = 1;
+                    msg.charLimit = msg.text.length;
+                }
+                
+                if (currentState === 'CONVERSATION_EXIT') {
+                    const delay = (chatHistory.length - index) * 100;
+                    const fadeProgress = Math.max(0, (timeSinceLastState - delay) / (conversationExitDuration - delay));
+                    msg.alpha = 1 - easeInOutQuad(fadeProgress);
+                } else if (currentState !== 'START_CONVERSATION') {
+                    msg.alpha = 1;
+                }
+                
+                drawMessageBubble(msg);
+            });
+
+            if (currentState === 'AI_THINKING') {
+                const p = easeInOutQuad(Math.min(1, timeSinceLastState / 500));
+                drawTypingIndicator(currentY, p);
+            }
+
+            ctx.restore();
+            drawChatUI();
+            
+            requestAnimationFrame(animate);
+        }
+
+        // --- Initialization ---
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Use a small delay to ensure the layout is stable before sizing the canvas
+        setTimeout(() => {
+            resizeCanvas();
+            lastStateChangeTime = Date.now();
+            animate(Date.now());
+        }, 100);
+
     </script>
 
 </body>
