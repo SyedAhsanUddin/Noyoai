@@ -721,27 +721,32 @@
             margin-bottom: 1rem;
         }
         .aurora-footer .footer-column a {
+            position: relative;
             text-decoration: none;
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             font-size: 0.9rem;
             font-weight: 500;
+            color: white;
             transition: transform 0.3s ease;
         }
         .aurora-footer .footer-column a:hover {
             transform: scale(1.05);
         }
-        .gradient-link {
-            color: white; /* Default color */
+        .aurora-footer .footer-column a::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
             background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
             background-size: 200% auto;
             background-clip: text;
             -webkit-background-clip: text;
-            transition: color 0.4s ease, background-position 0.4s ease;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
         }
-        .gradient-link:hover {
-            color: transparent; /* Reveal gradient on hover */
-            background-position: 100% center;
+        .aurora-footer .footer-column a:hover::before {
+            opacity: 1;
         }
         
         .aurora-footer .brand-column .social-links {
@@ -1198,21 +1203,21 @@
                 </div>
                 <div class="footer-column">
                     <h4>Solutions</h4>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-highlight);">By Industry</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-accent);">By Feature</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-accent); --c2: var(--brand-dark-cyan);">Integrations</a>
+                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #6A0FFF; --c2: #66CDFF;">By Industry</a>
+                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #66CDFF; --c2: #F4A3FF;">By Feature</a>
+                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #F4A3FF; --c2: #008B8B;">Integrations</a>
                 </div>
                 <div class="footer-column">
                     <h4>Resources</h4>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-dark-cyan); --c2: var(--brand-cta);">Blog</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-accent);">Help Center</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-dark-cyan);">FAQ</a>
+                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #008B8B; --c2: #6A0FFF;">Blog</a>
+                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #6A0FFF; --c2: #F4A3FF;">Help Center</a>
+                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #66CDFF; --c2: #008B8B;">FAQ</a>
                 </div>
                 <div class="footer-column">
                     <h4>Company</h4>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-accent); --c2: var(--brand-highlight);">About Us</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-dark-cyan);">Pricing</a>
-                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-cta);">Contact</a>
+                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #F4A3FF; --c2: #66CDFF;">About Us</a>
+                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #6A0FFF; --c2: #008B8B;">Pricing</a>
+                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #66CDFF; --c2: #6A0FFF;">Contact</a>
                 </div>
             </div>
             <div class="aurora-footer-bottom">
