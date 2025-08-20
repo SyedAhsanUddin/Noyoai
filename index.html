@@ -733,19 +733,16 @@
         }
         .gradient-link {
             color: white; /* Default color */
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
             background-size: 200% auto;
-            background-position: 0 center;
-            -webkit-background-clip: text;
             background-clip: text;
+            -webkit-background-clip: text;
             transition: color 0.4s ease, background-position 0.4s ease;
         }
         .gradient-link:hover {
             color: transparent; /* Reveal gradient on hover */
             background-position: 100% center;
         }
-        .gradient-1 { background-image: linear-gradient(to right, var(--brand-cta), var(--brand-highlight), var(--brand-cta)); }
-        .gradient-2 { background-image: linear-gradient(to right, var(--brand-highlight), var(--brand-accent), var(--brand-highlight)); }
-        .gradient-3 { background-image: linear-gradient(to right, var(--brand-accent), var(--brand-cta), var(--brand-accent)); }
         
         .aurora-footer .brand-column .social-links {
             display: flex;
@@ -1201,25 +1198,25 @@
                 </div>
                 <div class="footer-column">
                     <h4>Solutions</h4>
-                    <a href="#" class="gradient-link gradient-1">By Industry</a>
-                    <a href="#" class="gradient-link gradient-2">By Feature</a>
-                    <a href="#" class="gradient-link gradient-3">Integrations</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-highlight);">By Industry</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-accent);">By Feature</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-accent); --c2: var(--brand-dark-cyan);">Integrations</a>
                 </div>
                 <div class="footer-column">
                     <h4>Resources</h4>
-                    <a href="#" class="gradient-link gradient-1">Blog</a>
-                    <a href="#" class="gradient-link gradient-2">Help Center</a>
-                    <a href="#" class="gradient-link gradient-3">FAQ</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-dark-cyan); --c2: var(--brand-cta);">Blog</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-accent);">Help Center</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-dark-cyan);">FAQ</a>
                 </div>
                 <div class="footer-column">
                     <h4>Company</h4>
-                    <a href="#" class="gradient-link gradient-1">About Us</a>
-                    <a href="#" class="gradient-link gradient-2">Pricing</a>
-                    <a href="#" class="gradient-link gradient-3">Contact</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-accent); --c2: var(--brand-highlight);">About Us</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-cta); --c2: var(--brand-dark-cyan);">Pricing</a>
+                    <a href="#" class="gradient-link" style="--c1: var(--brand-highlight); --c2: var(--brand-cta);">Contact</a>
                 </div>
             </div>
             <div class="aurora-footer-bottom">
-                <p>&copy; 2024 NOYOAI. All Rights Reserved.</p>
+                <p>&copy; 2025 NOYOAI. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
