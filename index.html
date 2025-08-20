@@ -665,59 +665,66 @@
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
         }
 
-        /* --- Footer Section Styles (AI Synapse) --- */
-        .synapse-footer {
-            position: relative;
-            margin-top: 6rem;
-            background-color: #020408;
-            overflow: hidden;
-            border-top: 1px solid rgba(106, 15, 255, 0.2);
+        /* --- Footer Section Styles (Aurora Glass) --- */
+        .aurora-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            padding: 1rem;
         }
-
-        #synapse-canvas {
+        .aurora-footer.is-visible {
+            transform: translateY(0);
+        }
+        .aurora-panel {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            overflow: hidden;
+        }
+        #aurora-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
         }
-
-        .synapse-content {
+        .aurora-content {
             position: relative;
             z-index: 2;
-            padding: 5rem 2rem;
-        }
-
-        .synapse-footer .footer-grid {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-        }
-
-        .synapse-footer .footer-column {
             display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .synapse-footer h4 {
-            font-family: 'General Sans', sans-serif;
-            font-weight: 700;
-            color: #eee;
-            margin-bottom: 0.5rem;
+        .aurora-content .copyright {
+            color: var(--brand-gray);
+            font-size: 0.9rem;
         }
-
-        .synapse-footer a, .synapse-footer p {
-            color: #888;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        .aurora-content .social-links {
+            display: flex;
+            gap: 1.5rem;
         }
-
-        .synapse-footer a:hover {
+        .aurora-content .social-links a {
+            color: var(--brand-gray);
+            transition: color 0.3s ease, transform 0.3s ease;
+            font-size: 1.25rem;
+        }
+        .aurora-content .social-links a:hover {
             color: white;
+            transform: scale(1.1);
         }
 
     </style>
@@ -1135,31 +1142,15 @@
     </section>
 
     <!-- Footer -->
-    <footer class="synapse-footer">
-        <canvas id="synapse-canvas"></canvas>
-        <div class="synapse-content">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
-                    <p>&copy; 2024 NOYOAI</p>
-                </div>
-                <div class="footer-column">
-                    <h4>Company</h4>
-                    <a href="#">About</a>
-                    <a href="#">Careers</a>
-                    <a href="#">Blog</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Product</h4>
-                    <a href="#">Features</a>
-                    <a href="#">Pricing</a>
-                    <a href="#">Book a Demo</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Social</h4>
-                    <a href="#">Twitter</a>
-                    <a href="#">LinkedIn</a>
-                    <a href="#">GitHub</a>
+    <footer id="aurora-footer" class="aurora-footer">
+        <div class="aurora-panel">
+            <canvas id="aurora-canvas"></canvas>
+            <div class="aurora-content">
+                <p class="copyright">&copy; 2024 NOYOAI. All Rights Reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 </div>
             </div>
         </div>
@@ -1639,110 +1630,113 @@
                 });
             }
             
-            // --- AI Synapse Footer Logic ---
-            const synapseCanvas = document.getElementById('synapse-canvas');
-            if (synapseCanvas) {
-                const ctx = synapseCanvas.getContext('2d');
-                let particles = [];
-                let mouse = { x: null, y: null, radius: 150 };
+            // --- Aurora Glass Footer Logic ---
+            const auroraFooter = document.getElementById('aurora-footer');
+            if (auroraFooter) {
+                ScrollTrigger.create({
+                    trigger: "body",
+                    start: "bottom bottom-=100px", // Trigger when the bottom of the body is 100px from the bottom of the viewport
+                    onEnter: () => auroraFooter.classList.add('is-visible'),
+                    onLeaveBack: () => auroraFooter.classList.remove('is-visible')
+                });
 
-                function resizeSynapse() {
-                    synapseCanvas.width = synapseCanvas.offsetWidth;
-                    synapseCanvas.height = synapseCanvas.offsetHeight;
-                    initParticles();
+                const canvas = document.getElementById('aurora-canvas');
+                const ctx = canvas.getContext('2d');
+                let mouse = { x: undefined, y: undefined };
+                let glows = [];
+
+                function resizeAurora() {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    initGlows();
                 }
 
-                class Particle {
-                    constructor(x, y, directionX, directionY, size, color) {
+                class Glow {
+                    constructor(x, y, radius, color, velocity) {
                         this.x = x;
                         this.y = y;
-                        this.directionX = directionX;
-                        this.directionY = directionY;
-                        this.size = size;
+                        this.radius = radius;
                         this.color = color;
+                        this.velocity = velocity;
                     }
+
                     draw() {
                         ctx.beginPath();
-                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                        ctx.fillStyle = this.color;
+                        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                        gradient.addColorStop(0, `rgba(${this.color}, 0.2)`);
+                        gradient.addColorStop(1, `rgba(${this.color}, 0)`);
+                        ctx.fillStyle = gradient;
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                         ctx.fill();
                     }
+
                     update() {
-                        if (this.x > synapseCanvas.width || this.x < 0) {
-                            this.directionX = -this.directionX;
+                        // Drifting animation
+                        this.x += this.velocity.x;
+                        this.y += this.velocity.y;
+
+                        if (this.x - this.radius > canvas.width || this.x + this.radius < 0) {
+                            this.x = -this.radius;
                         }
-                        if (this.y > synapseCanvas.height || this.y < 0) {
-                            this.directionY = -this.directionY;
+                        if (this.y - this.radius > canvas.height || this.y + this.radius < 0) {
+                            this.y = -this.radius;
                         }
-                        this.x += this.directionX;
-                        this.y += this.directionY;
+
+                        // Mouse interaction
+                        if (mouse.x !== undefined && mouse.y !== undefined) {
+                            const dx = this.x - mouse.x;
+                            const dy = this.y - mouse.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const maxDistance = 200;
+                            const force = (maxDistance - distance) / maxDistance;
+
+                            if (distance < maxDistance) {
+                                this.x += forceDirectionX * force * 1.5;
+                                this.y += forceDirectionY * force * 1.5;
+                            }
+                        }
+
                         this.draw();
                     }
                 }
 
-                function initParticles() {
-                    particles = [];
-                    let numberOfParticles = (synapseCanvas.height * synapseCanvas.width) / 9000;
-                    for (let i = 0; i < numberOfParticles; i++) {
-                        let size = (Math.random() * 2) + 1;
-                        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                        let directionX = (Math.random() * .4) - .2;
-                        let directionY = (Math.random() * .4) - .2;
-                        let color = 'rgba(102, 205, 255, 0.5)';
-                        particles.push(new Particle(x, y, directionX, directionY, size, color));
+                function initGlows() {
+                    glows = [];
+                    const colors = ['106, 15, 255', '102, 205, 255', '244, 163, 255'];
+                    for (let i = 0; i < 3; i++) {
+                        const radius = Math.random() * 150 + 200;
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        const color = colors[i % colors.length];
+                        const velocity = {
+                            x: (Math.random() - 0.5) * 0.5,
+                            y: (Math.random() - 0.5) * 0.5
+                        };
+                        glows.push(new Glow(x, y, radius, color, velocity));
                     }
                 }
 
-                function connect() {
-                    let opacityValue = 1;
-                    for (let a = 0; a < particles.length; a++) {
-                        for (let b = a; b < particles.length; b++) {
-                            let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
-                                         + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
-                            
-                            if (distance < (synapseCanvas.width / 7) * (synapseCanvas.height / 7)) {
-                                opacityValue = 1 - (distance / 20000);
-                                let dx = mouse.x - particles[a].x;
-                                let dy = mouse.y - particles[a].y;
-                                let mouseDistance = Math.sqrt(dx*dx+dy*dy);
-                                if(mouseDistance < mouse.radius){
-                                     ctx.strokeStyle = `rgba(106, 15, 255, ${opacityValue})`;
-                                } else {
-                                     ctx.strokeStyle = `rgba(102, 205, 255, ${opacityValue})`;
-                                }
-                                ctx.lineWidth = 1;
-                                ctx.beginPath();
-                                ctx.moveTo(particles[a].x, particles[a].y);
-                                ctx.lineTo(particles[b].x, particles[b].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
+                function animateAurora() {
+                    requestAnimationFrame(animateAurora);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    glows.forEach(glow => glow.update());
                 }
 
-                function animateSynapse() {
-                    requestAnimationFrame(animateSynapse);
-                    ctx.clearRect(0, 0, innerWidth, innerHeight);
-                    for (let i = 0; i < particles.length; i++) {
-                        particles[i].update();
-                    }
-                    connect();
-                }
-
-                window.addEventListener('resize', resizeSynapse);
-                synapseCanvas.parentElement.addEventListener('mousemove', (event) => {
-                    const rect = synapseCanvas.getBoundingClientRect();
-                    mouse.x = event.clientX - rect.left;
-                    mouse.y = event.clientY - rect.top;
+                window.addEventListener('resize', resizeAurora);
+                auroraFooter.addEventListener('mousemove', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
                 });
-                synapseCanvas.parentElement.addEventListener('mouseleave', () => {
-                    mouse.x = null;
-                    mouse.y = null;
+                auroraFooter.addEventListener('mouseleave', () => {
+                    mouse.x = undefined;
+                    mouse.y = undefined;
                 });
-                
-                resizeSynapse();
-                animateSynapse();
+
+                resizeAurora();
+                animateAurora();
             }
 
 
