@@ -41,7 +41,7 @@
                         'brand-primary': '#001B6B',  // Deep Navy Blue
                         'brand-cta': '#6A0FFF',    // Vibrant Purple
                         'brand-highlight': '#66CDFF', // Sky Blue
-                        'brand-accent': '#F4A3FF',   // Light Pink
+                        'brand-accent': '#F4A3FF',  // Light Pink
                         'brand-dark-cyan': '#008B8B', // Dark Cyan
                         'brand-dark': '#1d1d1f',
                         'brand-gray': '#a0aec0',     // Combined gray
@@ -292,67 +292,74 @@
             transform: scale(1.05);
         }
 
-        /* --- Interactive Blueprint Section --- */
+        /* --- NEW: Kinetic Grid Features Section --- */
+        #features-sticky-container {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1000px; /* Enable 3D transformations for child elements */
+        }
+        
         .features-heading-gradient {
             background-image: linear-gradient(to right, #50c3f0, #ee4b89);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        #blueprint-container {
-            background-color: #0d0d0d;
-            background-image:  
-                linear-gradient(rgba(106, 15, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(106, 15, 255, 0.1) 1px, transparent 1px);
-            background-size: 2rem 2rem;
-            border: 1px solid rgba(106, 15, 255, 0.3);
+
+        #features-grid {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 10vh 10vw;
+            transform-style: preserve-3d; /* Important for 3D transforms */
+            will-change: transform;
         }
-        .blueprint-node {
-            perspective: 1000px;
+
+        .feature-card {
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            will-change: opacity, transform;
+            transition: box-shadow 0.3s ease; /* Transition for the glow */
         }
-        .node-flipper {
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-            position: relative;  
-            display: grid; /* Use grid for layering to ensure cross-browser consistency */
-        }
-        .blueprint-node.is-resolved .node-flipper {
-            transform: rotateY(180deg);
-        }
-        .node-front, .node-back {
-            -webkit-backface-visibility: hidden; /* Safari */
-            backface-visibility: hidden;
-            width: 100%;
-            height: 100%;
-            transition: box-shadow 0.3s ease;
-            grid-area: 1 / 1; /* Place both front and back in the same grid cell */
-        }
-        .node-back {
-            transform: rotateY(180deg);
-        }
-        .problem-node:hover .glitch-icon {
-            animation: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
-        }
-        .blueprint-node:hover .node-front,
-        .blueprint-node:hover .node-back {
-             box-shadow: 0 0 25px 5px rgba(102, 205, 255, 0.4); /* Glow effect */
-        }
-        .solution-path {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            transition: stroke-dashoffset 1s ease-in-out;
-        }
-        .blueprint-node.is-resolved .solution-path {
-            stroke-dashoffset: 0;
+
+        .feature-card:hover {
+            box-shadow: 0 0 25px 8px rgba(102, 205, 255, 0.2); /* Add glow on hover */
         }
         
-        @media (min-width: 768px) {
-            #f1 { grid-area: 1 / 1 / 2 / 2; }
-            #f2 { grid-area: 1 / 2 / 2 / 3; }
-            #f3 { grid-area: 1 / 3 / 2 / 4; }
-            #f4 { grid-area: 2 / 1 / 3 / 2; }
-            #f5 { grid-area: 2 / 2 / 3 / 3; }
-            #f6 { grid-area: 2 / 3 / 3 / 4; }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease; /* Transition for the pop-up */
+        }
+
+        .feature-card:hover .card-inner {
+            transform: scale(1.03); /* Pop up on hover */
+        }
+
+        .card-content {
+            position: absolute;
+            inset: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .solution-content {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         /* --- How It Works Section Styles --- */
@@ -955,24 +962,22 @@
     <!-- Industries Served Section -->
     <div id="industries-root"></div>
     
-    <!-- Interactive Blueprint Section -->
-    <section id="features" class="py-24 bg-black px-6 md:px-12 relative z-10">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
-                From Chaos to <span class="features-heading-gradient">Clarity.</span>
-            </h2>
-            <p class="text-lg text-gray-400 mx-auto font-medium">
-                Your workflow is a blueprint. Click on the system errors to see how NOYOAI re-engineers your process for maximum efficiency.
-            </p>
-        </div>
-
-        <div id="blueprint-container" class="relative p-4 md:p-8 rounded-2xl max-w-6xl mx-auto aspect-[1/1.2] md:aspect-[2/1]">
-            <!-- SVG for connection lines -->
-            <svg class="absolute inset-0 w-full h-full" id="blueprint-svg"></svg>
-
-            <!-- Grid for nodes -->
-            <div class="relative grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 h-full gap-4 md:gap-8" id="blueprint-grid">
-                <!-- Nodes will be injected here by JS -->
+    <!-- REPLACED: Features Section -->
+    <section id="features-section-wrapper">
+        <div id="features-sticky-container">
+            <!-- Heading is separate and will fade out -->
+            <div id="features-heading" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                 <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                    From Chaos to <span class="features-heading-gradient">Clarity.</span>
+                </h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
+                    A smarter workflow, engineered for efficiency.
+                </p>
+            </div>
+            
+            <!-- Grid container for the cards -->
+            <div id="features-grid">
+                <!-- Feature cards will be injected here by JavaScript -->
             </div>
         </div>
     </section>
@@ -1428,6 +1433,102 @@
         function initializeAnimations() {
             gsap.registerPlugin(ScrollTrigger);
 
+            // --- NEW: Kinetic Grid Features Section Logic ---
+            function generateFeatureElements() {
+                const gridContainer = document.getElementById('features-grid');
+                if (!gridContainer) return;
+
+                const features = [
+                    { problem: 'Missed Leads After Hours', solution: '24/7 Support', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
+                    { problem: 'Repetitive Questions', solution: 'Instant Answers', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
+                    { problem: 'Unqualified Inquiries', solution: 'Lead Qualification', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
+                    { problem: 'Disorganized Data', solution: 'Real-time Lookups', description: 'Integrate with your databases to provide live information on stock or status.', icon: 'fa-magnifying-glass' },
+                    { problem: 'Manual Scheduling', solution: 'Appointment Booking', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
+                    { problem: 'No Customer Insight', solution: 'Automated Feedback', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
+                ];
+
+                features.forEach((feature, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'feature-card';
+                    card.innerHTML = `
+                        <div class="card-inner">
+                            <div class="card-content problem-content">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-3xl text-red-500"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <h3 class="font-bold text-xl text-red-400">${feature.problem}</h3>
+                                </div>
+                            </div>
+                            <div class="card-content solution-content">
+                                 <div class="flex items-center gap-4 mb-3">
+                                    <div class="text-3xl text-brand-highlight"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h3 class="font-bold text-xl text-white">${feature.solution}</h3>
+                                </div>
+                                <p class="text-gray-400 font-medium">${feature.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            }
+
+            function setupFeatureAnimations() {
+                const gridContainer = document.getElementById('features-grid');
+                if (!gridContainer) return;
+
+                const heading = document.getElementById('features-heading');
+                const cards = gsap.utils.toArray('.feature-card');
+
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: '#features-sticky-container',
+                        pin: true,
+                        scrub: 1,
+                        start: 'top top',
+                        end: '+=3000'
+                    }
+                });
+
+                tl.to(heading, {
+                    opacity: 0,
+                    scale: 0.95,
+                    duration: 0.3
+                });
+
+                tl.to(cards, {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+
+                tl.to({}, { duration: 0.5 });
+
+                cards.forEach(card => {
+                    const problemContent = card.querySelector('.problem-content');
+                    const solutionContent = card.querySelector('.solution-content');
+                    
+                    tl.to(problemContent, {
+                        opacity: 0,
+                        y: -20,
+                        duration: 0.3,
+                        ease: 'power1.in'
+                    }, '-=0.4')
+                    .to(solutionContent, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.3,
+                        ease: 'power1.out'
+                    });
+                });
+                
+                tl.to({}, { duration: 1.0 });
+            }
+            
+            generateFeatureElements();
+            setupFeatureAnimations();
+
+
             // --- How It Works Section ---
             const howItWorksSection = document.getElementById('how-it-works');
             
@@ -1503,83 +1604,6 @@
                     });
                 });
             }
-
-            // --- Interactive Blueprint Logic ---
-            const blueprintGrid = document.getElementById('blueprint-grid');
-            const blueprintSvg = document.getElementById('blueprint-svg');
-            if (blueprintGrid && blueprintSvg) {
-                const features = [
-                    { id: 'f1', problem: 'Missed Leads After Hours', solution: '24/7 Support', icon: 'fa-headset' },
-                    { id: 'f2', problem: 'Unqualified Inquiries', solution: 'Lead Qualification', icon: 'fa-filter-circle-dollar' },
-                    { id: 'f3', problem: 'Manual Scheduling', solution: 'Appointment Booking', icon: 'fa-calendar-check' },
-                    { id: 'f4', problem: 'Repetitive Questions', solution: 'Instant Answers', icon: 'fa-circle-question' },
-                    { id: 'f5', problem: 'Availability Questions', solution: 'Real-time Lookups', icon: 'fa-magnifying-glass' },
-                    { id: 'f6', problem: 'No Customer Insight', solution: 'Automated Feedback', icon: 'fa-star-half-stroke' },
-                ];
-
-                features.forEach(feature => {
-                    const nodeHTML = `
-                        <div id="${feature.id}" class="blueprint-node">
-                            <div class="node-flipper w-full h-full">
-                                <!-- Front (Problem) -->
-                                <div class="node-front problem-node w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-red-900/20 border-2 border-dashed border-red-500/50 rounded-lg cursor-pointer">
-                                    <div class="glitch-icon text-2xl md:text-4xl text-red-500 mb-1 md:mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                                    <h4 class="font-semibold text-xs md:text-base text-red-400">${feature.problem}</h4>
-                                </div>
-                                <!-- Back (Solution) -->
-                                <div class="node-back w-full h-full flex flex-col items-center justify-center text-center p-2 md:p-4 bg-brand-cta/20 border border-brand-highlight/50 rounded-lg cursor-pointer">
-                                    <div class="text-2xl md:text-4xl text-brand-highlight mb-1 md:mb-2"><i class="fa-solid ${feature.icon}"></i></div>
-                                    <h4 class="font-bold text-xs md:text-base text-white">${feature.solution}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    blueprintGrid.innerHTML += nodeHTML;
-                });
-                
-                const connections = [ ['f1', 'f2'], ['f2', 'f3'], ['f1', 'f4'], ['f1', 'f5'], ['f3', 'f6'] ];
-                connections.forEach(([startId, endId]) => {
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('class', 'solution-path');
-                    path.setAttribute('fill', 'none');
-                    path.setAttribute('stroke', '#66CDFF');
-                    path.setAttribute('stroke-width', '2');
-                    path.setAttribute('data-start', startId);
-                    path.setAttribute('data-end', endId);
-                    blueprintSvg.appendChild(path);
-                });
-
-                function updateLines() {
-                    const gridRect = blueprintGrid.getBoundingClientRect();
-                    document.querySelectorAll('.solution-path').forEach(path => {
-                        const startNode = document.getElementById(path.dataset.start);
-                        const endNode = document.getElementById(path.dataset.end);
-                        if (!startNode || !endNode) return;
-                        const startRect = startNode.getBoundingClientRect();
-                        const endRect = endNode.getBoundingClientRect();
-
-                        const startX = (startRect.left + startRect.width / 2) - gridRect.left;
-                        const startY = (startRect.top + startRect.height / 2) - gridRect.top;
-                        const endX = (endRect.left + endRect.width / 2) - gridRect.left;
-                        const endY = (endRect.top + endRect.height / 2) - gridRect.top;
-                        
-                        path.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
-                        const length = path.getTotalLength();
-                        path.style.strokeDasharray = length;
-                        path.style.strokeDashoffset = length;
-                    });
-                }
-
-                document.querySelectorAll('.blueprint-node').forEach(node => {
-                    node.addEventListener('click', () => {
-                        node.classList.toggle('is-resolved');
-                    });
-                });
-                
-                updateLines();
-                window.addEventListener('resize', updateLines);
-            }
-
 
             // --- Testimonials Section Logic ---
             const testimonialsData = [
