@@ -192,20 +192,11 @@
             backdrop-filter: none;
         }
         #main-header.header-scrolled .container { justify-content: center; }
-        
         #main-header.header-scrolled #logo-link {
-            transform: scale(0.8);
-            opacity: 0.7;
+            opacity: 0; width: 0;
+            padding: 0; margin: 0;
+            pointer-events: none;
         }
-        @media (min-width: 768px) {
-            #main-header.header-scrolled #logo-link {
-                position: absolute;
-                left: 1.5rem;
-                top: 50%;
-                transform: translateY(-50%) scale(0.8);
-            }
-        }
-
         #main-header.header-scrolled #nav-wrapper {
             position: static;
             transform: none;
@@ -230,16 +221,17 @@
             transition: max-height 0.3s ease-in-out;
         }
 
-        /* --- AI in Action Section --- */
+        /* --- AI in Action Section (NEW) --- */
         #explainerCanvas {
             display: block;
-            border-radius: 1.5rem;
+            border-radius: 1.5rem; /* 24px */
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(106, 15, 255, 0.3);
             width: 100%;
+            /* Height will be set by JS to maintain aspect ratio */
         }
 
-        /* --- Industries Section Styles --- */
+        /* --- Industries Section Styles (Grid Layout) --- */
         .heading-gradient-text {
             background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
             -webkit-background-clip: text;
@@ -300,17 +292,12 @@
             transform: scale(1.05);
         }
 
-        /* --- Kinetic Grid Features Section --- */
+        /* --- NEW: Kinetic Grid Features Section --- */
         #features-sticky-container {
             position: relative;
+            height: 100vh;
             overflow: hidden;
-            perspective: 1000px;
-        }
-        /* FIX: Height is now dynamic on mobile, 100vh for desktop */
-        @media (min-width: 1024px) {
-            #features-sticky-container {
-                height: 100vh;
-            }
+            perspective: 1000px; /* Enable 3D transformations for child elements */
         }
         
         .features-heading-gradient {
@@ -321,15 +308,15 @@
         }
 
         #features-grid {
-            transform-style: preserve-3d;
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 10vh 10vw;
+            transform-style: preserve-3d; /* Important for 3D transforms */
             will-change: transform;
-        }
-        @media (min-width: 1024px) {
-            #features-grid {
-                position: absolute;
-                inset: 0;
-                padding: 10vh 10vw;
-            }
         }
 
         .feature-card {
@@ -343,22 +330,22 @@
             opacity: 0;
             transform: translateY(50px);
             will-change: opacity, transform;
-            transition: box-shadow 0.3s ease;
+            transition: box-shadow 0.3s ease; /* Transition for the glow */
         }
 
         .feature-card:hover {
-            box-shadow: 0 0 25px 8px rgba(102, 205, 255, 0.2);
+            box-shadow: 0 0 25px 8px rgba(102, 205, 255, 0.2); /* Add glow on hover */
         }
         
         .card-inner {
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease; /* Transition for the pop-up */
         }
 
         .feature-card:hover .card-inner {
-            transform: scale(1.03);
+            transform: scale(1.03); /* Pop up on hover */
         }
 
         .card-content {
@@ -382,6 +369,7 @@
             background-clip: text;
             color: transparent;
         }
+        /* Desktop Scroll Stepper */
         .scroll-stepper-container {
             position: relative;
             width: 100%;
@@ -423,6 +411,7 @@
             opacity: 1;
         }
         .scroll-stepper-right {
+            /* CSS `position: sticky` can be buggy in Safari, so we let GSAP handle the pinning via JavaScript */
             height: 100vh;
             display: flex;
             align-items: center;
@@ -460,10 +449,11 @@
         }
         @media (min-width: 1280px) {
              .visual-panel .step-visual i {
-                 font-size: 12rem;
+                font-size: 12rem;
             }
         }
         
+        /* Mobile Vertical Scrollytelling Timeline */
         .mobile-timeline-container {
             position: relative;
             padding: 2rem 0;
@@ -474,7 +464,7 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background-color: #374151;
+            background-color: #374151; /* gray-700 */
         }
         .mobile-timeline-progress-bar {
             width: 100%;
@@ -502,7 +492,7 @@
             width: 20px;
             height: 20px;
             border-radius: 9999px;
-            background-color: #374151;
+            background-color: #374151; /* gray-700 */
             border: 3px solid #000;
             transition: background-color 0.3s ease;
         }
@@ -553,14 +543,11 @@
         .testimonial-grid { display: grid; gap: 2rem; align-items: center; }
         .image-container {
             position: relative;
-            width: 100%;
+            width: 100%; height: 18rem;
             perspective: 1000px;
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 4 / 3;
-            background-color: #1d1d1f; /* Placeholder background */
-            border-radius: 1.5rem;
         }
          @media (min-width: 768px) {
             .image-container {
@@ -574,6 +561,7 @@
             object-position: center;
             border-radius: 1.5rem;
             box-shadow: 0 10px 40px rgba(106, 15, 255, 0.2);
+            background-color: #1d1d1f;
         }
         .testimonial-content {
             display: flex;
@@ -585,17 +573,17 @@
         .name {
             font-weight: bold;
             margin-bottom: 0.25rem;
-            font-size: 1.5rem;
+            font-size: 1.5rem; /* Adjusted for consistency */
             color: var(--color-name);
         }
         .designation {
             margin-bottom: 2rem;
-            font-size: 1rem;
+            font-size: 1rem; /* Adjusted for consistency */
             color: var(--color-designation);
         }
         .quote {
             line-height: 1.75;
-            font-size: 1.125rem;
+            font-size: 1.125rem; /* Adjusted for consistency */
             color: var(--color-testimony);
             flex-grow: 1;
         }
@@ -635,16 +623,12 @@
         }
         
         /* --- Contact Section Styles --- */
+        #contact {
+             margin-bottom: 250px; /* Added space for the footer to slide up into */
+        }
         .contact-card-container {
             position: relative;
-            /* FIX: Allow height to be dynamic on mobile */
-            min-height: auto;
-            overflow: hidden;
-        }
-        @media (min-width: 768px) {
-            .contact-card-container {
-                min-height: 500px;
-            }
+            min-height: 500px; /* Adjust as needed */
         }
         .contact-card {
             position: absolute;
@@ -655,7 +639,6 @@
             transform: translateY(20px);
         }
         .contact-card.active {
-            position: relative; /* FIX: Allow active card to define container height */
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0);
@@ -693,32 +676,20 @@
             animation: draw-checkmark 0.8s ease-out 0.3s forwards;
         }
 
-        /* --- Footer Section Styles --- */
+        /* --- Footer Section Styles (Aurora Glass) --- */
         .aurora-footer {
-            position: relative;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             padding: 1rem;
-            margin-top: 6rem;
         }
-
-        @media (min-width: 1024px) {
-            .aurora-footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 100;
-                transform: translateY(100%);
-                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-                margin-top: 0;
-            }
-            .aurora-footer.is-visible {
-                transform: translateY(0);
-            }
-            #contact {
-                margin-bottom: 250px;
-            }
+        .aurora-footer.is-visible {
+            transform: translateY(0);
         }
-
         .aurora-panel {
             position: relative;
             width: 100%;
@@ -809,12 +780,13 @@
             color: var(--brand-gray);
             font-size: 0.8rem;
         }
+        /* NEW STYLES FOR EMAIL LINK HOVER EFFECT */
         .footer-email-link span {
             position: relative;
             transition: color 0.4s ease;
         }
         .footer-email-link:hover span {
-            color: transparent;
+            color: transparent; /* Make original text disappear */
         }
         .footer-email-link span::before {
             content: attr(data-text);
@@ -827,10 +799,10 @@
             color: transparent;
             transition: opacity 0.4s ease;
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none; /* Allow clicks to pass through */
         }
         .footer-email-link:hover span::before {
-            opacity: 1;
+            opacity: 1; /* Make gradient text appear */
         }
 
     </style>
@@ -918,10 +890,10 @@
     <section class="relative min-h-screen flex flex-col justify-center text-center p-6 font-display">
         <div id="orb-container" class="orb-container"></div>
         <div class="relative z-10 max-w-screen-lg mx-auto">
-            <h1 class="font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
+            <h1 class="font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
                 <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
                 <br>
-                <span class="text-2xl sm:text-3xl lg:text-4xl text-gray-300 font-medium">
+                <span class="text-2xl sm:text-3xl md:text-4xl text-gray-300 font-medium">
                     So That You Are <span class="font-bold tagline-gradient animate-tagline-gradient">Never On Your Own.</span>
                 </span>
             </h1>
@@ -975,6 +947,7 @@
                 <a href="#contact" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                     Discover the Potential
                 </a>
+                <!-- SUGGESTION 3 -->
                 <p class="mt-4 text-sm text-gray-400">
                     Or email us at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>
                 </p>
@@ -990,10 +963,10 @@
     <div id="industries-root"></div>
     
     <!-- REPLACED: Features Section -->
-    <section id="features-section-wrapper" class="py-24 px-6 md:px-12">
+    <section id="features-section-wrapper">
         <div id="features-sticky-container">
             <!-- Heading is separate and will fade out -->
-            <div id="features-heading" class="text-center">
+            <div id="features-heading" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                  <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
                     From Chaos to <span class="features-heading-gradient">Clarity.</span>
                 </h2>
@@ -1002,7 +975,8 @@
                 </p>
             </div>
             
-            <div id="features-grid" class="relative grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Grid container for the cards -->
+            <div id="features-grid">
                 <!-- Feature cards will be injected here by JavaScript -->
             </div>
         </div>
@@ -1150,6 +1124,7 @@
                 <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
                     Any queries? <span class="heading-gradient-text">Contact Us.</span>
                 </h2>
+                <!-- SUGGESTION 2 -->
                 <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">
                     Let us know how we can help. Select your interests below to get started, or email us directly at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>.
                 </p>
@@ -1278,6 +1253,7 @@
                     <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #6A0FFF; --c2: #008B8B;">Pricing</a>
                     <a href="#" data-text="Contact" class="gradient-link" style="--c1: #66CDFF; --c2: #6A0FFF;">Contact</a>
                 </div>
+                 <!-- SUGGESTION 1 -->
                 <div class="footer-column">
                     <h4>Get in Touch</h4>
                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 footer-email-link" style="--c1: #F4A3FF; --c2: #66CDFF;">
@@ -1296,6 +1272,7 @@
     <!-- Merged Scripts -->
     <script type="module">
         // --- Main Header & Hero Logic ---
+        // Scroll-based Header Change
         const mainHeader = document.getElementById('main-header');
         if (mainHeader) {
             window.addEventListener('scroll', () => {
@@ -1456,7 +1433,7 @@
         function initializeAnimations() {
             gsap.registerPlugin(ScrollTrigger);
 
-            // --- Kinetic Grid Features Section Logic ---
+            // --- NEW: Kinetic Grid Features Section Logic ---
             function generateFeatureElements() {
                 const gridContainer = document.getElementById('features-grid');
                 if (!gridContainer) return;
@@ -1472,7 +1449,7 @@
 
                 features.forEach((feature, index) => {
                     const card = document.createElement('div');
-                    card.className = 'feature-card p-6';
+                    card.className = 'feature-card';
                     card.innerHTML = `
                         <div class="card-inner">
                             <div class="card-content problem-content">
@@ -1501,82 +1478,61 @@
                 const heading = document.getElementById('features-heading');
                 const cards = gsap.utils.toArray('.feature-card');
 
-                ScrollTrigger.matchMedia({
-                    "(min-width: 1024px)": function() {
-                        heading.classList.add('absolute', 'inset-0', 'flex', 'flex-col', 'items-center', 'justify-center', 'pointer-events-none', 'z-10');
-                        heading.style.marginBottom = '0';
-
-                        const tl = gsap.timeline({
-                            scrollTrigger: {
-                                trigger: '#features-sticky-container',
-                                pin: true,
-                                scrub: 1,
-                                start: 'top top',
-                                end: '+=3000'
-                            }
-                        });
-
-                        tl.to(heading, { opacity: 0, scale: 0.95, duration: 0.3 });
-                        tl.to(cards, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' });
-                        tl.to({}, { duration: 0.5 });
-
-                        cards.forEach(card => {
-                            const problemContent = card.querySelector('.problem-content');
-                            const solutionContent = card.querySelector('.solution-content');
-                            
-                            tl.to(problemContent, { opacity: 0, y: -20, duration: 0.3, ease: 'power1.in' }, '-=0.4')
-                              .to(solutionContent, { opacity: 1, y: 0, duration: 0.3, ease: 'power1.out' });
-                        });
-                        
-                        tl.to({}, { duration: 1.0 });
-                    },
-
-                    "(max-width: 1023px)": function() {
-                        document.getElementById('features-sticky-container').style.height = 'auto';
-                        
-                        heading.classList.remove('absolute', 'inset-0', 'pointer-events-none', 'flex', 'flex-col', 'items-center', 'justify-center', 'z-10');
-                        heading.style.position = 'relative';
-                        heading.style.zIndex = 'auto';
-                        heading.style.marginBottom = '4rem';
-                        
-                        gsap.from(heading, {
-                            scrollTrigger: { trigger: heading, start: "top 80%" },
-                            opacity: 0, y: 30, duration: 0.8
-                        });
-
-                        cards.forEach(card => {
-                            gsap.from(card, {
-                                scrollTrigger: {
-                                    trigger: card,
-                                    start: "top 85%",
-                                    toggleActions: "play none none none"
-                                },
-                                opacity: 0,
-                                y: 50,
-                                duration: 0.6
-                            });
-                            
-                            const problemContent = card.querySelector('.problem-content');
-                            const solutionContent = card.querySelector('.solution-content');
-                            ScrollTrigger.create({
-                                trigger: card,
-                                start: "top 60%",
-                                onEnter: () => {
-                                    gsap.to(problemContent, { opacity: 0, y: -20, duration: 0.3, ease: 'power1.in' });
-                                    gsap.fromTo(solutionContent, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, delay: 0.2, ease: 'power1.out' });
-                                }
-                            });
-                        });
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: '#features-sticky-container',
+                        pin: true,
+                        scrub: 1,
+                        start: 'top top',
+                        end: '+=3000'
                     }
                 });
+
+                tl.to(heading, {
+                    opacity: 0,
+                    scale: 0.95,
+                    duration: 0.3
+                });
+
+                tl.to(cards, {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+
+                tl.to({}, { duration: 0.5 });
+
+                cards.forEach(card => {
+                    const problemContent = card.querySelector('.problem-content');
+                    const solutionContent = card.querySelector('.solution-content');
+                    
+                    tl.to(problemContent, {
+                        opacity: 0,
+                        y: -20,
+                        duration: 0.3,
+                        ease: 'power1.in'
+                    }, '-=0.4')
+                    .to(solutionContent, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.3,
+                        ease: 'power1.out'
+                    });
+                });
+                
+                tl.to({}, { duration: 1.0 });
             }
             
             generateFeatureElements();
             setupFeatureAnimations();
 
+
             // --- How It Works Section ---
             const howItWorksSection = document.getElementById('how-it-works');
             
+            // DESKTOP: Scroll-Driven Logic
             if (howItWorksSection && window.innerWidth >= 1024) { 
                 const steps = gsap.utils.toArray(".step-content-item");
                 const visuals = gsap.utils.toArray(".step-visual");
@@ -1614,6 +1570,7 @@
                 }
             }
 
+            // MOBILE Vertical Scrollytelling Timeline Logic
             const mobileStepperEl = document.getElementById('mobile-timeline-stepper');
             if (mobileStepperEl && window.innerWidth < 1024) {
                 const steps = gsap.utils.toArray(".mobile-timeline-step");
@@ -1722,47 +1679,21 @@
                 const confirmationScreen = document.getElementById('confirmation-screen');
                 let currentStep = 0;
 
-                const showStep = (nextStepIndex) => {
-                    const currentCard = steps[currentStep];
-                    const nextCard = steps[nextStepIndex];
-                    const direction = nextStepIndex > currentStep ? 1 : -1;
-
-                    // Make next card active first to define height
-                    nextCard.classList.add('active');
-
-                    gsap.timeline({ onComplete: () => {
-                        // After animation, make only the current card active
-                        steps.forEach((s, i) => {
-                            if (i !== nextStepIndex) {
-                                s.classList.remove('active');
-                            }
-                        });
-                    }})
-                        .to(currentCard, {
-                            opacity: 0,
-                            x: -50 * direction,
-                            duration: 0.3,
-                            ease: 'power2.in',
-                        })
-                        .fromTo(nextCard, {
-                            opacity: 0,
-                            x: 50 * direction
-                        }, {
-                            opacity: 1,
-                            x: 0,
-                            duration: 0.3,
-                            ease: 'power2.out',
-                        }, "-=0.2");
-
-                    currentStep = nextStepIndex;
+                const showStep = (stepIndex) => {
+                    steps.forEach((step, index) => {
+                        step.classList.toggle('active', index === stepIndex);
+                    });
+                    currentStep = stepIndex;
                 };
 
                 nextBtns.forEach((btn, index) => {
                     btn.addEventListener('click', () => {
-                        if (index === 1) {
+                        if (index === 1) { // After step 2 (name/email)
                             const name = document.getElementById('contact-name').value.trim();
                             const email = document.getElementById('contact-email').value.trim();
                             if (!name || !email) {
+                                // You might want a more sophisticated modal here instead of alert
+                                alert('Please fill in your name and email.');
                                 return;
                             }
                         }
@@ -1821,9 +1752,11 @@
                     const checkmarkPath = confirmationScreen.querySelector('.checkmark-path');
                     if (checkmarkPath) {
                         checkmarkPath.style.animation = 'none';
+                        // Use a timeout to re-trigger the animation
                         setTimeout(() => { checkmarkPath.style.animation = ''; }, 10);
                     }
 
+                    // Replace with your actual form submission logic (e.g., fetch to an API)
                     console.log('Form submitted (simulation). Data:', Object.fromEntries(data));
                 });
             }
@@ -1831,15 +1764,11 @@
             // --- Aurora Glass Footer Logic ---
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
-                ScrollTrigger.matchMedia({
-                    "(min-width: 1024px)": function() {
-                        ScrollTrigger.create({
-                            trigger: "#contact",
-                            start: "bottom bottom-=100px",
-                            onEnter: () => auroraFooter.classList.add('is-visible'),
-                            onLeaveBack: () => auroraFooter.classList.remove('is-visible')
-                        });
-                    }
+                ScrollTrigger.create({
+                    trigger: "#contact",
+                    start: "bottom bottom-=100px", // Trigger when the bottom of the contact section is 100px from the bottom of the viewport
+                    onEnter: () => auroraFooter.classList.add('is-visible'),
+                    onLeaveBack: () => auroraFooter.classList.remove('is-visible')
                 });
 
                 const canvas = document.getElementById('aurora-canvas');
@@ -1873,6 +1802,7 @@
                     }
 
                     update() {
+                        // Drifting animation
                         this.x += this.velocity.x;
                         this.y += this.velocity.y;
 
@@ -1881,6 +1811,8 @@
                         if (this.y - this.radius > canvas.height) this.y = -this.radius;
                         if (this.y + this.radius < 0) this.y = canvas.height + this.radius;
 
+
+                        // Mouse interaction
                         if (mouse.x !== undefined && mouse.y !== undefined) {
                             const dx = this.x - mouse.x;
                             const dy = this.y - mouse.y;
@@ -1937,11 +1869,14 @@
                 animateAurora();
             }
 
+
+            // FINAL FIX: Refresh ScrollTrigger after a short delay to ensure all dynamic content (like React) is loaded
             setTimeout(() => {
                 ScrollTrigger.refresh();
-            }, 500);
+            }, 500); // A 500ms delay should be sufficient for the React component to render.
         }
 
+        // Run the animation initialization function
         window.addEventListener('load', initializeAnimations);
     </script>
     
@@ -1949,6 +1884,7 @@
     <script type="text/babel">
         const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
 
+        // --- Industries Section Component ---
         function IndustriesApp() {
             const cardsData = [
                 { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
@@ -1975,7 +1911,7 @@
                                     <div className="inner-content">
                                         <img src={card.src} alt={card.title} className="card-bg-image" />
                                         <div className="absolute inset-0 bg-black/60 z-10"></div>
-                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8">
                                             <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
                                             <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
                                         </div>
@@ -1997,9 +1933,11 @@
     
     <!-- NEW SCRIPT FOR CHAT ANIMATION -->
     <script>
+        // --- Setup ---
         const canvas = document.getElementById('explainerCanvas');
         const ctx = canvas.getContext('2d');
 
+        // --- Configuration ---
         const bubbleWidth = 280;
         const bubblePadding = 15;
         const bubbleSpacing = 20;
@@ -2007,6 +1945,7 @@
         const headerHeight = 80;
         const footerHeight = 70;
 
+        // --- State Management ---
         let lastTime = 0;
         let chatHistory = [];
         let conversationIndex = -1;
@@ -2017,31 +1956,31 @@
         let targetScrollY = 0;
         
         const conversations = [
-            [
+            [ // Conversation 1: Clinic Appointment
                 { sender: 'user', text: "Can you book me a dental check-up for tomorrow afternoon?" },
                 { sender: 'ai', text: "Certainly. Dr. Smith has an opening at 4:30 PM. The fee is $75. Shall I confirm?" },
                 { sender: 'user', text: "Yes, 4:30 PM works perfectly. Please confirm it for me." },
                 { sender: 'ai', text: "You're all set. Your appointment with Dr. Smith is confirmed for tomorrow at 4:30 PM." }
             ],
-            [
+            [ // Conversation 2: International Shipping
                 { sender: 'user', text: "Do you offer international shipping for your products?" },
                 { sender: 'ai', text: "Yes, we ship globally via express courier. Delivery to most regions is 3-5 business days." },
                 { sender: 'user', text: "That's great. What are the charges for shipping to Europe?" },
                 { sender: 'ai', text: "Standard shipping to Europe is a flat rate of $25. It's complimentary on all orders over $100." }
             ],
-            [
+            [ // Conversation 3: Property Search
                 { sender: 'user', text: "Show me properties in the waterfront district in the 1-2 million dollar range." },
                 { sender: 'ai', text: "I have found three 2-bedroom condos in that range. One with a city view is listed at $1.5M. Interested?" },
                 { sender: 'user', text: "The one with the city view sounds good. Can you schedule a viewing for this Saturday?" },
                 { sender: 'ai', text: "Done. The viewing is scheduled for this Saturday at 11:00 AM. I've sent the details to your calendar." }
             ],
-            [
+            [ // Conversation 4: Promotions
                 { sender: 'user', text: "What promotions or discounts do you have active today?" },
                 { sender: 'ai', text: "Today we have 25% off all smart watches and a 'Buy One, Get One Free' offer on select wireless chargers." },
                 { sender: 'user', text: "Perfect, please add two of the 'Aura' wireless chargers to my cart." },
                 { sender: 'ai', text: "I've added them to your cart. The BOGO discount has been applied automatically. Your total is $59.99." }
             ],
-             [
+             [ // Conversation 5: Internet Outage
                 { sender: 'user', text: "My internet has been down for an hour in the Northwood area." },
                 { sender: 'ai', text: "I see a temporary service disruption in your area due to network upgrades." },
                 { sender: 'user', text: "Is there an ETA for when it will be restored?" },
@@ -2052,8 +1991,11 @@
         const typingDuration = 2000;
         const transitionDuration = 500;
         const thinkingDuration = 1500;
+        const pauseDuration = 1000;
         const conversationExitDuration = 1500;
 
+        // --- Canvas & Drawing Functions ---
+        
         function resizeCanvas() {
             const container = canvas.parentElement;
             if (!container) return;
@@ -2109,6 +2051,7 @@
 
             ctx.globalAlpha = alpha;
 
+            // Bubble Body
             ctx.fillStyle = message.isUser ? 'rgba(244, 163, 255, 0.15)' : 'rgba(106, 15, 255, 0.2)';
             ctx.strokeStyle = message.isUser ? 'rgba(244, 163, 255, 0.3)' : 'rgba(130, 69, 255, 0.4)';
             ctx.lineWidth = 1;
@@ -2116,6 +2059,7 @@
             ctx.fill();
             ctx.stroke();
 
+            // Avatar
             if (message.isUser) {
                 const popScale = 1 + Math.sin(p * Math.PI) * 0.1;
                 ctx.save();
@@ -2132,9 +2076,10 @@
                 ctx.fill();
                 ctx.restore();
             } else {
-                drawAIAvatar(avatarX, avatarY, false);
+                drawAIAvatar(avatarX, avatarY, false); // Not scanning
             }
 
+            // Text
             if (scale > 0.8) {
                 ctx.globalAlpha = alpha * ((scale - 0.8) * 5);
                 ctx.fillStyle = '#ffffff';
@@ -2174,6 +2119,7 @@
             ctx.arc(x, headY - 6, 2, 0, Math.PI * 2);
             ctx.fill();
 
+            // Visor
             ctx.fillStyle = '#66CDFF';
             ctx.beginPath();
             ctx.fillRect(headX + 4, headY + 4, headWidth - 8, 8);
@@ -2216,7 +2162,8 @@
             
             for (let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
                     lines.push(line);
                     line = words[n] + ' ';
                 } else {
@@ -2274,6 +2221,7 @@
         }
 
         function drawChatUI() {
+            // Header
             ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
             ctx.fillRect(0, 0, canvas.width, headerHeight);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -2292,6 +2240,7 @@
             }
             ctx.fillText(statusText, canvas.width / 2, headerHeight / 2 + 15);
 
+            // Footer
             ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
             ctx.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -2307,12 +2256,19 @@
             ctx.fill();
         }
 
+        // --- Main Animation Loop ---
+
         function animate(now) {
             if (!lastTime) lastTime = now;
+            const deltaTime = now - lastTime;
+            lastTime = now;
+            
             const timeSinceLastState = now - lastStateChangeTime;
 
+            // State Machine Logic
             if (currentState === 'START_CONVERSATION') {
-                conversationIndex = (conversationIndex + 1) % conversations.length;
+                conversationIndex++;
+                if (conversationIndex >= conversations.length) conversationIndex = 0;
                 messageIndex = 0;
                 chatHistory = [];
                 scrollY = 0;
@@ -2347,12 +2303,14 @@
                 lastStateChangeTime = now;
             }
 
+            // Update scroll position
             let totalHeight = 0;
             chatHistory.forEach(msg => totalHeight += msg.height + bubbleSpacing);
             if (currentState === 'AI_THINKING') totalHeight += 60;
             targetScrollY = Math.max(0, totalHeight - (canvas.height - headerHeight - footerHeight) + 40);
             scrollY += (targetScrollY - scrollY) * 0.1;
 
+            // Drawing
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawAndUpdateBackground();
             
@@ -2404,8 +2362,10 @@
             requestAnimationFrame(animate);
         }
 
+        // --- Initialization ---
         window.addEventListener('resize', resizeCanvas);
         
+        // Use a small delay to ensure the layout is stable before sizing the canvas
         setTimeout(() => {
             resizeCanvas();
             lastStateChangeTime = Date.now();
