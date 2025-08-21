@@ -192,21 +192,11 @@
             backdrop-filter: none;
         }
         #main-header.header-scrolled .container { justify-content: center; }
-        
-        /* FIX: Header logo shrinks on scroll instead of disappearing */
         #main-header.header-scrolled #logo-link {
-            transform: scale(0.8);
-            opacity: 0.7;
+            opacity: 0; width: 0;
+            padding: 0; margin: 0;
+            pointer-events: none;
         }
-        @media (min-width: 768px) {
-            #main-header.header-scrolled #logo-link {
-                position: absolute;
-                left: 1.5rem;
-                top: 50%;
-                transform: translateY(-50%) scale(0.8);
-            }
-        }
-
         #main-header.header-scrolled #nav-wrapper {
             position: static;
             transform: none;
@@ -305,8 +295,7 @@
         /* --- NEW: Kinetic Grid Features Section --- */
         #features-sticky-container {
             position: relative;
-            /* FIX: Height is dynamic for mobile, 100vh for desktop */
-            min-height: 100vh;
+            height: 100vh;
             overflow: hidden;
             perspective: 1000px; /* Enable 3D transformations for child elements */
         }
@@ -318,20 +307,17 @@
             color: transparent;
         }
 
-        /* FIX: Grid layout is now handled by Tailwind classes in HTML */
         #features-grid {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 10vh 10vw;
             transform-style: preserve-3d; /* Important for 3D transforms */
             will-change: transform;
-            /* Desktop-specific styles */
         }
-        @media (min-width: 1024px) {
-            #features-grid {
-                position: absolute;
-                inset: 0;
-                padding: 10vh 10vw;
-            }
-        }
-
 
         .feature-card {
             border-radius: 1.5rem;
@@ -463,7 +449,7 @@
         }
         @media (min-width: 1280px) {
              .visual-panel .step-visual i {
-                 font-size: 12rem;
+                font-size: 12rem;
             }
         }
         
@@ -562,8 +548,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* IMPROVEMENT: Add aspect ratio for better responsiveness */
-            aspect-ratio: 4 / 3;
         }
          @media (min-width: 768px) {
             .image-container {
@@ -640,12 +624,11 @@
         
         /* --- Contact Section Styles --- */
         #contact {
-             /* FIX: Removed bottom margin to let static footer handle spacing */
+             margin-bottom: 250px; /* Added space for the footer to slide up into */
         }
         .contact-card-container {
             position: relative;
             min-height: 500px; /* Adjust as needed */
-            overflow: hidden; /* IMPROVEMENT: Hide sliding cards */
         }
         .contact-card {
             position: absolute;
@@ -694,33 +677,19 @@
         }
 
         /* --- Footer Section Styles (Aurora Glass) --- */
-        /* FIX: Footer is now static on mobile, fixed on desktop */
         .aurora-footer {
-            position: relative; /* Static by default */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             padding: 1rem;
-            margin-top: 6rem; /* Add space after contact section */
         }
-
-        @media (min-width: 1024px) {
-            .aurora-footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 100;
-                transform: translateY(100%);
-                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-                margin-top: 0;
-            }
-            .aurora-footer.is-visible {
-                transform: translateY(0);
-            }
-            /* Add margin to contact section only on desktop to prevent overlap */
-            #contact {
-                margin-bottom: 250px;
-            }
+        .aurora-footer.is-visible {
+            transform: translateY(0);
         }
-
         .aurora-panel {
             position: relative;
             width: 100%;
@@ -921,11 +890,10 @@
     <section class="relative min-h-screen flex flex-col justify-center text-center p-6 font-display">
         <div id="orb-container" class="orb-container"></div>
         <div class="relative z-10 max-w-screen-lg mx-auto">
-            <!-- IMPROVEMENT: Adjusted font sizes for better wrapping on mobile/tablet -->
-            <h1 class="font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
+            <h1 class="font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
                 <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
                 <br>
-                <span class="text-2xl sm:text-3xl lg:text-4xl text-gray-300 font-medium">
+                <span class="text-2xl sm:text-3xl md:text-4xl text-gray-300 font-medium">
                     So That You Are <span class="font-bold tagline-gradient animate-tagline-gradient">Never On Your Own.</span>
                 </span>
             </h1>
@@ -979,6 +947,7 @@
                 <a href="#contact" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                     Discover the Potential
                 </a>
+                <!-- SUGGESTION 3 -->
                 <p class="mt-4 text-sm text-gray-400">
                     Or email us at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>
                 </p>
@@ -994,10 +963,10 @@
     <div id="industries-root"></div>
     
     <!-- REPLACED: Features Section -->
-    <section id="features-section-wrapper" class="py-24 px-6 md:px-12">
+    <section id="features-section-wrapper">
         <div id="features-sticky-container">
             <!-- Heading is separate and will fade out -->
-            <div id="features-heading" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none z-10">
+            <div id="features-heading" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                  <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
                     From Chaos to <span class="features-heading-gradient">Clarity.</span>
                 </h2>
@@ -1006,8 +975,8 @@
                 </p>
             </div>
             
-            <!-- FIX: Grid container now uses responsive Tailwind classes -->
-            <div id="features-grid" class="relative grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Grid container for the cards -->
+            <div id="features-grid">
                 <!-- Feature cards will be injected here by JavaScript -->
             </div>
         </div>
@@ -1155,6 +1124,7 @@
                 <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
                     Any queries? <span class="heading-gradient-text">Contact Us.</span>
                 </h2>
+                <!-- SUGGESTION 2 -->
                 <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">
                     Let us know how we can help. Select your interests below to get started, or email us directly at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>.
                 </p>
@@ -1283,6 +1253,7 @@
                     <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #6A0FFF; --c2: #008B8B;">Pricing</a>
                     <a href="#" data-text="Contact" class="gradient-link" style="--c1: #66CDFF; --c2: #6A0FFF;">Contact</a>
                 </div>
+                 <!-- SUGGESTION 1 -->
                 <div class="footer-column">
                     <h4>Get in Touch</h4>
                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 footer-email-link" style="--c1: #F4A3FF; --c2: #66CDFF;">
@@ -1462,7 +1433,7 @@
         function initializeAnimations() {
             gsap.registerPlugin(ScrollTrigger);
 
-            // --- Kinetic Grid Features Section Logic ---
+            // --- NEW: Kinetic Grid Features Section Logic ---
             function generateFeatureElements() {
                 const gridContainer = document.getElementById('features-grid');
                 if (!gridContainer) return;
@@ -1478,7 +1449,7 @@
 
                 features.forEach((feature, index) => {
                     const card = document.createElement('div');
-                    card.className = 'feature-card p-6'; // Added padding for content
+                    card.className = 'feature-card';
                     card.innerHTML = `
                         <div class="card-inner">
                             <div class="card-content problem-content">
@@ -1507,72 +1478,51 @@
                 const heading = document.getElementById('features-heading');
                 const cards = gsap.utils.toArray('.feature-card');
 
-                // FIX: Use matchMedia for responsive animations
-                ScrollTrigger.matchMedia({
-                    // Desktop animation (for screens 1024px and up)
-                    "(min-width: 1024px)": function() {
-                        const tl = gsap.timeline({
-                            scrollTrigger: {
-                                trigger: '#features-sticky-container',
-                                pin: true,
-                                scrub: 1,
-                                start: 'top top',
-                                end: '+=3000'
-                            }
-                        });
-
-                        tl.to(heading, { opacity: 0, scale: 0.95, duration: 0.3 });
-                        tl.to(cards, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' });
-                        tl.to({}, { duration: 0.5 });
-
-                        cards.forEach(card => {
-                            const problemContent = card.querySelector('.problem-content');
-                            const solutionContent = card.querySelector('.solution-content');
-                            
-                            tl.to(problemContent, { opacity: 0, y: -20, duration: 0.3, ease: 'power1.in' }, '-=0.4')
-                              .to(solutionContent, { opacity: 1, y: 0, duration: 0.3, ease: 'power1.out' });
-                        });
-                        
-                        tl.to({}, { duration: 1.0 });
-                    },
-
-                    // Mobile animation (for screens smaller than 1024px)
-                    "(max-width: 1023px)": function() {
-                         // Make container static height on mobile
-                        document.getElementById('features-sticky-container').style.height = 'auto';
-                        heading.style.position = 'relative'; // Un-stick the heading
-                        heading.style.zIndex = '0';
-                        
-                        gsap.from(heading, {
-                            scrollTrigger: { trigger: heading, start: "top 80%" },
-                            opacity: 0, y: 30, duration: 0.8
-                        });
-
-                        cards.forEach(card => {
-                            gsap.from(card, {
-                                scrollTrigger: {
-                                    trigger: card,
-                                    start: "top 85%",
-                                    toggleActions: "play none none none"
-                                },
-                                opacity: 0,
-                                y: 50,
-                                duration: 0.6
-                            });
-                            
-                            const problemContent = card.querySelector('.problem-content');
-                            const solutionContent = card.querySelector('.solution-content');
-                            ScrollTrigger.create({
-                                trigger: card,
-                                start: "top 60%",
-                                onEnter: () => {
-                                    gsap.to(problemContent, { opacity: 0, y: -20, duration: 0.3, ease: 'power1.in' });
-                                    gsap.fromTo(solutionContent, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, delay: 0.2, ease: 'power1.out' });
-                                }
-                            });
-                        });
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: '#features-sticky-container',
+                        pin: true,
+                        scrub: 1,
+                        start: 'top top',
+                        end: '+=3000'
                     }
                 });
+
+                tl.to(heading, {
+                    opacity: 0,
+                    scale: 0.95,
+                    duration: 0.3
+                });
+
+                tl.to(cards, {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+
+                tl.to({}, { duration: 0.5 });
+
+                cards.forEach(card => {
+                    const problemContent = card.querySelector('.problem-content');
+                    const solutionContent = card.querySelector('.solution-content');
+                    
+                    tl.to(problemContent, {
+                        opacity: 0,
+                        y: -20,
+                        duration: 0.3,
+                        ease: 'power1.in'
+                    }, '-=0.4')
+                    .to(solutionContent, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.3,
+                        ease: 'power1.out'
+                    });
+                });
+                
+                tl.to({}, { duration: 1.0 });
             }
             
             generateFeatureElements();
@@ -1729,31 +1679,11 @@
                 const confirmationScreen = document.getElementById('confirmation-screen');
                 let currentStep = 0;
 
-                const showStep = (nextStepIndex) => {
-                    const currentCard = steps[currentStep];
-                    const nextCard = steps[nextStepIndex];
-                    const direction = nextStepIndex > currentStep ? 1 : -1; // 1 for forward, -1 for backward
-
-                    gsap.timeline()
-                        .to(currentCard, {
-                            opacity: 0,
-                            x: -50 * direction,
-                            duration: 0.3,
-                            ease: 'power2.in',
-                            onComplete: () => currentCard.classList.remove('active')
-                        })
-                        .fromTo(nextCard, {
-                            opacity: 0,
-                            x: 50 * direction
-                        }, {
-                            opacity: 1,
-                            x: 0,
-                            duration: 0.3,
-                            ease: 'power2.out',
-                            onStart: () => nextCard.classList.add('active')
-                        });
-
-                    currentStep = nextStepIndex;
+                const showStep = (stepIndex) => {
+                    steps.forEach((step, index) => {
+                        step.classList.toggle('active', index === stepIndex);
+                    });
+                    currentStep = stepIndex;
                 };
 
                 nextBtns.forEach((btn, index) => {
@@ -1762,7 +1692,8 @@
                             const name = document.getElementById('contact-name').value.trim();
                             const email = document.getElementById('contact-email').value.trim();
                             if (!name || !email) {
-                                // A custom modal would be better, but for now, we prevent progression
+                                // You might want a more sophisticated modal here instead of alert
+                                alert('Please fill in your name and email.');
                                 return;
                             }
                         }
@@ -1833,16 +1764,11 @@
             // --- Aurora Glass Footer Logic ---
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
-                // FIX: Only trigger fixed footer animation on desktop
-                ScrollTrigger.matchMedia({
-                    "(min-width: 1024px)": function() {
-                        ScrollTrigger.create({
-                            trigger: "#contact",
-                            start: "bottom bottom-=100px",
-                            onEnter: () => auroraFooter.classList.add('is-visible'),
-                            onLeaveBack: () => auroraFooter.classList.remove('is-visible')
-                        });
-                    }
+                ScrollTrigger.create({
+                    trigger: "#contact",
+                    start: "bottom bottom-=100px", // Trigger when the bottom of the contact section is 100px from the bottom of the viewport
+                    onEnter: () => auroraFooter.classList.add('is-visible'),
+                    onLeaveBack: () => auroraFooter.classList.remove('is-visible')
                 });
 
                 const canvas = document.getElementById('aurora-canvas');
@@ -1985,7 +1911,7 @@
                                     <div className="inner-content">
                                         <img src={card.src} alt={card.title} className="card-bg-image" />
                                         <div className="absolute inset-0 bg-black/60 z-10"></div>
-                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8">
                                             <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
                                             <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
                                         </div>
