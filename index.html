@@ -11,14 +11,7 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lottie Player for Mobile Animations -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-
-
+    
     <!-- OGL Library for Orb Animation -->
     <script type="module">
         import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
@@ -506,6 +499,10 @@
             background-clip: text;
             color: transparent;
             text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
+            transition: transform 0.3s ease; /* Added for interactivity */
+        }
+        .step-item:hover .icon-content i {
+            transform: scale(1.1) rotate(-5deg); /* Added for interactivity */
         }
         
         /* Mobile "How It Works" Fading Number Cards */
@@ -727,12 +724,7 @@
                 left: 0;
                 right: 0;
                 z-index: 100;
-                transform: translateY(100%);
-                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
                 margin-top: 0;
-            }
-            .aurora-footer.is-visible {
-                transform: translateY(0);
             }
             #contact {
                 margin-bottom: 250px;
@@ -939,10 +931,10 @@
         <div id="orb-container" class="orb-container"></div>
         <div class="relative z-10 max-w-screen-lg mx-auto">
             <h1 class="font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
-                <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
+                <span class="font-extrabold">Unleash the Power of AI with NOYOAI</span>
                 <br>
                 <span class="text-2xl sm:text-3xl lg:text-4xl text-gray-300 font-medium">
-                    So That You Are <span class="font-bold tagline-gradient animate-tagline-gradient">Never On Your Own.</span>
+                    Your Partner in Intelligent Automation
                 </span>
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 opacity-0 animate-fade-in-2">
@@ -969,7 +961,7 @@
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
             </div>
-              <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
+             <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
                 <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
@@ -1007,7 +999,76 @@
     </section>
 
     <!-- Industries Served Section -->
-    <div id="industries-root"></div>
+    <section class="py-24 relative">
+        <div class="container mx-auto flex flex-col lg:flex-row gap-16 items-start px-6">
+            <div class="lg:order-2 lg:w-1/2 lg:sticky top-32">
+                <div class="text-left">
+                     <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                        A Perfect Fit for <span class="heading-gradient-text">Your Industry.</span>
+                    </h2>
+                    <p class="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
+                </div>
+            </div>
+            <div class="space-y-8 lg:order-1 lg:w-1/2">
+                
+                <a href="/retail" class="industry-card" style="--color1: #6A0FFF; --color2: #F4A3FF;" aria-label="RETAIL">
+                    <div class="inner-content">
+                        <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop" alt="RETAIL" class="card-bg-image">
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                            <div class="font-bold text-4xl mb-4">RETAIL</div>
+                            <p class="text-xl font-medium mt-4 max-w-md text-white">Transform your customer experience with 24/7 AI assistance.</p>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="/real-estate" class="industry-card" style="--color1: #66CDFF; --color2: #001B6B;" aria-label="REAL ESTATE">
+                    <div class="inner-content">
+                        <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop" alt="REAL ESTATE" class="card-bg-image">
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                            <div class="font-bold text-4xl mb-4">REAL ESTATE</div>
+                            <p class="text-xl font-medium mt-4 max-w-md text-white">Capture and qualify every lead, day or night, freeing your agents to close deals.</p>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="/salons" class="industry-card" style="--color1: #F4A3FF; --color2: #6A0FFF;" aria-label="SALONS">
+                    <div class="inner-content">
+                        <img src="https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="SALONS" class="card-bg-image">
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                            <div class="font-bold text-4xl mb-4">SALONS</div>
+                            <p class="text-xl font-medium mt-4 max-w-md text-white">Streamline your appointment management and reduce no-shows.</p>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="/healthcare" class="industry-card" style="--color1: #001B6B; --color2: #66CDFF;" aria-label="HEALTHCARE">
+                    <div class="inner-content">
+                        <img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop" alt="HEALTHCARE" class="card-bg-image">
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                            <div class="font-bold text-4xl mb-4">HEALTHCARE</div>
+                            <p class="text-xl font-medium mt-4 max-w-md text-white">Elevate the patient experience and ensure seamless communication.</p>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="/ecommerce" class="industry-card" style="--color1: #6A0FFF; --color2: #F4A3FF;" aria-label="ECOMMERCE">
+                    <div class="inner-content">
+                        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop" alt="ECOMMERCE" class="card-bg-image">
+                        <div class="absolute inset-0 bg-black/60 z-10"></div>
+                        <div class="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                            <div class="font-bold text-4xl mb-4">ECOMMERCE</div>
+                            <p class="text-xl font-medium mt-4 max-w-md text-white">Turn conversations into conversions and drive sales around the clock.</p>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </div>
+    </section>
     
     <!-- Features Section -->
     <section id="features-section-wrapper" class="py-24 px-6 md:px-12">
@@ -1443,13 +1504,13 @@
     </script>
     
     <script>
-        function initializeAnimations() {
+        window.addEventListener('load', () => {
             gsap.registerPlugin(ScrollTrigger);
 
             // --- NEW TIMELINE FEATURES SECTION LOGIC ---
             function setupTimelineFeatures() {
                 const desktopContainer = document.getElementById('features-desktop-container');
-                if (!desktopContainer) return; // Only run this logic if the desktop container exists
+                if (!desktopContainer) return;
 
                 const contentContainer = document.getElementById('features-content-container');
                 const svgCanvas = document.getElementById('features-canvas');
@@ -1522,7 +1583,7 @@
                                 trigger: '#features-sticky-container',
                                 pin: true,
                                 scrub: 1.5,
-                                start: 'top 80px', // <-- FIX: Offset start to avoid header overlap
+                                start: 'top 80px',
                                 end: `+=${features.length * 650}`
                             }
                         });
@@ -1747,35 +1808,20 @@
                 
                 ScrollTrigger.matchMedia({
                     "(min-width: 1024px)": function() {
-                        gsap.utils.toArray('.step-item').forEach(item => {
-                            gsap.from(item, {
-                                scrollTrigger: {
-                                    trigger: item,
-                                    start: 'top 80%',
-                                    toggleActions: 'play none none none',
-                                },
-                                opacity: 0,
-                                y: 50,
-                                duration: 0.8,
-                                ease: 'power2.out'
-                            });
-                        });
+                        // NO ANIMATION FOR DESKTOP
                     },
                     "(max-width: 1023px)": function() {
                         const cards = gsap.utils.toArray('.mobile-how-it-works-card');
                         cards.forEach(card => {
+                            gsap.set(card, { autoAlpha: 0, y: 50 });
                             const number = card.querySelector('.step-number');
-                            const text = card.querySelector('.step-text');
                             
-                            gsap.from(card, {
-                                scrollTrigger: {
-                                    trigger: card,
-                                    start: "top 85%",
-                                    toggleActions: "play none none none"
-                                },
-                                opacity: 0,
-                                y: 50,
-                                duration: 0.8
+                            ScrollTrigger.create({
+                                trigger: card,
+                                start: "top 85%",
+                                onEnter: () => gsap.to(card, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out' }),
+                                onLeaveBack: () => gsap.to(card, { autoAlpha: 0, y: 50, duration: 0.4, ease: 'power2.in' }),
+                                toggleActions: "play none none reverse"
                             });
 
                             gsap.to(number, {
@@ -1977,13 +2023,15 @@
             // --- Aurora Glass Footer Logic ---
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
+                
                 ScrollTrigger.matchMedia({
                     "(min-width: 1024px)": function() {
+                        gsap.set(auroraFooter, { yPercent: 100, autoAlpha: 1 });
                         ScrollTrigger.create({
                             trigger: "#contact",
-                            start: "bottom bottom-=100px",
-                            onEnter: () => auroraFooter.classList.add('is-visible'),
-                            onLeaveBack: () => auroraFooter.classList.remove('is-visible')
+                            start: "top bottom", // Trigger when top of contact hits bottom of viewport
+                            onEnter: () => gsap.to(auroraFooter, { yPercent: 0, duration: 0.6, ease: 'power2.out' }),
+                            onLeaveBack: () => gsap.to(auroraFooter, { yPercent: 100, duration: 0.6, ease: 'power2.in' })
                         });
                     }
                 });
@@ -2003,15 +2051,17 @@
                     constructor(x, y, radius, color, velocity) {
                         this.x = x;
                         this.y = y;
+                        this.baseRadius = radius;
                         this.radius = radius;
                         this.color = color;
                         this.velocity = velocity;
+                        this.time = Math.random() * Math.PI * 2;
                     }
 
                     draw() {
                         ctx.beginPath();
                         const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-                        gradient.addColorStop(0, `rgba(${this.color}, 0.2)`);
+                        gradient.addColorStop(0, `rgba(${this.color}, 0.3)`);
                         gradient.addColorStop(1, `rgba(${this.color}, 0)`);
                         ctx.fillStyle = gradient;
                         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -2019,6 +2069,9 @@
                     }
 
                     update() {
+                        this.time += 0.01;
+                        this.radius = this.baseRadius + Math.sin(this.time) * 20;
+
                         this.x += this.velocity.x;
                         this.y += this.velocity.y;
 
@@ -2033,12 +2086,12 @@
                             const distance = Math.sqrt(dx * dx + dy * dy);
                             const forceDirectionX = dx / distance;
                             const forceDirectionY = dy / distance;
-                            const maxDistance = 200;
+                            const maxDistance = 250;
                             const force = (maxDistance - distance) / maxDistance;
 
                             if (distance < maxDistance) {
-                                this.x += forceDirectionX * force * 1.5;
-                                this.y += forceDirectionY * force * 1.5;
+                                this.x += forceDirectionX * force * 2.5;
+                                this.y += forceDirectionY * force * 2.5;
                             }
                         }
 
@@ -2082,63 +2135,7 @@
                 resizeAurora();
                 animateAurora();
             }
-
-            setTimeout(() => {
-                ScrollTrigger.refresh();
-            }, 500);
-        }
-
-        window.addEventListener('load', initializeAnimations);
-    </script>
-    
-    <!-- React Babel Script for Industries Section -->
-    <script type="text/babel">
-        const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
-
-        function IndustriesApp() {
-            const cardsData = [
-                { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
-                { title: "REAL ESTATE", href: "/real-estate", description: "Capture and qualify every lead, day or night, freeing your agents to close deals.", src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop", colors: ['#66CDFF', '#001B6B'] },
-                { title: "SALONS", href: "/salons", description: "Streamline your appointment management and reduce no-shows.", src: "https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", colors: ['#F4A3FF', '#6A0FFF'] },
-                { title: "HEALTHCARE", href: "/healthcare", description: "Elevate the patient experience and ensure seamless communication.", src: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'] },
-                { title: "ECOMMERCE", href: "/ecommerce", description: "Turn conversations into conversions and drive sales around the clock.", src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] }
-            ];
-
-            return (
-                <section className="py-24 relative">
-                    <div className="container mx-auto flex flex-col lg:flex-row gap-16 items-start px-6">
-                        <div className="lg:order-2 lg:w-1/2 lg:sticky top-32">
-                            <div className="text-left">
-                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
-                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
-                                </h2>
-                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
-                            </div>
-                        </div>
-                        <div className="space-y-8 lg:order-1 lg:w-1/2">
-                            {cardsData.map((card, index) => (
-                                <a href={card.href} key={index} className="industry-card" style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
-                                    <div className="inner-content">
-                                        <img src={card.src} alt={card.title} className="card-bg-image" />
-                                        <div className="absolute inset-0 bg-black/60 z-10"></div>
-                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
-                                            <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
-                                            <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            );
-        }
-
-        const industriesContainer = document.getElementById('industries-root');
-        if (industriesContainer) {
-            const industriesRoot = ReactDOM.createRoot(industriesContainer);
-            industriesRoot.render(<IndustriesApp />);
-        }
+        });
     </script>
     
     <!-- NEW SCRIPT FOR CHAT ANIMATION -->
@@ -2559,6 +2556,25 @@
         }, 100);
 
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const footer = document.getElementById("aurora-footer");
+  const contact = document.getElementById("contact");
 
+  if (footer && contact) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          footer.classList.add("is-visible");   // Slide footer up
+        } else {
+          footer.classList.remove("is-visible"); // Hide footer again
+        }
+      });
+    }, { threshold: 0.3 }); // Trigger when 30% of contact is visible
+
+    observer.observe(contact);
+  }
+});
+</script>
 </body>
 </html>
