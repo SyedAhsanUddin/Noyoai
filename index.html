@@ -2567,10 +2567,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (entry.isIntersecting) {
           footer.classList.add("is-visible");   // Slide footer up
         } else {
-          footer.classList.remove("is-visible"); // Hide footer again
+          footer.classList.remove("is-visible"); // Slide footer back down
         }
       });
-    }, { threshold: 0.3 }); // Trigger when 30% of contact is visible
+    }, { 
+      threshold: 0.1,               // trigger when at least 10% is visible
+      rootMargin: "0px 0px -100px 0px"  // fire earlier, before footer overlaps
+    });
 
     observer.observe(contact);
   }
