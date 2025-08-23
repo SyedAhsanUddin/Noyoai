@@ -255,22 +255,19 @@
         }
         .industry-card {
             position: relative;
-            border-radius: 40px;
+            border-radius: 1.5rem; /* Adjusted for bento grid */
             overflow: hidden;
-            aspect-ratio: 16 / 9;
             width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            height: 100%; /* Ensure card fills grid area */
             box-sizing: border-box;
-            padding: 2px;
+            padding: 1px; /* Border width */
             background: transparent;
             display: block;  
             text-decoration: none;
             transition: transform 0.3s ease;
         }
         .industry-card:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateY(-8px) scale(1.02);
         }
         .industry-card::before {
             content: '';
@@ -287,7 +284,7 @@
         .inner-content {
             position: relative;
             background: #000;
-            border-radius: 38px;
+            border-radius: calc(1.5rem - 1px); /* Match parent radius */
             z-index: 2;
             height: 100%;
             transition: transform 0.3s ease;
@@ -301,7 +298,7 @@
             height: 100%;
             object-fit: cover;
             opacity: 1;
-            transition: transform 0.4s ease;
+            transition: transform 0.4s ease, filter 0.4s ease;
         }
         .industry-card:hover .card-bg-image {
             transform: scale(1.05);
@@ -853,10 +850,10 @@
             opacity: 1;
         }
         /* Force only How It Works steps to always be visible */
-#how-it-works .step-item {
-  opacity: 1 !important;
-  transform: translate(0,0) !important;
-}
+        #how-it-works .step-item {
+          opacity: 1 !important;
+          transform: translate(0,0) !important;
+        }
     </style>
 </head>
 <body class="text-white">
@@ -955,7 +952,7 @@
         </div>
         <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3">
             <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
-                                         transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                                             transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
                 Book a Free Demo
             </a>
         </div>
@@ -2101,33 +2098,35 @@
 
         function IndustriesApp() {
             const cardsData = [
-                { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
-                { title: "REAL ESTATE", href: "/real-estate", description: "Capture and qualify every lead, day or night, freeing your agents to close deals.", src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop", colors: ['#66CDFF', '#001B6B'] },
-                { title: "SALONS", href: "/salons", description: "Streamline your appointment management and reduce no-shows.", src: "https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", colors: ['#F4A3FF', '#6A0FFF'] },
-                { title: "HEALTHCARE", href: "/healthcare", description: "Elevate the patient experience and ensure seamless communication.", src: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'] },
-                { title: "ECOMMERCE", href: "/ecommerce", description: "Turn conversations into conversions and drive sales around the clock.", src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] }
+                { title: "HEALTHCARE & WELLNESS", href: "/healthcare-wellness", description: "Automate appointment booking and provide 24/7 patient support.", src: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop", colors: ['#66CDFF', '#001B6B'], gridClass: "md:col-span-2 md:row-span-2" },
+                { title: "FOOD & BEVERAGE", href: "/food-beverage", description: "Handle reservations and take orders effortlessly.", src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop", colors: ['#F4A3FF', '#6A0FFF'], gridClass: "md:col-span-1 md:row-span-1" },
+                { title: "RETAIL & E-COMMERCE", href: "/retail-ecommerce", description: "Turn conversations into conversions with personalized recommendations.", src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'], gridClass: "md:col-span-1 md:row-span-1" },
+                { title: "REAL ESTATE", href: "/real-estate-property", description: "Capture and qualify every lead, day or night.", src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'], gridClass: "md:col-span-1 md:row-span-1" },
+                { title: "TRAVEL & HOSPITALITY", href: "/travel-hospitality", description: "Manage bookings and provide instant guest assistance.", src: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2070&auto=format&fit=crop", colors: ['#66CDFF', '#F4A3FF'], gridClass: "md:col-span-2 md:row-span-1" },
+                { title: "AUTOMOTIVE", href: "/automotive", description: "Schedule test drives and manage service appointments 24/7.", src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", colors: ['#001B6B', '#a0aec0'], gridClass: "md:col-span-3 md:row-span-1" },
+                { title: "EDUCATION", href: "/education-training", description: "Automate admissions and support students around the clock.", src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#008B8B'], gridClass: "md:col-span-1 md:row-span-1" },
+                { title: "EVENTS", href: "/events-entertainment", description: "Sell tickets and manage guest inquiries seamlessly.", src: "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?q=80&w=2070&auto=format&fit=crop", colors: ['#F4A3FF', '#ed293b'], gridClass: "md:col-span-2 md:row-span-2" },
+                { title: "FINANCE", href: "/finance-services", description: "Qualify leads and book consultations.", src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'], gridClass: "md:col-span-1 md:row-span-1" },
             ];
 
             return (
                 <section className="py-24 relative">
-                    <div className="container mx-auto flex flex-col lg:flex-row gap-16 items-start px-6">
-                        <div className="lg:order-2 lg:w-1/2 lg:sticky top-32">
-                            <div className="text-left">
-                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
-                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
-                                </h2>
-                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
-                            </div>
+                    <div className="container mx-auto px-6">
+                        <div className="text-center lg:text-left max-w-xl mx-auto lg:mx-0 mb-12">
+                             <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
+                                A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
+                            </h2>
+                            <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most, designed to scale with your business needs.</p>
                         </div>
-                        <div className="space-y-8 lg:order-1 lg:w-1/2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {cardsData.map((card, index) => (
-                                <a href={card.href} key={index} className="industry-card" style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
+                                <a href={card.href} key={index} className={`industry-card ${card.gridClass}`} style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
                                     <div className="inner-content">
-                                        <img src={card.src} alt={card.title} className="card-bg-image" />
-                                        <div className="absolute inset-0 bg-black/60 z-10"></div>
-                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
-                                            <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
-                                            <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
+                                        <img src={card.src} alt={card.title} className="card-bg-image filter brightness-50 blur-[2px]" />
+                                        <div className="absolute inset-0 bg-black/40 z-10"></div>
+                                        <div className="relative z-20 flex flex-col items-start justify-end h-full p-6 text-left">
+                                            <h3 className="font-bold text-2xl mb-2">{card.title}</h3>
+                                            <p className="text-md font-medium text-gray-200">{card.description}</p>
                                         </div>
                                     </div>
                                 </a>
