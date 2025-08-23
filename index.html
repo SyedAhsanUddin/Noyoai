@@ -844,7 +844,11 @@
         .footer-email-link:hover span::before {
             opacity: 1;
         }
-
+        /* Force only How It Works steps to always be visible */
+#how-it-works .step-item {
+  opacity: 1 !important;
+  transform: translate(0,0) !important;
+}
     </style>
 </head>
 <body class="text-white">
