@@ -535,8 +535,8 @@
                 ScrollTrigger.matchMedia({
                     "(min-width: 1024px)": function() {
                         ScrollTrigger.create({
-                            trigger: "#final-cta",
-                            start: "bottom bottom",
+                            trigger: "main",
+                            start: "bottom bottom", // Corrected Trigger
                             onEnter: () => auroraFooter.classList.add('is-visible'),
                             onLeaveBack: () => auroraFooter.classList.remove('is-visible')
                         });
