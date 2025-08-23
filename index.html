@@ -1,539 +1,2564 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOYOAI — Homepage</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOYOAI - Complete Website</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lottie Player for Mobile Animations -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Fonts & Icons -->
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- OGL Library for Orb Animation -->
+    <script type="module">
+        import { Renderer, Program, Mesh, Triangle, Vec3 } from 'https://cdn.skypack.dev/ogl';
+        window.ogl = { Renderer, Program, Mesh, Triangle, Vec3 };
+    </script>
 
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Custom Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --brand-primary: #001B6B;
-      --brand-cta: #6A0FFF;
-      --brand-highlight: #66CDFF;
-      --brand-accent: #F4A3FF;
-      --brand-dark: #0a0a0a;
-      --brand-gray: #a0aec0;
-    }
-    html, body { background:#000; color:#fff; font-family: "Satoshi", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-    .gradient-text { background: linear-gradient(90deg, var(--brand-accent), var(--brand-highlight)); -webkit-background-clip: text; background-clip:text; color: transparent; }
-    .btn-cta {
-      background: linear-gradient(90deg, var(--brand-cta), var(--brand-highlight));
-      border-radius: 9999px;
-      padding: 0.875rem 1.25rem;
-      font-weight: 700;
-      transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
-    }
-    .btn-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(102,205,255,.2); }
-    .btn-ghost { border:1px solid rgba(255,255,255,.1); padding:.875rem 1.25rem; border-radius:9999px; font-weight:700; }
-    .glass {
-      backdrop-filter: blur(12px);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 10px 50px rgba(0,0,0,.35);
-    }
-    .nav-link { position: relative; display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.65rem; }
-    .nav-link:hover span { background: linear-gradient(90deg, var(--brand-accent), var(--brand-highlight)); -webkit-background-clip:text; background-clip:text; color: transparent; }
-    .dropdown-menu { transition: opacity .25s ease, transform .25s ease; transform: translateY(8px); opacity: 0; pointer-events: none; }
-    .dropdown-menu.is-visible{ opacity: 1; transform: translateY(0); pointer-events: auto; }
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    /* Sections */
-    section { scroll-margin-top: 80px; }
-    .section-head { letter-spacing: .02em; }
-
-    /* HOW IT WORKS — initial hidden state (fixed to ensure it appears on first visit) */
-    #how-it-works .step-item { opacity: 0; transform: translateY(20px); }
-
-    /* Footer (Aurora) */
-    .aurora-footer {
-      position: relative;
-      margin-top: 6rem;
-      background: transparent;
-      color: #fff;
-    }
-    @media (min-width: 1024px) {
-      .aurora-footer {
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
-        z-index: 50;
-        transform: translateY(100%);
-        transition: transform .6s cubic-bezier(.25,1,.5,1);
-        margin-top: 0;
-      }
-      .aurora-footer.is-visible { transform: translateY(0); }
-      #contact { margin-bottom: 260px; } /* make space so content isn't hidden behind fixed footer */
-    }
-    #aurora-canvas { width: 100%; height: 280px; display:block; }
-    .aurora-panel { position: relative; overflow: hidden; }
-    .aurora-footer-inner { position: relative; padding: 2rem 1.25rem; }
-
-    /* Simple canvas fallback gradient if JS disabled */
-    .aurora-fallback { background: radial-gradient(1600px 300px at 10% 120%, rgba(102,205,255,.25), transparent 60%), radial-gradient(1400px 240px at 80% 120%, rgba(106,15,255,.25), transparent 60%), rgba(10,10,10,0.65); }
-
-    /* Cards */
-    .card { border: 1px solid rgba(255,255,255,.08); border-radius: 1.25rem; background: rgba(255,255,255,.03); }
-  </style>
-</head>
-<body>
-
-  <!-- HEADER -->
-  <header class="w-full sticky top-0 z-40 backdrop-blur-md/60 border-b border-white/10 bg-black/30">
-    <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-      <a href="#" class="text-xl font-extrabold tracking-tight gradient-text">NOYOAI</a>
-      <nav class="hidden md:flex items-center gap-1">
-        <a href="#features" class="nav-link text-sm text-white/80"><span>Features</span></a>
-        <a href="#how-it-works" class="nav-link text-sm text-white/80"><span>How it works</span></a>
-        <a href="#pricing" class="nav-link text-sm text-white/80"><span>Pricing</span></a>
-        <a href="#contact" class="nav-link text-sm text-white/80"><span>Contact</span></a>
-
-        <div class="relative" data-dropdown>
-          <button class="nav-link text-sm text-white/80" data-dropdown-button>
-            <span>More</span>
-            <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
-          </button>
-          <div class="dropdown-menu absolute right-0 mt-2 w-52 glass rounded-xl p-2 hidden" data-dropdown-menu>
-            <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#">Docs</a>
-            <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#">Blog</a>
-            <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#">Changelog</a>
-          </div>
-        </div>
-      </nav>
-
-      <div class="flex md:hidden">
-        <button id="mobile-menu-button" class="p-2 rounded-lg border border-white/10">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Mobile menu -->
-    <div id="mobile-menu" class="fixed inset-0 bg-black/80 backdrop-blur-lg -translate-x-full transition-transform z-50">
-      <div class="w-80 max-w-full h-full bg-black/70 border-r border-white/10 p-6">
-        <div class="flex items-center justify-between">
-          <span class="text-lg font-extrabold gradient-text">NOYOAI</span>
-          <button id="mobile-menu-close-button" class="p-2 rounded-lg border border-white/10">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <div class="mt-6 space-y-2 text-white/80">
-          <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#features">Features</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#how-it-works">How it works</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#pricing">Pricing</a>
-          <a class="block px-3 py-2 rounded-lg hover:bg-white/5" href="#contact">Contact</a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="relative pt-16 pb-20">
-    <div class="max-w-7xl mx-auto px-4 md:px-6">
-      <div class="grid md:grid-cols-2 items-center gap-8">
-        <div>
-          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">Deploy your <span class="gradient-text">AI Agent</span> without writing code.</h1>
-          <p class="mt-4 text-white/70 text-lg">NoYoAI connects to your docs, website, and systems to automate support, sales, and operations 24/7.</p>
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a href="#how-it-works" class="btn-cta">See how it works</a>
-            <a href="#contact" class="btn-ghost">Talk to us</a>
-          </div>
-          <div class="mt-8 grid grid-cols-3 gap-4 text-center">
-            <div class="card p-4">
-              <div class="text-3xl font-extrabold">98%</div>
-              <div class="text-xs text-white/60">CSAT</div>
-            </div>
-            <div class="card p-4">
-              <div class="text-3xl font-extrabold">70%</div>
-              <div class="text-xs text-white/60">Tickets deflected</div>
-            </div>
-            <div class="card p-4">
-              <div class="text-3xl font-extrabold">10x</div>
-              <div class="text-xs text-white/60">Faster responses</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="aspect-[4/3] w-full rounded-2xl glass p-2">
-            <div class="w-full h-full rounded-xl overflow-hidden aurora-fallback flex items-center justify-center">
-              <span class="text-white/70">Product preview</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section id="features" class="py-16 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 md:px-6">
-      <div class="max-w-3xl">
-        <h2 class="section-head text-3xl md:text-4xl font-extrabold">What you get</h2>
-        <p class="mt-2 text-white/70">Everything you need to launch an on-brand AI that actually understands your business.</p>
-      </div>
-
-      <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card p-5">
-          <div class="text-lg font-bold">RAG knowledge</div>
-          <p class="text-white/70 mt-2">Connect your site, docs, and files so your agent answers with citations.</p>
-        </div>
-        <div class="card p-5">
-          <div class="text-lg font-bold">Multi-channel</div>
-          <p class="text-white/70 mt-2">Embed on your site or use on WhatsApp, Slack, Intercom and more.</p>
-        </div>
-        <div class="card p-5">
-          <div class="text-lg font-bold">Workflow actions</div>
-          <p class="text-white/70 mt-2">Book meetings, create tickets, update CRM records via secure actions.</p>
-        </div>
-        <div class="card p-5">
-          <div class="text-lg font-bold">Guardrails</div>
-          <p class="text-white/70 mt-2">Tone control, escalation paths, content filters built-in.</p>
-        </div>
-        <div class="card p-5">
-          <div class="text-lg font-bold">Analytics</div>
-          <p class="text-white/70 mt-2">See conversations, satisfaction, and deflection in real time.</p>
-        </div>
-        <div class="card p-5">
-          <div class="text-lg font-bold">Fast setup</div>
-          <p class="text-white/70 mt-2">Go live in hours, not weeks, with our guided onboarding.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" class="py-20 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 md:px-6">
-      <div class="max-w-3xl">
-        <h2 class="section-head text-3xl md:text-4xl font-extrabold">How it works</h2>
-        <p class="mt-2 text-white/70">Three quick steps to launch your on-brand agent.</p>
-      </div>
-
-      <div class="mt-12 space-y-10">
-        <div class="step-item grid md:grid-cols-2 gap-8 items-center">
-          <div class="order-2 md:order-1">
-            <h3 class="text-2xl font-bold">1) Connect knowledge</h3>
-            <p class="text-white/70 mt-2">Add your URLs, PDFs, and data sources. We keep everything fresh automatically.</p>
-          </div>
-          <div class="order-1 md:order-2">
-            <div class="aspect-[16/10] rounded-xl glass"></div>
-          </div>
-        </div>
-
-        <div class="step-item grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <div class="aspect-[16/10] rounded-xl glass"></div>
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold">2) Configure behavior</h3>
-            <p class="text-white/70 mt-2">Tone, guardrails, escalation and approved actions — all in one place.</p>
-          </div>
-        </div>
-
-        <div class="step-item grid md:grid-cols-2 gap-8 items-center">
-          <div class="order-2 md:order-1">
-            <h3 class="text-2xl font-bold">3) Launch anywhere</h3>
-            <p class="text-white/70 mt-2">Embed on your site or deploy to chat channels in a click.</p>
-          </div>
-          <div class="order-1 md:order-2">
-            <div class="aspect-[16/10] rounded-xl glass"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRICING (simple) -->
-  <section id="pricing" class="py-20 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 md:px-6">
-      <div class="max-w-3xl">
-        <h2 class="section-head text-3xl md:text-4xl font-extrabold">Pricing</h2>
-        <p class="mt-2 text-white/70">Start free. Scale when you’re ready.</p>
-      </div>
-
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <div class="card p-6">
-          <div class="text-lg font-bold">Starter</div>
-          <div class="text-3xl font-extrabold mt-2">$0</div>
-          <ul class="mt-4 space-y-2 text-white/70 text-sm">
-            <li>• 200 conversations/mo</li>
-            <li>• 1 data source</li>
-            <li>• Basic analytics</li>
-          </ul>
-          <a href="#contact" class="btn-cta mt-6 inline-block text-center w-full">Get started</a>
-        </div>
-
-        <div class="card p-6 border-white/20">
-          <div class="text-lg font-bold">Growth</div>
-          <div class="text-3xl font-extrabold mt-2">$99</div>
-          <ul class="mt-4 space-y-2 text-white/70 text-sm">
-            <li>• 3,000 conversations/mo</li>
-            <li>• 10 data sources</li>
-            <li>• Advanced analytics</li>
-          </ul>
-          <a href="#contact" class="btn-cta mt-6 inline-block text-center w-full">Choose plan</a>
-        </div>
-
-        <div class="card p-6">
-          <div class="text-lg font-bold">Scale</div>
-          <div class="text-3xl font-extrabold mt-2">Custom</div>
-          <ul class="mt-4 space-y-2 text-white/70 text-sm">
-            <li>• Unlimited conversations</li>
-            <li>• Priority support</li>
-            <li>• SSO + SOC2</li>
-          </ul>
-          <a href="#contact" class="btn-cta mt-6 inline-block text-center w-full">Talk to sales</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="py-20 border-t border-white/10">
-    <div class="max-w-5xl mx-auto px-4 md:px-6">
-      <div class="max-w-3xl">
-        <h2 class="section-head text-3xl md:text-4xl font-extrabold">Contact</h2>
-        <p class="mt-2 text-white/70">Tell us a bit about your use‑case and we’ll get back within 24h.</p>
-      </div>
-
-      <form class="mt-8 grid md:grid-cols-2 gap-4">
-        <div class="col-span-2 md:col-span-1">
-          <label class="block text-sm text-white/70 mb-1">Name</label>
-          <input class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 outline-none" placeholder="Jane Doe" />
-        </div>
-        <div class="col-span-2 md:col-span-1">
-          <label class="block text-sm text-white/70 mb-1">Email</label>
-          <input type="email" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 outline-none" placeholder="jane@company.com" />
-        </div>
-        <div class="col-span-2">
-          <label class="block text-sm text-white/70 mb-1">Message</label>
-          <textarea rows="5" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 outline-none" placeholder="What are you trying to automate?"></textarea>
-        </div>
-        <div class="col-span-2">
-          <button class="btn-cta">Send</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- FOOTER (Aurora, slides up on desktop) -->
-  <footer id="aurora-footer" class="aurora-footer">
-    <div class="aurora-panel">
-      <canvas id="aurora-canvas"></canvas>
-      <div class="aurora-footer-inner max-w-7xl mx-auto px-4 md:px-6">
-        <div class="grid md:grid-cols-3 gap-6">
-          <div>
-            <div class="text-xl font-extrabold gradient-text">NOYOAI</div>
-            <div class="text-white/70 text-sm mt-2">On-brand AI, everywhere your customers are.</div>
-          </div>
-          <div class="text-sm text-white/70">
-            <div class="font-bold text-white mb-2">Company</div>
-            <ul class="space-y-1">
-              <li><a href="#" class="hover:underline">About</a></li>
-              <li><a href="#" class="hover:underline">Careers</a></li>
-              <li><a href="#" class="hover:underline">Security</a></li>
-            </ul>
-          </div>
-          <div class="text-sm text-white/70">
-            <div class="font-bold text-white mb-2">Product</div>
-            <ul class="space-y-1">
-              <li><a href="#features" class="hover:underline">Features</a></li>
-              <li><a href="#pricing" class="hover:underline">Pricing</a></li>
-              <li><a href="#contact" class="hover:underline">Contact</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-6 border-t border-white/10 pt-4 text-xs text-white/60">
-          © 2025 NOYOAI. All rights reserved.
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // --- Header dropdown ---
-    document.querySelectorAll("[data-dropdown]").forEach((dropdown) => {
-      const button = dropdown.querySelector("[data-dropdown-button]");
-      const menu = dropdown.querySelector("[data-dropdown-menu]");
-      const icon = button.querySelector("i");
-      let hideTimeout;
-
-      const showMenu = () => {
-        clearTimeout(hideTimeout);
-        menu.classList.remove("hidden");
-        if (icon) icon.style.transform = "rotate(180deg)";
-        setTimeout(() => menu.classList.add("is-visible"), 10);
-      };
-      const hideMenu = () => {
-        hideTimeout = setTimeout(() => {
-          menu.classList.remove("is-visible");
-          if (icon) icon.style.transform = "rotate(0deg)";
-          setTimeout(() => menu.classList.add("hidden"), 250);
-        }, 250);
-      };
-
-      button.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (menu.classList.contains("is-visible")) { hideMenu(); } else { showMenu(); }
-      });
-      dropdown.addEventListener("mouseenter", showMenu);
-      dropdown.addEventListener("mouseleave", hideMenu);
-      document.addEventListener("click", hideMenu);
-    });
-
-    // --- Mobile menu ---
-    const mobileMenuBtn = document.getElementById("mobile-menu-button");
-    const mobileMenuCloseBtn = document.getElementById("mobile-menu-close-button");
-    const mobileMenu = document.getElementById("mobile-menu");
-    if (mobileMenuBtn && mobileMenu) {
-      mobileMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("-translate-x-full"));
-      (mobileMenuCloseBtn || mobileMenu).addEventListener("click", () => mobileMenu.classList.add("-translate-x-full"));
-      mobileMenu.querySelector("div").addEventListener("click", (e) => e.stopPropagation());
-    }
-
-    // --- HOW IT WORKS: ensure it appears on first visit + animates ---
-    (function initHowItWorks(){
-      const section = document.getElementById("how-it-works");
-      if (!section) return;
-      const items = section.querySelectorAll(".step-item");
-
-      // If GSAP available, animate on enter (once). Also run immediately if already in view on first load.
-      const animate = () => {
-        gsap.fromTo(items, {opacity:0, y:20}, {opacity:1, y:0, duration:0.7, stagger:0.15, ease:"power2.out"});
-      };
-
-      if (window.gsap && window.ScrollTrigger) {
-        gsap.registerPlugin(ScrollTrigger);
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top 80%",
-          once: true,
-          onEnter: animate
-        });
-        // In case the user lands with the section already visible (first visit top-of-page), show it.
-        const rect = section.getBoundingClientRect();
-        const vh = window.innerHeight || document.documentElement.clientHeight;
-        if (rect.top < vh * 0.9) animate();
-      } else {
-        // Fallback: IntersectionObserver
-        const io = new IntersectionObserver((entries, obs) => {
-          entries.forEach(e => { if (e.isIntersecting) { animate(); obs.disconnect(); } });
-        }, {threshold: 0.2});
-        io.observe(section);
-      }
-    })();
-
-    // --- FOOTER slide-up logic ---
-    (function initFooter(){
-      const footer = document.getElementById("aurora-footer");
-      const contact = document.getElementById("contact");
-      if (!footer || !contact) return;
-
-      const enableDesktop = () => window.matchMedia("(min-width: 1024px)").matches;
-
-      const addVisible = () => footer.classList.add("is-visible");
-      const removeVisible = () => footer.classList.remove("is-visible");
-
-      const setupGSAP = () => {
-        if (!(window.gsap && window.ScrollTrigger)) return null;
-        gsap.registerPlugin(ScrollTrigger);
-        return ScrollTrigger.create({
-          trigger: contact,
-          start: "bottom bottom-=120",
-          onEnter: addVisible,
-          onLeaveBack: removeVisible,
-          invalidateOnRefresh: true
-        });
-      };
-
-      const setupIO = () => {
-        const io = new IntersectionObserver((entries)=>{
-          entries.forEach(e => {
-            if (e.isIntersecting) addVisible(); else removeVisible();
-          });
-        }, {root: null, rootMargin: "0px 0px -120px 0px", threshold: 0});
-        io.observe(contact);
-        return io;
-      };
-
-      let st = null, io = null;
-      const apply = () => {
-        // Reset
-        removeVisible();
-        if (st && st.kill) { st.kill(); st = null; }
-        if (io && io.disconnect) { io.disconnect(); io = null; }
-
-        if (enableDesktop()) {
-          // Desktop: fixed footer + slide on approach
-          if (window.gsap && window.ScrollTrigger) st = setupGSAP();
-          else io = setupIO();
-        } else {
-          // Mobile: footer is static and visible
-          addVisible();
+    <!-- Merged Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#001B6B',  // Deep Navy Blue
+                        'brand-cta': '#6A0FFF',    // Vibrant Purple
+                        'brand-highlight': '#66CDFF', // Sky Blue
+                        'brand-accent': '#F4A3FF',  // Light Pink
+                        'brand-dark-cyan': '#008B8B', // Dark Cyan
+                        'brand-dark': '#1d1d1f',
+                        'brand-gray': '#a0aec0',     // Combined gray
+                        'brand-navy': '#192A56',
+                        'brand-light-gray': '#f5f5f7'
+                    },
+                    fontFamily: {
+                        display: ['General Sans', 'sans-serif'],
+                        sans: ['Satoshi', 'sans-serif'],
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' }
+                        },
+                        taglineGradient: {
+                            '0%': { backgroundPosition: '200% center' },
+                            '100%': { backgroundPosition: '-200% center' },
+                        },
+                        rotate: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        shine: {
+                            '0%': { transform: 'translateX(-150%) translateY(-50%) rotate(35deg)' },
+                            '100%': { transform: 'translateX(150%) translateY(-50%) rotate(35deg)' },
+                        },
+                        blink: {
+                            '50%': { opacity: 0 }
+                        },
+                        glitch: {
+                            '0%, 100%': { transform: 'translate(0, 0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                        },
+                        'static-flicker': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '25%': { transform: 'translateY(-2px)' },
+                            '50%': { transform: 'translateY(2px)' },
+                            '75%': { transform: 'translateY(-1px)' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-1': 'fadeIn 1s ease-out 0.2s forwards',
+                        'fade-in-2': 'fadeIn 1s ease-out 0.4s forwards',
+                        'fade-in-3': 'fadeIn 1s ease-out 0.6s forwards',
+                        'tagline-gradient': 'taglineGradient 6s linear infinite',
+                        scroll: 'scroll 30s linear infinite',
+                        'border-rotate': 'rotate 6s linear infinite',
+                        'shine-effect': 'shine 5s linear infinite',
+                        'blink': 'blink 1s step-end infinite',
+                        'glitch': 'glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite',
+                        'static-flicker': 'static-flicker 0.2s infinite',
+                    }
+                }
+            }
         }
-      };
+    </script>
 
-      apply();
-      window.addEventListener("resize", () => { clearTimeout(window.__footerResizeT); window.__footerResizeT = setTimeout(apply, 150); });
-    })();
+    <!-- Merged Custom Styles -->
+    <style>
+        :root {
+            /* Testimonial Colors */
+            --color-name: #FFFFFF;
+            --color-designation: #a0aec0;
+            --color-testimony: #d1d5db;
+            --color-arrow-bg: #1d1d1f;
+            --color-arrow-fg: #f1f1f7;
+            --color-arrow-hover-bg: #6A0FFF;
+            --gradient-start: #66CDFF;
+            --gradient-end: #F4A3FF;
+        }
 
-    // --- Simple Aurora Canvas (lightweight, no WebGL) ---
-    (function auroraCanvas(){
-      const canvas = document.getElementById("aurora-canvas");
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      let w = canvas.width = canvas.clientWidth;
-      let h = canvas.height = canvas.clientHeight;
-      let t = 0;
+        body {
+            font-family: 'General Sans', 'Satoshi', sans-serif;
+            background-color: #000000; /* Fallback for the gradient */
+            background-image: linear-gradient(to bottom, #0F2027, #000000);
+            background-attachment: fixed; /* Makes the gradient stay in place while scrolling */
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* --- Header & Hero Styles --- */
+        .dropdown-menu {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .dropdown-item:hover { color: #66CDFF; }
+        .nav-link:hover > span {
+            background: linear-gradient(to right, #F4A3FF, #66CDFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .glare-hover {
+            overflow: hidden;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+        .glare-hover::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(-45deg, hsla(0,0%,100%,0) 60%, rgba(255,255,255,0.5) 70%, hsla(0,0%,100%,0), hsla(0,0%,100%,0) 100%);
+            transition: 650ms ease;
+            background-size: 250% 250%, 100% 100%;
+            background-repeat: no-repeat;
+            background-position: -100% -100%, 0 0;
+        }
+        .glare-hover:hover::before { background-position: 100% 100%, 0 0; }
+        .benefit-pod { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .benefit-pod:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+        }
+        .benefit-pod:hover i { color: #6A0FFF; }
+        .orb-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .tagline-gradient {
+            background-image: linear-gradient(to right, #001B6B 0%, #6A0FFF 25%, #F4A3FF 50%, #ed293b 75%, #001B6B 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        #main-header .container { position: relative; }
+        
+        #main-header:not(.header-scrolled) #desktop-nav {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-      const resize = () => {
-        const ratio = window.devicePixelRatio || 1;
-        w = canvas.width = Math.floor(canvas.clientWidth * ratio);
-        h = canvas.height = Math.floor(canvas.clientHeight * ratio);
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      };
-      window.addEventListener("resize", () => { clearTimeout(window.__auroraRT); window.__auroraRT = setTimeout(resize, 100); });
-      resize();
+        #main-header.header-scrolled {
+            background-color: transparent;
+            border-bottom-color: transparent;
+            backdrop-filter: none;
+        }
+        #main-header.header-scrolled .container { justify-content: center; }
+        
+        #main-header.header-scrolled #logo-link {
+            transform: scale(0.8);
+            opacity: 0.7;
+        }
+        @media (min-width: 768px) {
+            #main-header.header-scrolled #logo-link {
+                position: absolute;
+                left: 1.5rem;
+                top: 50%;
+                transform: translateY(-50%) scale(0.8);
+            }
+        }
 
-      function draw() {
-        t += 0.005;
-        ctx.clearRect(0,0,w,h);
+        #main-header.header-scrolled #nav-wrapper {
+            position: static;
+            transform: none;
+            background-color: rgba(29, 29, 31, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+            z-index: 60;
+        }
+        #mobile-menu-button {
+            z-index: 50;
+        }
+        .mobile-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
 
-        // Background
-        ctx.fillStyle = "rgba(10,10,10,0.6)";
-        ctx.fillRect(0,0,w,h);
+        /* --- AI in Action Section --- */
+        #explainerCanvas {
+            display: block;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(106, 15, 255, 0.3);
+            width: 100%;
+        }
 
-        // Blobs
-        const blobs = [
-          { x: w*0.2 + Math.sin(t*1.2)*w*0.05, y: h*0.8, r: 260, c: "rgba(102,205,255,0.22)" },
-          { x: w*0.85 + Math.cos(t*0.9)*w*0.04, y: h*0.85, r: 220, c: "rgba(106,15,255,0.18)" },
-          { x: w*0.55 + Math.sin(t*0.7)*w*0.06, y: h*0.9, r: 300, c: "rgba(255,255,255,0.06)" }
+        /* --- Industries Section Styles --- */
+        .heading-gradient-text {
+            background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .industry-card {
+            position: relative;
+            border-radius: 40px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+            padding: 2px;
+            background: transparent;
+            display: block;  
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .industry-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+        .industry-card::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, var(--color1, #6A0FFF), var(--color2, #66CDFF), var(--color3, #F4A3FF), var(--color1, #6A0FFF));
+            animation: border-rotate 6s linear infinite;
+            transition: animation-duration 0.3s ease;
+            z-index: 0;
+        }
+        .industry-card:hover::before { animation-duration: 2s; }
+        .inner-content {
+            position: relative;
+            background: #000;
+            border-radius: 38px;
+            z-index: 2;
+            height: 100%;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+        .industry-card:hover .inner-content { transform: scale(0.98); }
+        .card-bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1;
+            transition: transform 0.4s ease;
+        }
+        .industry-card:hover .card-bg-image {
+            transform: scale(1.05);
+        }
+
+        /* --- NEW TIMELINE FEATURES SECTION STYLES --- */
+        .features-heading-gradient {
+            background-image: linear-gradient(to right, #50c3f0, #ee4b89);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        #features-sticky-container {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #features-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .problem-node {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            will-change: transform, background-color, border-color, color;
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+        }
+
+        .problem-node.is-resolved {
+            background-color: rgba(102, 205, 255, 0.1);
+            border-color: rgba(102, 205, 255, 0.4);
+            color: #66CDFF;
+        }
+
+        .feature-card, .problem-title {
+            position: absolute;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid transparent;
+            
+            background-clip: padding-box;
+            -webkit-background-clip: padding-box;
+            border: solid 1px transparent;
+
+            opacity: 0;
+            will-change: opacity, transform;
+            overflow: hidden;
+        }
+        
+        .feature-card::after, .problem-title::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: -1;
+            margin: -1px;
+            border-radius: inherit;
+        }
+        .feature-card::after {
+            background: linear-gradient(to right, rgba(102, 205, 255, 0.15), rgba(102, 205, 255, 0.05));
+        }
+        .problem-title::after {
+             background: linear-gradient(to left, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+        }
+
+
+        .feature-card {
+            width: 300px;
+            text-align: left;
+            left: 55%;
+            transform: translateY(-50%) translateX(30px);
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-50%) translateX(30px) scale(1.05);
+            box-shadow: 0 0 30px rgba(102, 205, 255, 0.25);
+        }
+
+        .problem-title {
+            width: 300px;
+            text-align: right;
+            right: 55%;
+            transform: translateY(-50%) translateX(-30px);
+        }
+
+        .feature-card > *, .problem-title > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .problem-title::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(239, 68, 68, 0.08),
+                rgba(239, 68, 68, 0.08) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            animation: static-flicker 0.2s infinite steps(1);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            z-index: 1;
+        }
+
+        .problem-title.is-fading-out::before {
+            opacity: 0;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250%;
+            height: 250%;
+            background: radial-gradient(circle, rgba(102, 205, 255, 0.12) 0%, rgba(102, 205, 255, 0) 50%);
+            opacity: 0;
+            transition: opacity 0.8s ease-in, transform 0.3s ease-out;
+            z-index: 1;
+        }
+
+        .feature-card.is-glowing::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover::before {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* --- OLD MOBILE FEATURES SECTION STYLES (PRESERVED) --- */
+        .mobile-feature-card-container {
+            perspective: 1000px;
+        }
+        .mobile-feature-card-inner {
+            position: relative;
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .mobile-feature-card-face {
+            width: 100%;
+            min-height: 240px;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .mobile-feature-card-front {
+            position: relative;
+        }
+        .mobile-feature-card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotateY(180deg);
+        }
+
+        /* --- How It Works Section Styles --- */
+        .how-it-works-heading {
+            background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .step-item .icon-content i {
+            font-size: 8rem; /* Or any size you prefer */
+            background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
+        }
+        
+        /* Mobile "How It Works" Fading Number Cards */
+        .mobile-how-it-works-card {
+            position: relative;
+            padding: 2rem;
+            min-height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        .mobile-how-it-works-card .step-number {
+            position: absolute;
+            top: -2rem;
+            right: 1rem;
+            font-size: 10rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+        }
+        .mobile-how-it-works-card .step-text {
+            position: relative;
+            z-index: 2;
+        }
+        .mobile-how-it-works-card .step-text h3 span {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* --- Testimonials Section Styles --- */
+        .testimonials-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-section {
+            width: 100%;
+            max-width: 64rem;
+            padding: 2rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .main-section h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .main-section p.subtitle {
+            font-size: 1.125rem;
+            color: var(--color-designation);
+            max-width: 42rem;
+            margin: 0 auto 4rem auto;
+        }
+        .testimonial-container {
+            width: 100%;
+            max-width: 56rem;
+            margin: 0 auto;
+        }
+        .testimonial-grid { display: grid; gap: 2rem; align-items: center; }
+        .image-container {
+            position: relative;
+            width: 100%;
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 4 / 3;
+            background-color: #1d1d1f; /* Placeholder background */
+            border-radius: 1.5rem;
+        }
+         @media (min-width: 768px) {
+            .image-container {
+                height: 24rem;
+            }
+        }
+        .testimonial-image {
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(106, 15, 255, 0.2);
+        }
+        .testimonial-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 24rem;
+            justify-content: space-between;
+            text-align: left;
+        }
+        .name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            font-size: 1.5rem;
+            color: var(--color-name);
+        }
+        .designation {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            color: var(--color-designation);
+        }
+        .quote {
+            line-height: 1.75;
+            font-size: 1.125rem;
+            color: var(--color-testimony);
+            flex-grow: 1;
+        }
+        .quote .word-span {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(5px);
+            transition: opacity 0.22s ease-in-out, filter 0.22s ease-in-out, transform 0.22s ease-in-out;
+        }
+        .quote .word-span.visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0px);
+        }
+        .arrow-buttons { display: flex; gap: 1.5rem; padding-top: 3rem; }
+        .arrow-button {
+            width: 2.7rem; height: 2.7rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 1px solid #374151;
+            background-color: var(--color-arrow-bg);
+        }
+        .arrow-button:hover {
+            background-color: var(--color-arrow-hover-bg);
+            border-color: var(--color-arrow-hover-bg);
+        }
+        .arrow-button svg { fill: var(--color-arrow-fg); }
+        @media (min-width: 768px) {
+            .main-section h2 { font-size: 3rem; }
+            .testimonial-grid { grid-template-columns: 1fr 1fr; gap: 5rem;}
+            .arrow-buttons { padding-top: 0; }
+        }
+        
+        /* --- Contact Section Styles --- */
+        .contact-card-container {
+            position: relative;
+            min-height: auto;
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .contact-card-container {
+                min-height: 500px;
+            }
+        }
+        .contact-card {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(20px);
+        }
+        .contact-card.active {
+            position: relative;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .service-option {
+            transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+        }
+        .service-option.selected {
+            background-color: rgba(106, 15, 255, 0.2);
+            border-color: #6A0FFF;
+            transform: scale(1.03);
+        }
+        .contact-input {
+            width: 100%;
+            background-color: #000;
+            border: 1px solid #4a5568;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            font-family: 'Satoshi', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-input::placeholder { color: #a0aec0; }
+        .contact-input:focus {
+            outline: none;
+            border-color: #66CDFF;
+            box-shadow: 0 0 0 3px rgba(102, 205, 255, 0.3);
+        }
+        @keyframes draw-checkmark {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        .checkmark-path {
+            animation: draw-checkmark 0.8s ease-out 0.3s forwards;
+        }
+
+        /* --- Footer Section Styles --- */
+        .aurora-footer {
+            position: relative;
+            padding: 1rem;
+            margin-top: 6rem;
+        }
+
+        @media (min-width: 1024px) {
+            .aurora-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                transform: translateY(100%);
+                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+                margin-top: 0;
+            }
+            .aurora-footer.is-visible {
+                transform: translateY(0);
+            }
+            #contact {
+                margin-bottom: 250px;
+            }
+        }
+
+        .aurora-panel {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            overflow: hidden;
+        }
+        #aurora-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .aurora-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+        .aurora-footer .footer-column h4 {
+            font-family: 'General Sans', sans-serif;
+            font-weight: 700;
+            color: #eee;
+            margin-bottom: 1rem;
+        }
+        .aurora-footer .footer-column a {
+            position: relative;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .aurora-footer .footer-column a:hover {
+            transform: scale(1.05);
+        }
+        .aurora-footer .footer-column a::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+        }
+        .aurora-footer .footer-column a:hover::before {
+            opacity: 1;
+        }
+        
+        .aurora-footer .brand-column .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .aurora-footer .brand-column .social-links a {
+            font-size: 1.25rem;
+            color: var(--brand-gray);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .aurora-footer .brand-column .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+        .aurora-footer-bottom {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--brand-gray);
+            font-size: 0.8rem;
+        }
+        .footer-email-link span {
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .footer-email-link:hover span {
+            color: transparent;
+        }
+        .footer-email-link span::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .footer-email-link:hover span::before {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- HEADER -->
+    <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/10 font-display transition-all duration-300 ease-in-out">
+        <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
+            <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 md:h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+            </a>
+            <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
+                <nav id="desktop-nav" class="hidden md:flex items-center gap-10 font-medium text-sm text-white">
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                        <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Industry</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Feature</a>
+                        </div>
+                    </div>
+                    <a href="#" class="relative py-2 group nav-link">
+                        <span>Pricing</span>
+                    </a>
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                         <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Blog</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">FAQ</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Help Center</a>
+                        </div>
+                    </div>
+                    <a href="#" class="relative py-2 group nav-link">
+                        <span>About</span>
+                    </a>
+                </nav>
+                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 hidden md:inline-block">
+                    Get Started
+                </a>
+                 <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-white text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg -translate-x-full md:hidden">
+        <button id="mobile-menu-close-button" class="absolute top-6 right-6 text-white text-4xl">
+            <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center justify-center h-full gap-6 text-2xl font-bold">
+             <div class="text-center">
+                <button class="flex items-center gap-2 py-2 transition-colors" data-mobile-submenu-button>
+                    <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                </button>
+                <div class="mobile-submenu ml-4 text-xl font-medium text-gray-300 flex flex-col gap-2 mt-2">
+                    <a href="#" class="hover:text-brand-highlight">By Industry</a>
+                    <a href="#" class="hover:text-brand-highlight">By Feature</a>
+                </div>
+            </div>
+            <a href="#" class="nav-link">Pricing</a>
+            <div class="text-center">
+                <button class="flex items-center gap-2 py-2 transition-colors" data-mobile-submenu-button>
+                    <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                </button>
+                <div class="mobile-submenu ml-4 text-xl font-medium text-gray-300 flex flex-col gap-2 mt-2">
+                    <a href="#" class="hover:text-brand-highlight">Blog</a>
+                    <a href="#" class="hover:text-brand-highlight">FAQ</a>
+                    <a href="#" class="hover:text-brand-highlight">Help Center</a>
+                </div>
+            </div>
+            <a href="#" class="nav-link">About</a>
+            <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg mt-4">
+                Get Started
+            </a>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex flex-col justify-center text-center p-6 font-display">
+        <div id="orb-container" class="orb-container"></div>
+        <div class="relative z-10 max-w-screen-lg mx-auto">
+            <h1 class="font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
+                <span class="font-extrabold">Smarter Conversations. Built For Business.</span>
+                <br>
+                <span class="text-2xl sm:text-3xl lg:text-4xl text-gray-300 font-medium">
+                    So That You Are <span class="font-bold tagline-gradient animate-tagline-gradient">Never On Your Own.</span>
+                </span>
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 opacity-0 animate-fade-in-2">
+                Experience the future of customer engagement. Our custom AI chatbots for WhatsApp provide instant, intelligent, and on-brand conversations, 24/7.
+            </p>
+        </div>
+        <div class="relative z-20 mt-8 opacity-0 animate-fade-in-3">
+            <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block
+                                         transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                Book a Free Demo
+            </a>
+        </div>
+    </section>
+
+    <!-- Infinite Benefits Belt -->
+    <div class="w-full overflow-hidden py-8 bg-black/20 border-t border-b border-white/10">
+         <div class="flex animate-scroll hover:[animation-play-state:paused]">
+            <div class="flex-shrink-0 flex items-center pr-8 space-x-8">
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-sack-dollar text-brand-highlight transition-colors"></i> Operational Efficiency</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-brain text-brand-highlight transition-colors"></i> Data-Driven Insights</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
+            </div>
+              <div class="flex-shrink-0 flex items-center pr-8 space-x-8" aria-hidden="true">
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-clock text-brand-highlight transition-colors"></i> Instantaneous Support</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-arrow-trend-up text-brand-highlight transition-colors"></i> Personalized Engagement</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-rocket text-brand-highlight transition-colors"></i> Rapid Deployment</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-sack-dollar text-brand-highlight transition-colors"></i> Operational Efficiency</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-brain text-brand-highlight transition-colors"></i> Data-Driven Insights</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-cogs text-brand-highlight transition-colors"></i> Effortless Integration</div>
+                <div class="benefit-pod flex items-center gap-3 text-gray-300 font-medium text-center bg-brand-dark shadow-md rounded-full px-6 py-3"><i class="fa-solid fa-comments text-brand-highlight transition-colors"></i> Always On-Brand</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI in Action Section -->
+    <section id="ai-in-action" class="py-24 px-6 md:px-12">
+        <div class="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center">
+            <!-- Right Column: Explainer Text -->
+            <div class="text-center lg:text-left lg:order-1">
+                <h2 class="font-bold text-4xl md:text-5xl text-white mb-6">
+                    Conversations, <span class="heading-gradient-text">Reimagined.</span>
+                </h2>
+                <p class="text-lg text-gray-300 mb-8 font-medium">
+                    Watch how our AI navigates real-world scenarios—from booking appointments to qualifying leads. It's not just a chatbot; it's your most efficient employee, always on, always learning, and always on-brand.
+                </p>
+                <a href="#contact" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                    Discover the Potential
+                </a>
+                <p class="mt-4 text-sm text-gray-400">
+                    Or email us at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>
+                </p>
+            </div>
+            <!-- Left Column: Canvas Animation -->
+            <div class="w-full max-w-md mx-auto lg:mx-0 lg:order-2">
+                 <canvas id="explainerCanvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industries Served Section -->
+    <div id="industries-root"></div>
+    
+    <!-- Features Section -->
+    <section id="features-section-wrapper" class="py-24 px-6 md:px-12">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                 <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                    From Chaos to <span class="features-heading-gradient">Clarity.</span>
+                </h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
+                    Scroll to see how NOYOAI re-engineers your workflow for maximum efficiency.
+                </p>
+            </div>
+
+            <!-- DESKTOP VERSION (NEW TIMELINE) -->
+            <div id="features-desktop-container" class="hidden lg:block">
+                <div id="features-sticky-container">
+                    <svg id="features-canvas">
+                        <defs>
+                            <filter id="neon-glow">
+                                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"></feGaussianBlur>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"></feMergeNode>
+                                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <line id="central-axis-bg" stroke="rgba(106, 15, 255, 0.2)" stroke-width="2"></line>
+                        <line id="central-axis-glow" stroke="#66CDFF" stroke-width="2" filter="url(#neon-glow)"></line>
+                    </svg>
+                    <div id="features-content-container">
+                        <!-- Elements will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOBILE VERSION (CARD FLIP - UNCHANGED) -->
+            <div id="features-mobile-container" class="lg:hidden space-y-8">
+                <!-- Mobile card flip content will be injected here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-24 container mx-auto px-6">
+        <div class="text-center mb-16 px-4">
+            <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                Launch in <span class="how-it-works-heading">Three Simple Steps.</span>
+            </h2>
+            <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">Our process is designed for clarity, speed, and exceptional results.</p>
+        </div>
+
+        <!-- Desktop Version -->
+        <div class="hidden lg:block space-y-24">
+            <!-- Step 1 -->
+            <div class="step-item flex items-center gap-16">
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Share Your Vision</h3>
+                     <p class="text-brand-gray font-medium text-lg">It all begins with your goals. Tell us what you want to automate, whether it's booking appointments, qualifying leads, or providing instant support, and we'll map out the perfect solution.</p>
+                </div>
+                <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-comments"></i>
+                </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="step-item flex items-center gap-16">
+                 <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-cogs"></i>
+                </div>
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Watch Your AI Come to Life</h3>
+                     <p class="text-brand-gray font-medium text-lg">Our experts build and train your chatbot on your business data, transforming it into an intelligent agent that speaks in your brand's voice and knows your operations inside and out.</p>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="step-item flex items-center gap-16">
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Go Live and Grow</h3>
+                     <p class="text-brand-gray font-medium text-lg">We handle the entire deployment. Your new AI-powered employee starts working for you instantly, engaging customers and driving growth around the clock, so you never miss an opportunity.</p>
+                </div>
+                <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-rocket"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Version -->
+        <div id="how-it-works-mobile" class="lg:hidden space-y-16">
+            <!-- Mobile content will be injected by JS -->
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <div class="testimonials-container">
+        <section class="main-section">
+            <h2>
+                Trusted by <span class="heading-gradient-text">Businesses Like Yours.</span>
+            </h2>
+            <p class="subtitle">Real results from real clients who have transformed their workflow.</p>
+            <div class="testimonial-container">
+                <div class="testimonial-grid">
+                    <div class="image-container" id="image-container"></div>
+                    <div class="testimonial-content">
+                        <div id="text-content-wrapper">
+                            <h3 class="name" id="testimonial-name"></h3>
+                            <p class="designation" id="testimonial-designation"></p>
+                            <p class="quote" id="testimonial-quote"></p>
+                        </div>
+                        <div class="arrow-buttons">
+                            <button class="arrow-button prev-button" id="prev-button" aria-label="Previous testimonial">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512">
+                                    <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                                </svg>
+                            </button>
+                            <button class="arrow-button next-button" id="next-button" aria-label="Next testimonial">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512">
+                                    <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- NEW INTERACTIVE CONTACT SECTION -->
+    <section id="contact" class="py-24 px-6 md:px-12">
+        <div class="container mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="font-bold text-4xl md:text-5xl text-white mb-4">
+                    Any queries? <span class="heading-gradient-text">Contact Us.</span>
+                </h2>
+                <p class="text-lg text-brand-gray max-w-2xl mx-auto font-medium">
+                    Let us know how we can help. Select your interests below to get started, or email us directly at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="text-brand-highlight hover:underline font-semibold">info@noyoai.com</a>.
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <form id="contact-form" action="#" method="POST">
+                    <div class="contact-card-container">
+                        <!-- STEP 1: Service Selection -->
+                        <div id="contact-step-1" class="contact-card active">
+                            <div class="bg-brand-dark p-8 rounded-2xl border border-white/10">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h3 class="font-bold text-xl text-white mb-4">I'm interested in...</h3>
+                                        <div id="interest-options" class="space-y-3">
+                                            <!-- Options will be injected by JS -->
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl text-white mb-4">I need help with...</h3>
+                                        <div id="help-options" class="space-y-3">
+                                            <!-- Options will be injected by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-8 text-right">
+                                    <button type="button" id="next-step-1" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-base py-3 px-8 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 opacity-50 cursor-not-allowed inline-flex items-center justify-center whitespace-nowrap" disabled>
+                                        <span>Next</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: User Details -->
+                        <div id="contact-step-2" class="contact-card">
+                            <div class="bg-brand-dark p-8 rounded-2xl border border-white/10">
+                                <div class="flex justify-between items-center mb-6">
+                                    <button type="button" data-nav="back" class="text-brand-gray hover:text-white transition-colors"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
+                                    <p class="text-sm font-medium text-brand-gray">Step 2 of 3</p>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <label for="contact-name" class="sr-only">Full Name</label>
+                                        <input type="text" name="name" id="contact-name" placeholder="Full Name" required class="contact-input">
+                                    </div>
+                                    <div>
+                                        <label for="contact-email" class="sr-only">Work Email</label>
+                                        <input type="email" name="email" id="contact-email" placeholder="Work Email" required class="contact-input">
+                                    </div>
+                                    <div class="text-right">
+                                        <button type="button" id="next-step-2" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-base py-3 px-8 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 inline-flex items-center justify-center whitespace-nowrap">
+                                            <span>Next</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Optional Message -->
+                        <div id="contact-step-3" class="contact-card">
+                            <div class="bg-brand-dark p-8 rounded-2xl border border-white/10">
+                                <div class="flex justify-between items-center mb-6">
+                                    <button type="button" data-nav="back" class="text-brand-gray hover:text-white transition-colors"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
+                                    <p class="text-sm font-medium text-brand-gray">Step 3 of 3 (Optional)</p>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <label for="contact-message" class="sr-only">Additional Details</label>
+                                        <textarea name="message" id="contact-message" rows="5" placeholder="Add any additional details here..." class="contact-input"></textarea>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="w-full glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-base py-3 px-8 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105">
+                                            Build My Solution
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden input for selected services -->
+                        <input type="hidden" name="services_selected" id="services-selected-input">
+                    </div>
+                </form>
+                
+                <!-- Confirmation Screen -->
+                <div id="confirmation-screen" class="bg-brand-dark p-8 rounded-2xl border border-white/10 flex-col items-center justify-center text-center hidden min-h-[500px]">
+                    <svg class="w-24 h-24 mb-4" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="26" r="25" stroke="#6A0FFF" stroke-width="2"/>
+                        <path class="checkmark-path" stroke="#66CDFF" stroke-width="3" d="M14 27l8 8 16-16" stroke-dasharray="100" stroke-dashoffset="100" style="fill: none;"/>
+                    </svg>
+                    <h3 class="font-bold text-3xl text-white mt-4">Query Received!</h3>
+                    <p class="text-brand-gray mt-2">Thanks for reaching out. We'll be in touch shortly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="aurora-footer" class="aurora-footer">
+        <div class="aurora-panel">
+            <canvas id="aurora-canvas"></canvas>
+            <div class="aurora-content">
+                <div class="footer-column brand-column">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Solutions</h4>
+                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #6A0FFF; --c2: #66CDFF;">By Industry</a>
+                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #66CDFF; --c2: #F4A3FF;">By Feature</a>
+                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #F4A3FF; --c2: #008B8B;">Integrations</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #008B8B; --c2: #6A0FFF;">Blog</a>
+                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #6A0FFF; --c2: #F4A3FF;">Help Center</a>
+                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #66CDFF; --c2: #008B8B;">FAQ</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #F4A3FF; --c2: #66CDFF;">About Us</a>
+                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #6A0FFF; --c2: #008B8B;">Pricing</a>
+                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #66CDFF; --c2: #6A0FFF;">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Get in Touch</h4>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 footer-email-link" style="--c1: #F4A3FF; --c2: #66CDFF;">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span data-text="info@noyoai.com">info@noyoai.com</span>
+                    </a>
+                </div>
+            </div>
+            <div class="aurora-footer-bottom">
+                <p>&copy; 2025 NOYOAI. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Merged Scripts -->
+    <script type="module">
+        // --- Main Header & Hero Logic ---
+        const mainHeader = document.getElementById('main-header');
+        if (mainHeader) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.classList.add('header-scrolled');
+                } else {
+                    mainHeader.classList.remove('header-scrolled');
+                }
+            });
+        }
+
+        // Header Dropdown Logic
+        document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
+            const button = dropdown.querySelector('[data-dropdown-button]');
+            const menu = dropdown.querySelector('[data-dropdown-menu]');
+            const icon = button.querySelector('i');
+            let hideTimeout;
+
+            const showMenu = () => {
+                clearTimeout(hideTimeout);
+                menu.classList.remove('hidden');
+                if(icon) icon.style.transform = 'rotate(180deg)';
+                setTimeout(() => menu.classList.add('is-visible'), 10);
+            };
+            const hideMenu = () => {
+                hideTimeout = setTimeout(() => {
+                    menu.classList.remove('is-visible');
+                    if(icon) icon.style.transform = 'rotate(0deg)';
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }, 400);
+            };
+            
+            dropdown.addEventListener('mouseenter', showMenu);
+            dropdown.addEventListener('mouseleave', hideMenu);
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const openMenu = () => {
+             mobileMenu.classList.remove('-translate-x-full');
+        }
+        const closeMenu = () => {
+            mobileMenu.classList.add('-translate-x-full');
+        }
+
+        mobileMenuButton.addEventListener('click', openMenu);
+        mobileMenuCloseButton.addEventListener('click', closeMenu);
+
+        document.querySelectorAll('[data-mobile-submenu-button]').forEach(button => {
+            button.addEventListener('click', () => {
+                const submenu = button.nextElementSibling;
+                const icon = button.querySelector('i');
+                if (submenu.style.maxHeight) {
+                    submenu.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                    icon.style.transform = 'rotate(180deg)';
+                } 
+            });
+        });
+
+
+        // Tubelight Nav Bar Logic
+        const nav = document.querySelector('#desktop-nav');
+        if (nav) {
+            const navItems = nav.querySelectorAll('a.nav-link, div[data-dropdown]');
+            const tubelight = document.createElement('div');
+            tubelight.style.position = 'absolute';
+            tubelight.style.bottom = '-2px';
+            tubelight.style.height = '3px';
+            tubelight.style.backgroundColor = '#66CDFF';
+            tubelight.style.borderRadius = '9999px';
+            tubelight.style.boxShadow = '0 0 10px #66CDFF, 0 0 15px #6A0FFF';
+            tubelight.style.transition = 'left 0.3s ease, width 0.3s ease, opacity 0.3s ease';
+            tubelight.style.pointerEvents = 'none';
+            tubelight.style.opacity = '0';
+            nav.classList.add('relative');
+            nav.appendChild(tubelight);
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const { offsetLeft, offsetWidth } = item;
+                    tubelight.style.left = `${offsetLeft}px`;
+                    tubelight.style.width = `${offsetWidth}px`;
+                    tubelight.style.opacity = '1';
+                });
+            });
+            nav.addEventListener('mouseleave', () => {
+                tubelight.style.opacity = '0';
+            });
+        }
+
+        // Orb Animation Logic
+        const { Renderer, Program, Mesh, Triangle, Vec3 } = window.ogl;
+        const orbContainer = document.getElementById('orb-container');
+        if (orbContainer) {
+            const vert = `precision highp float; attribute vec2 position; attribute vec2 uv; varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 0.0, 1.0); }`;
+            const frag = `precision highp float; uniform float iTime; uniform vec3 iResolution; uniform float hue; uniform float hover; uniform float rot; uniform float hoverIntensity; varying vec2 vUv; vec3 rgb2yiq(vec3 c){return vec3(dot(c,vec3(.299,.587,.114)),dot(c,vec3(.596,-.274,-.322)),dot(c,vec3(.211,-.523,.312)));} vec3 yiq2rgb(vec3 c){return vec3(c.x+.956*c.y+.621*c.z,c.x-.272*c.y-.647*c.z,c.x-1.106*c.y+1.703*c.z);} vec3 adjustHue(vec3 color,float hueDeg){float hueRad=hueDeg*3.14159265/180.;vec3 yiq=rgb2yiq(color);float cosA=cos(hueRad);float sinA=sin(hueRad);float i=yiq.y*cosA-yiq.z*sinA;float q=yiq.y*sinA+yiq.z*cosA;yiq.y=i;yiq.z=q;return yiq2rgb(yiq);} vec3 hash33(vec3 p3){p3=fract(p3*vec3(.1031,.11369,.13787));p3+=dot(p3,p3.yxz+19.19);return-1.+2.*fract(vec3(p3.x+p3.y,p3.x+p3.z,p3.y+p3.z)*p3.zyx);} float snoise3(vec3 p){const float K1=.333333333;const float K2=.166666667;vec3 i=floor(p+(p.x+p.y+p.z)*K1);vec3 d0=p-(i-(i.x+i.y+i.z)*K2);vec3 e=step(vec3(0.),d0-d0.yzx);vec3 i1=e*(1.-e.zxy);vec3 i2=1.-e.zxy*(1.-e);vec3 d1=d0-(i1-K2);vec3 d2=d0-(i2-K1);vec3 d3=d0-.5;vec4 h=max(.6-vec4(dot(d0,d0),dot(d1,d1),dot(d2,d2),dot(d3,d3)),0.);vec4 n=h*h*h*h*vec4(dot(d0,hash33(i)),dot(d1,hash33(i+i1)),dot(d2,hash33(i+i2)),dot(d3,hash33(i+1.)));return dot(vec4(31.316),n);} vec4 extractAlpha(vec3 colorIn){float a=max(max(colorIn.r,colorIn.g),colorIn.b);return vec4(colorIn.rgb/(a+1e-5),a);} const vec3 baseColor1 = vec3(0.415, 0.062, 1.0); const vec3 baseColor2 = vec3(0.4, 0.803, 1.0); const vec3 baseColor3 = vec3(0.0, 0.105, 0.419); const float innerRadius=.6; const float noiseScale=.65; float light1(float intensity,float attenuation,float dist){return intensity/(1.+dist*attenuation);} float light2(float intensity,float attenuation,float dist){return intensity/(1.+dist*dist*attenuation);} vec4 draw(vec2 uv){vec3 color1=adjustHue(baseColor1,hue);vec3 color2=adjustHue(baseColor2,hue);vec3 color3=adjustHue(baseColor3,hue);float ang=atan(uv.y,uv.x);float len=length(uv);float invLen=len>0.?1./len:0.;float n0=snoise3(vec3(uv*noiseScale,iTime*.5))*.5+.5;float r0=mix(mix(innerRadius,1.,.4),mix(innerRadius,1.,.6),n0);float d0=distance(uv,(r0*invLen)*uv);float v0=light1(1.,10.,d0);v0*=smoothstep(r0*1.05,r0,len);float cl=cos(ang+iTime*2.)*.5+.5;float a=iTime*-1.;vec2 pos=vec2(cos(a),sin(a))*r0;float d=distance(uv,pos);float v1=light2(1.5,5.,d);v1*=light1(1.,50.,d0);float v2=smoothstep(1.,mix(innerRadius,1.,n0*.5),len);float v3=smoothstep(innerRadius,mix(innerRadius,1.,.5),len);vec3 col=mix(color1,color2,cl);col=mix(color3,col,v0);col=(col+v1)*v2*v3;col=clamp(col,0.,1.);return extractAlpha(col);} vec4 mainImage(vec2 fragCoord){vec2 center=iResolution.xy*.5;float size=min(iResolution.x,iResolution.y);vec2 uv=(fragCoord-center)/size*2.;float angle=rot;float s=sin(angle);float c=cos(angle);uv=vec2(c*uv.x-s*uv.y,s*uv.x+c*uv.y);uv.x+=hover*hoverIntensity*.1*sin(uv.y*10.+iTime);uv.y+=hover*hoverIntensity*.1*sin(uv.x*10.+iTime);return draw(uv);} void main(){vec2 fragCoord=vUv*iResolution.xy;vec4 col=mainImage(fragCoord);gl_FragColor=vec4(col.rgb,col.a*0.8);}`;
+            const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+            const gl = renderer.gl;
+            gl.clearColor(0, 0, 0, 0);
+            orbContainer.appendChild(gl.canvas);
+            const geometry = new Triangle(gl);
+            const program = new Program(gl, {
+                vertex: vert, fragment: frag,
+                uniforms: {
+                    iTime: { value: 0 },
+                    iResolution: { value: new Vec3(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+                    hue: { value: 0 }, hover: { value: 0 }, rot: { value: 0 }, hoverIntensity: { value: 0.5 },
+                },
+            });
+            const mesh = new Mesh(gl, { geometry, program });
+            function resize() {
+                if (!orbContainer) return;
+                const dpr = window.devicePixelRatio || 1;
+                const width = orbContainer.clientWidth;
+                const height = orbContainer.clientHeight;
+                renderer.setSize(width * dpr, height * dpr);
+                gl.canvas.style.width = width + "px";
+                gl.canvas.style.height = height + "px";
+                program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+            }
+            window.addEventListener("resize", resize);
+            resize();
+            let targetHover = 0, lastTime = 0, currentRot = 0;
+            const rotationSpeed = 0.3;
+            const handleMouseMove = (e) => {
+                const rect = orbContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const width = rect.width, height = rect.height;
+                const size = Math.min(width, height);
+                const centerX = width / 2, centerY = height / 2;
+                const uvX = ((x - centerX) / size) * 2.0, uvY = ((y - centerY) / size) * 2.0;
+                targetHover = Math.sqrt(uvX * uvX + uvY * uvY) < 0.8 ? 1 : 0;
+            };
+            orbContainer.addEventListener("mousemove", handleMouseMove);
+            orbContainer.addEventListener("mouseleave", () => { targetHover = 0; });
+            let rafId;
+            const update = (t) => {
+                rafId = requestAnimationFrame(update);
+                const dt = (t - lastTime) * 0.001;
+                lastTime = t;
+                program.uniforms.iTime.value = t * 0.001;
+                program.uniforms.hover.value += (targetHover - program.uniforms.hover.value) * 0.1;
+                if (targetHover > 0.5) { currentRot += dt * rotationSpeed; }
+                program.uniforms.rot.value = currentRot;
+                renderer.render({ scene: mesh });
+            };
+            rafId = requestAnimationFrame(update);
+        }
+    </script>
+    
+    <script>
+        function initializeAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- NEW TIMELINE FEATURES SECTION LOGIC ---
+            function setupTimelineFeatures() {
+                const desktopContainer = document.getElementById('features-desktop-container');
+                if (!desktopContainer) return; // Only run this logic if the desktop container exists
+
+                const contentContainer = document.getElementById('features-content-container');
+                const svgCanvas = document.getElementById('features-canvas');
+                const axisBg = document.getElementById('central-axis-bg');
+                const axisGlow = document.getElementById('central-axis-glow');
+
+                if (!contentContainer || !svgCanvas || !axisGlow) return;
+
+                const features = [
+                    { solution: '24/7 Support', problem: 'Missed Leads After Hours', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
+                    { solution: 'Instant Answers', problem: 'Repetitive Questions', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
+                    { solution: 'Lead Qualification', problem: 'Unqualified Inquiries', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
+                    { solution: 'Appointment Booking', problem: 'Manual Scheduling', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
+                    { solution: 'Automated Feedback', problem: 'No Customer Insight', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
+                ];
+
+                function generateElements() {
+                    features.forEach((feature, index) => {
+                        const node = document.createElement('div');
+                        node.id = `problem-node-${index}`;
+                        node.className = 'problem-node';
+                        node.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+                        contentContainer.appendChild(node);
+
+                        const problemTitle = document.createElement('div');
+                        problemTitle.id = `problem-title-${index}`;
+                        problemTitle.className = 'problem-title';
+                        problemTitle.innerHTML = `<div><h4 class="font-semibold text-red-400">${feature.problem}</h4></div>`;
+                        contentContainer.appendChild(problemTitle);
+
+                        const card = document.createElement('div');
+                        card.id = `feature-card-${index}`;
+                        card.className = 'feature-card';
+                        
+                        card.innerHTML = `
+                            <div>
+                                <div class="flex items-center gap-4">
+                                    <div class="card-icon text-2xl text-brand-highlight opacity-0"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h3 class="card-title font-bold text-lg text-white opacity-0">${feature.solution}</h3>
+                                </div>
+                                <p class="card-description text-gray-400 font-medium text-sm mt-2 opacity-0">${feature.description}</p>
+                            </div>
+                        `;
+                        contentContainer.appendChild(card);
+                        
+                        const lineToCard = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        lineToCard.id = `line-to-card-${index}`;
+                        lineToCard.setAttribute('stroke', 'rgba(102, 205, 255, 0.4)');
+                        lineToCard.setAttribute('stroke-width', '1.5');
+                        lineToCard.setAttribute('fill', 'none');
+                        svgCanvas.appendChild(lineToCard);
+
+                        const lineToTitle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        lineToTitle.id = `line-to-title-${index}`;
+                        lineToTitle.setAttribute('stroke', 'rgba(239, 68, 68, 0.4)');
+                        lineToTitle.setAttribute('stroke-width', '1.5');
+                        lineToTitle.setAttribute('fill', 'none');
+                        svgCanvas.appendChild(lineToTitle);
+                    });
+                }
+
+                function setupAnimations() {
+                    const stickyContainer = document.getElementById('features-sticky-container');
+                    
+                    function updateLayout() {
+                        ScrollTrigger.getAll().forEach(st => st.kill());
+
+                        const masterTimeline = gsap.timeline({
+                            scrollTrigger: {
+                                trigger: '#features-sticky-container',
+                                pin: true,
+                                scrub: 1.5,
+                                start: 'top 80px', // <-- FIX: Offset start to avoid header overlap
+                                end: `+=${features.length * 650}`
+                            }
+                        });
+
+                        const centerX = stickyContainer.clientWidth / 2;
+                        axisBg.setAttribute('x1', centerX);
+                        axisBg.setAttribute('y1', 0);
+                        axisBg.setAttribute('x2', centerX);
+                        axisBg.setAttribute('y2', stickyContainer.clientHeight);
+                        
+                        axisGlow.setAttribute('x1', centerX);
+                        axisGlow.setAttribute('y1', 0);
+                        axisGlow.setAttribute('x2', centerX);
+                        axisGlow.setAttribute('y2', stickyContainer.clientHeight);
+                        
+                        requestAnimationFrame(() => {
+                            const axisLength = axisGlow.getTotalLength();
+                            axisGlow.style.strokeDasharray = axisLength;
+                            axisGlow.style.strokeDashoffset = axisLength;
+                            masterTimeline.to(axisGlow, { strokeDashoffset: 0, ease: 'none' });
+                        });
+
+
+                        const verticalPadding = 10;
+
+                        features.forEach((feature, index) => {
+                            const node = document.getElementById(`problem-node-${index}`);
+                            const card = document.getElementById(`feature-card-${index}`);
+                            const title = document.getElementById(`problem-title-${index}`);
+                            
+                            const availableHeight = 100 - (verticalPadding * 2);
+                            const verticalPosition = verticalPadding + (index / (features.length - 1)) * availableHeight;
+                            
+                            gsap.set(node, { top: `${verticalPosition}%` });
+                            gsap.set(card, { top: `${verticalPosition}%` });
+                            gsap.set(title, { top: `${verticalPosition}%` });
+                        });
+
+                        requestAnimationFrame(() => {
+                            features.forEach((feature, index) => {
+                                const node = document.getElementById(`problem-node-${index}`);
+                                const card = document.getElementById(`feature-card-${index}`);
+                                const title = document.getElementById(`problem-title-${index}`);
+                                const icon = node.querySelector('i');
+                                const lineToCard = document.getElementById(`line-to-card-${index}`);
+                                const lineToTitle = document.getElementById(`line-to-title-${index}`);
+                                
+                                const availableHeight = 100 - (verticalPadding * 2);
+                                const verticalPosition = verticalPadding + (index / (features.length - 1)) * availableHeight;
+
+                                const nodeRect = node.getBoundingClientRect();
+                                const cardRect = card.getBoundingClientRect();
+                                const titleRect = title.getBoundingClientRect();
+                                const stickyRect = stickyContainer.getBoundingClientRect();
+
+                                const nodeCenter = { x: nodeRect.left - stickyRect.left + nodeRect.width / 2, y: nodeRect.top - stickyRect.top + nodeRect.height / 2 };
+                                const cardEdge = { x: cardRect.left - stickyRect.left, y: cardRect.top - stickyRect.top + cardRect.height / 2 };
+                                const titleEdge = { x: titleRect.left - stickyRect.left + titleRect.width, y: titleRect.top - stickyRect.top + titleRect.height / 2 };
+
+                                const controlOffset = 60;
+                                const lineToCardPath = `M ${nodeCenter.x + 20},${nodeCenter.y} C ${nodeCenter.x + controlOffset},${nodeCenter.y} ${cardEdge.x - controlOffset},${cardEdge.y} ${cardEdge.x},${cardEdge.y}`;
+                                const lineToTitlePath = `M ${nodeCenter.x - 20},${nodeCenter.y} C ${nodeCenter.x - controlOffset},${nodeCenter.y} ${titleEdge.x + controlOffset},${titleEdge.y} ${titleEdge.x},${titleEdge.y}`;
+                                
+                                lineToCard.setAttribute('d', lineToCardPath);
+                                lineToTitle.setAttribute('d', lineToTitlePath);
+
+                                [lineToCard, lineToTitle].forEach(line => {
+                                    const len = line.getTotalLength();
+                                    line.style.strokeDasharray = len;
+                                    line.style.strokeDashoffset = len;
+                                });
+
+                                const startTime = (verticalPosition / 100) * masterTimeline.duration() * 0.8;
+
+                                masterTimeline
+                                    .to(node, { scale: 1 }, startTime)
+                                    .to(title, { opacity: 1, x: 0 }, startTime + 0.1)
+                                    .to(lineToTitle, { strokeDashoffset: 0 }, startTime + 0.2)
+                                    .add(() => {
+                                        node.classList.add('is-resolved');
+                                        
+                                        gsap.to(icon, {
+                                            scale: 0,
+                                            rotate: -90,
+                                            duration: 0.2,
+                                            ease: 'power2.in',
+                                            onComplete: () => {
+                                                icon.className = 'fa-solid fa-check';
+                                                gsap.fromTo(icon, 
+                                                    { scale: 0, rotate: 90 }, 
+                                                    { scale: 1, rotate: 0, duration: 0.3, ease: 'back.out(1.7)' }
+                                                );
+                                            }
+                                        });
+
+                                        lineToTitle.style.transition = 'stroke 0.4s ease';
+                                        lineToTitle.setAttribute('stroke', 'rgba(102, 205, 255, 0.4)');
+                                        title.classList.add('is-fading-out');
+                                    }, startTime + 0.4)
+                                    .to(card, { 
+                                        opacity: 1, 
+                                        x: 0,
+                                        onStart: () => card.classList.add('is-glowing')
+                                    }, startTime + 0.4)
+                                    .to(lineToCard, { strokeDashoffset: 0 }, startTime + 0.4)
+                                    
+                                    .to(`#${card.id} .card-icon`, { opacity: 1, duration: 0.3 }, startTime + 0.6)
+                                    .to(`#${card.id} .card-title`, { opacity: 1, duration: 0.3 }, startTime + 0.7)
+                                    .to(`#${card.id} .card-description`, { opacity: 1, duration: 0.3 }, startTime + 0.8);
+                            });
+                        });
+                    }
+
+                    generateElements();
+                    setTimeout(() => {
+                        updateLayout();
+                        let resizeTimer;
+                        window.addEventListener('resize', () => {
+                            clearTimeout(resizeTimer);
+                            resizeTimer = setTimeout(updateLayout, 250);
+                        });
+                    }, 100);
+                }
+                
+                setupAnimations();
+            }
+
+            // --- OLD MOBILE FEATURES SECTION LOGIC (PRESERVED) ---
+            function setupMobileFeatures() {
+                 const features = [
+                    { problem: 'Missed Leads After Hours', solution: '24/7 Support', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
+                    { problem: 'Repetitive Questions', solution: 'Instant Answers', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
+                    { problem: 'Unqualified Inquiries', solution: 'Lead Qualification', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
+                    { problem: 'Disorganized Data', solution: 'Real-time Lookups', description: 'Integrate with your databases to provide live information on stock or status.', icon: 'fa-magnifying-glass' },
+                    { problem: 'Manual Scheduling', solution: 'Appointment Booking', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
+                    { problem: 'No Customer Insight', solution: 'Automated Feedback', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
+                ];
+
+                const container = document.getElementById('features-mobile-container');
+                if (!container) return;
+
+                features.forEach(feature => {
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'mobile-feature-card-container';
+                    cardContainer.innerHTML = `
+                        <div class="mobile-feature-card-inner">
+                            <div class="mobile-feature-card-face mobile-feature-card-front">
+                                <div class="text-center">
+                                    <div class="text-3xl text-red-500 mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <h3 class="font-bold text-xl text-red-400">${feature.problem}</h3>
+                                </div>
+                            </div>
+                            <div class="mobile-feature-card-face mobile-feature-card-back">
+                                <div class="text-center">
+                                    <div class="text-4xl text-brand-highlight mb-3"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h3 class="font-bold text-xl text-white">${feature.solution}</h3>
+                                    <p class="text-gray-400 font-medium mt-2">${feature.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(cardContainer);
+                });
+
+                const cards = gsap.utils.toArray('.mobile-feature-card-container');
+                cards.forEach(card => {
+                    const inner = card.querySelector('.mobile-feature-card-inner');
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                            toggleActions: "play none none none"
+                        },
+                        opacity: 0,
+                        y: 50,
+                        duration: 0.6
+                    });
+
+                    ScrollTrigger.create({
+                        trigger: card,
+                        start: "top center",
+                        onEnter: () => inner.style.transform = "rotateY(180deg)",
+                        onLeaveBack: () => inner.style.transform = "rotateY(0deg)",
+                        toggleActions: "play none none reverse"
+                    });
+                });
+            }
+            
+            // --- INITIALIZE ALL FEATURES ---
+            ScrollTrigger.matchMedia({
+                "(min-width: 1024px)": function() {
+                    setupTimelineFeatures();
+                },
+                "(max-width: 1023px)": function() {
+                    setupMobileFeatures();
+                }
+            });
+
+            // --- How It Works Section ---
+            function setupHowItWorksAnimation() {
+                const howItWorksMobileData = [
+                    { title: "Share Your Vision", description: "It all begins with your goals. Tell us what you want to automate, whether it's booking appointments, qualifying leads, or providing instant support, and we'll map out the perfect solution.", gradient: "background-image: linear-gradient(to right, #66CDFF, #F4A3FF);" },
+                    { title: "Watch Your AI Come to Life", description: "Our experts build and train your chatbot on your business data, transforming it into an intelligent agent that speaks in your brand's voice and knows your operations inside and out.", gradient: "background-image: linear-gradient(to right, #F4A3FF, #6A0FFF);" },
+                    { title: "Go Live and Grow", description: "We handle the entire deployment. Your new AI-powered employee starts working for you instantly, engaging customers and driving growth around the clock, so you never miss an opportunity.", gradient: "background-image: linear-gradient(to right, #6A0FFF, #008B8B);" }
+                ];
+                
+                const mobileContainer = document.getElementById('how-it-works-mobile');
+                if (mobileContainer) {
+                    howItWorksMobileData.forEach((step, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'mobile-how-it-works-card';
+                        card.innerHTML = `
+                            <div class="step-number" data-parallax-y="-50">0${index + 1}</div>
+                            <div class="step-text">
+                                <h3 class="font-bold text-3xl text-white mb-3"><span style="${step.gradient}">${step.title}</span></h3>
+                                <p class="text-brand-gray font-medium text-lg">${step.description}</p>
+                            </div>
+                        `;
+                        mobileContainer.appendChild(card);
+                    });
+                }
+                
+                ScrollTrigger.matchMedia({
+                    "(min-width: 1024px)": function() {
+                        gsap.utils.toArray('.step-item').forEach(item => {
+                            gsap.from(item, {
+                                scrollTrigger: {
+                                    trigger: item,
+                                    start: 'top 80%',
+                                    toggleActions: 'play none none none',
+                                },
+                                opacity: 0,
+                                y: 50,
+                                duration: 0.8,
+                                ease: 'power2.out'
+                            });
+                        });
+                    },
+                    "(max-width: 1023px)": function() {
+                        const cards = gsap.utils.toArray('.mobile-how-it-works-card');
+                        cards.forEach(card => {
+                            const number = card.querySelector('.step-number');
+                            const text = card.querySelector('.step-text');
+                            
+                            gsap.from(card, {
+                                scrollTrigger: {
+                                    trigger: card,
+                                    start: "top 85%",
+                                    toggleActions: "play none none none"
+                                },
+                                opacity: 0,
+                                y: 50,
+                                duration: 0.8
+                            });
+
+                            gsap.to(number, {
+                                y: number.dataset.parallaxY || -50,
+                                ease: "none",
+                                scrollTrigger: {
+                                    trigger: card,
+                                    scrub: 1.5,
+                                    start: "top bottom",
+                                    end: "bottom top"
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+            setupHowItWorksAnimation();
+
+            // --- Testimonials Section Logic ---
+            const testimonialsData = [
+                { quote: "Deploying the NOYOAI chatbot on WhatsApp was the best decision we've made. Our lead qualification is now fully automated, saving our sales team countless hours every week.", name: "Ayesha Khan", designation: "Marketing Head", src: "" },
+                { quote: "We needed 24/7 support without the high cost. NOYOAI delivered an intelligent chatbot that handles 80% of customer queries instantly. Our satisfaction scores have never been higher.", name: "Ali Raza", designation: "CEO", src: "" },
+                { quote: "The ease of deployment was incredible. We went from signup to a fully functional AI chatbot on our WhatsApp in just a day. The elegant interface is a huge plus.", name: "Fatima Ahmed", designation: "Lead Developer", src: "" },
+                { quote: "Our online sales have increased by 30% since using the NOYOAI bot to engage customers on WhatsApp. It guides them through products and answers questions, closing sales around the clock.", name: "Bilal Hassan", designation: "Product Manager", src: "" },
+                { quote: "As a small team, we felt overwhelmed. NOYOAI's promise of 'Never On Your Own' is real. The chatbot acts as our primary support agent, letting us focus on growing the business.", name: "Sana Iqbal", designation: "Operations Chief", src: "" },
+                { quote: "The futuristic feel of the chatbot conversations has really impressed our clientele. It's sleek, professional, and perfectly matches our modern brand identity.", name: "Zainab Mehmood", designation: "Creative Director", src: "" },
+                { quote: "The intelligence of the NOYOAI bot is remarkable. It understands complex queries and provides accurate answers, reducing the burden on our technical support team significantly.", name: "Usman Malik", designation: "IT Specialist", src: "" },
+                { quote: "For our startup, the NOYOAI chatbot was the most cost-effective way to offer enterprise-level customer service. It's a scalable solution that grows with us.", name: "Hira Ali", designation: "Founder", src: "" }
+            ];
+            const testimonialImageContainer = document.getElementById("image-container");
+            if(testimonialImageContainer){
+                const nameEl = document.getElementById("testimonial-name"), designationEl = document.getElementById("testimonial-designation"), quoteEl = document.getElementById("testimonial-quote");
+                const nextButton = document.getElementById("next-button"), prevButton = document.getElementById("prev-button");
+                let activeIndex = 0, autoplayInterval = null;
+                const animateQuote = () => {
+                    const activeTestimonial = testimonialsData[activeIndex];
+                    quoteEl.innerHTML = '';
+                    const words = activeTestimonial.quote.split(' ');
+                    words.forEach((word, i) => {
+                        const span = document.createElement('span');
+                        span.className = 'word-span';
+                        span.innerHTML = word + '&nbsp;';
+                        quoteEl.appendChild(span);
+                        setTimeout(() => { span.classList.add('visible'); }, 25 * i);
+                    });
+                };
+                const updateTestimonial = () => {
+                    const activeTestimonial = testimonialsData[activeIndex];
+                    nameEl.textContent = activeTestimonial.name;
+                    designationEl.textContent = activeTestimonial.designation;
+                    animateQuote();
+                    const imageElements = testimonialImageContainer.querySelectorAll('.testimonial-image');
+                    imageElements.forEach((img, index) => {
+                        const isActive = index === activeIndex;
+                        img.style.opacity = isActive ? '1' : '0';
+                        img.style.transform = isActive ? 'scale(1)' : 'scale(0.8)';
+                        img.style.zIndex = isActive ? '3' : '1';
+                    });
+                };
+                const handleNext = () => { activeIndex = (activeIndex + 1) % testimonialsData.length; updateTestimonial(); resetAutoplay(); };
+                const handlePrev = () => { activeIndex = (activeIndex - 1 + testimonialsData.length) % testimonialsData.length; updateTestimonial(); resetAutoplay(); };
+                const startAutoplay = () => { if (!autoplayInterval) autoplayInterval = setInterval(handleNext, 5000); };
+                const stopAutoplay = () => { clearInterval(autoplayInterval); autoplayInterval = null; };
+                const resetAutoplay = () => { stopAutoplay(); startAutoplay(); };
+                const initTestimonials = () => {
+                    testimonialsData.forEach((testimonial, index) => {
+                        const img = document.createElement('img');
+                        img.src = testimonial.src;
+                        img.alt = testimonial.name;
+                        img.className = 'testimonial-image';
+                        img.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        img.onerror = () => { img.src = `https://placehold.co/600x400/1d1d1f/a0aec0?text=?`; };
+                        if (!testimonial.src) img.onerror();
+                        testimonialImageContainer.appendChild(img);
+                    });
+                    updateTestimonial();
+                    startAutoplay();
+                };
+                nextButton.addEventListener('click', handleNext);
+                prevButton.addEventListener('click', handlePrev);
+                initTestimonials();
+            }
+
+            // --- Interactive Contact Form Logic ---
+            const contactFormEl = document.getElementById('contact-form');
+            if (contactFormEl) {
+                const steps = [document.getElementById('contact-step-1'), document.getElementById('contact-step-2'), document.getElementById('contact-step-3')];
+                const nextBtns = [document.getElementById('next-step-1'), document.getElementById('next-step-2')];
+                const backBtns = document.querySelectorAll('[data-nav="back"]');
+                const confirmationScreen = document.getElementById('confirmation-screen');
+                let currentStep = 0;
+
+                const showStep = (nextStepIndex) => {
+                    const currentCard = steps[currentStep];
+                    const nextCard = steps[nextStepIndex];
+                    const direction = nextStepIndex > currentStep ? 1 : -1;
+
+                    // Make next card active first to define height
+                    nextCard.classList.add('active');
+
+                    gsap.timeline({ onComplete: () => {
+                        // After animation, make only the current card active
+                        steps.forEach((s, i) => {
+                            if (i !== nextStepIndex) {
+                                s.classList.remove('active');
+                            }
+                        });
+                    }})
+                        .to(currentCard, {
+                            opacity: 0,
+                            x: -50 * direction,
+                            duration: 0.3,
+                            ease: 'power2.in',
+                        })
+                        .fromTo(nextCard, {
+                            opacity: 0,
+                            x: 50 * direction
+                        }, {
+                            opacity: 1,
+                            x: 0,
+                            duration: 0.3,
+                            ease: 'power2.out',
+                        }, "-=0.2");
+
+                    currentStep = nextStepIndex;
+                };
+
+                nextBtns.forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        if (index === 1) {
+                            const name = document.getElementById('contact-name').value.trim();
+                            const email = document.getElementById('contact-email').value.trim();
+                            if (!name || !email) {
+                                return;
+                            }
+                        }
+                        showStep(currentStep + 1);
+                    });
+                });
+
+                backBtns.forEach(btn => {
+                    btn.addEventListener('click', () => showStep(currentStep - 1));
+                });
+
+                const interestOptions = ['Sales Inquiry', 'Pricing Details', 'Request a Demo', 'Partnerships', 'Press & Media'];
+                const helpOptions = ['Customer Support', 'Billing Questions', 'Technical Assistance', 'General Feedback', 'Careers'];
+                const interestContainer = document.getElementById('interest-options');
+                const helpContainer = document.getElementById('help-options');
+                
+                const createOption = (text) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = text;
+                    btn.className = 'w-full text-left p-3 bg-black/30 border border-gray-700 rounded-lg service-option hover:bg-brand-cta/20 hover:border-brand-cta';
+                    btn.dataset.value = text;
+                    return btn;
+                };
+                
+                interestOptions.forEach(opt => interestContainer.appendChild(createOption(opt)));
+                helpOptions.forEach(opt => helpContainer.appendChild(createOption(opt)));
+
+                let selectedServices = [];
+                document.querySelectorAll('.service-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('selected');
+                        const value = btn.dataset.value;
+                        if (selectedServices.includes(value)) {
+                            selectedServices = selectedServices.filter(s => s !== value);
+                        } else {
+                            selectedServices.push(value);
+                        }
+                        
+                        const nextBtn = document.getElementById('next-step-1');
+                        nextBtn.disabled = selectedServices.length === 0;
+                        nextBtn.classList.toggle('opacity-50', selectedServices.length === 0);
+                        nextBtn.classList.toggle('cursor-not-allowed', selectedServices.length === 0);
+                    });
+                });
+
+                contactFormEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    document.getElementById('services-selected-input').value = selectedServices.join(', ');
+                    
+                    const data = new FormData(contactFormEl);
+                    
+                    contactFormEl.style.display = 'none';
+                    confirmationScreen.style.display = 'flex';
+                    
+                    const checkmarkPath = confirmationScreen.querySelector('.checkmark-path');
+                    if (checkmarkPath) {
+                        checkmarkPath.style.animation = 'none';
+                        setTimeout(() => { checkmarkPath.style.animation = ''; }, 10);
+                    }
+
+                    console.log('Form submitted (simulation). Data:', Object.fromEntries(data));
+                });
+            }
+            
+            // --- Aurora Glass Footer Logic ---
+            const auroraFooter = document.getElementById('aurora-footer');
+            if (auroraFooter) {
+                ScrollTrigger.matchMedia({
+                    "(min-width: 1024px)": function() {
+                        ScrollTrigger.create({
+                            trigger: "#contact",
+                            start: "bottom bottom-=100px",
+                            onEnter: () => auroraFooter.classList.add('is-visible'),
+                            onLeaveBack: () => auroraFooter.classList.remove('is-visible')
+                        });
+                    }
+                });
+
+                const canvas = document.getElementById('aurora-canvas');
+                const ctx = canvas.getContext('2d');
+                let mouse = { x: undefined, y: undefined };
+                let glows = [];
+
+                function resizeAurora() {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    initGlows();
+                }
+
+                class Glow {
+                    constructor(x, y, radius, color, velocity) {
+                        this.x = x;
+                        this.y = y;
+                        this.radius = radius;
+                        this.color = color;
+                        this.velocity = velocity;
+                    }
+
+                    draw() {
+                        ctx.beginPath();
+                        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                        gradient.addColorStop(0, `rgba(${this.color}, 0.2)`);
+                        gradient.addColorStop(1, `rgba(${this.color}, 0)`);
+                        ctx.fillStyle = gradient;
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    update() {
+                        this.x += this.velocity.x;
+                        this.y += this.velocity.y;
+
+                        if (this.x - this.radius > canvas.width) this.x = -this.radius;
+                        if (this.x + this.radius < 0) this.x = canvas.width + this.radius;
+                        if (this.y - this.radius > canvas.height) this.y = -this.radius;
+                        if (this.y + this.radius < 0) this.y = canvas.height + this.radius;
+
+                        if (mouse.x !== undefined && mouse.y !== undefined) {
+                            const dx = this.x - mouse.x;
+                            const dy = this.y - mouse.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const maxDistance = 200;
+                            const force = (maxDistance - distance) / maxDistance;
+
+                            if (distance < maxDistance) {
+                                this.x += forceDirectionX * force * 1.5;
+                                this.y += forceDirectionY * force * 1.5;
+                            }
+                        }
+
+                        this.draw();
+                    }
+                }
+
+                function initGlows() {
+                    glows = [];
+                    const colors = ['106, 15, 255', '102, 205, 255', '244, 163, 255'];
+                    for (let i = 0; i < 3; i++) {
+                        const radius = Math.random() * 150 + 200;
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        const color = colors[i % colors.length];
+                        const velocity = {
+                            x: (Math.random() - 0.5) * 0.5,
+                            y: (Math.random() - 0.5) * 0.5
+                        };
+                        glows.push(new Glow(x, y, radius, color, velocity));
+                    }
+                }
+
+                function animateAurora() {
+                    requestAnimationFrame(animateAurora);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    glows.forEach(glow => glow.update());
+                }
+
+                window.addEventListener('resize', resizeAurora);
+                auroraFooter.addEventListener('mousemove', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
+                });
+                auroraFooter.addEventListener('mouseleave', () => {
+                    mouse.x = undefined;
+                    mouse.y = undefined;
+                });
+
+                resizeAurora();
+                animateAurora();
+            }
+
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 500);
+        }
+
+        window.addEventListener('load', initializeAnimations);
+    </script>
+    
+    <!-- React Babel Script for Industries Section -->
+    <script type="text/babel">
+        const { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef, useCallback } = React;
+
+        function IndustriesApp() {
+            const cardsData = [
+                { title: "RETAIL", href: "/retail", description: "Transform your customer experience with 24/7 AI assistance.", src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] },
+                { title: "REAL ESTATE", href: "/real-estate", description: "Capture and qualify every lead, day or night, freeing your agents to close deals.", src: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=1992&auto=format&fit=crop", colors: ['#66CDFF', '#001B6B'] },
+                { title: "SALONS", href: "/salons", description: "Streamline your appointment management and reduce no-shows.", src: "https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", colors: ['#F4A3FF', '#6A0FFF'] },
+                { title: "HEALTHCARE", href: "/healthcare", description: "Elevate the patient experience and ensure seamless communication.", src: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2128&auto=format&fit=crop", colors: ['#001B6B', '#66CDFF'] },
+                { title: "ECOMMERCE", href: "/ecommerce", description: "Turn conversations into conversions and drive sales around the clock.", src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop", colors: ['#6A0FFF', '#F4A3FF'] }
+            ];
+
+            return (
+                <section className="py-24 relative">
+                    <div className="container mx-auto flex flex-col lg:flex-row gap-16 items-start px-6">
+                        <div className="lg:order-2 lg:w-1/2 lg:sticky top-32">
+                            <div className="text-left">
+                                 <h2 className="font-bold text-4xl md:text-5xl text-white mb-4">
+                                    A Perfect Fit for <span className="heading-gradient-text">Your Industry.</span>
+                                </h2>
+                                <p className="text-lg text-gray-400 font-medium">Seamless automation where it matters most.</p>
+                            </div>
+                        </div>
+                        <div className="space-y-8 lg:order-1 lg:w-1/2">
+                            {cardsData.map((card, index) => (
+                                <a href={card.href} key={index} className="industry-card" style={{'--color1': card.colors[0], '--color2': card.colors[1]}} aria-label={card.title}>
+                                    <div className="inner-content">
+                                        <img src={card.src} alt={card.title} className="card-bg-image" />
+                                        <div className="absolute inset-0 bg-black/60 z-10"></div>
+                                        <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
+                                            <div className="industry-button font-bold text-4xl mb-4">{card.title}</div>
+                                            <p className="text-xl font-medium mt-4 max-w-md text-white">{card.description}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        const industriesContainer = document.getElementById('industries-root');
+        if (industriesContainer) {
+            const industriesRoot = ReactDOM.createRoot(industriesContainer);
+            industriesRoot.render(<IndustriesApp />);
+        }
+    </script>
+    
+    <!-- NEW SCRIPT FOR CHAT ANIMATION -->
+    <script>
+        const canvas = document.getElementById('explainerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const bubbleWidth = 280;
+        const bubblePadding = 15;
+        const bubbleSpacing = 20;
+        const avatarSize = 32;
+        const headerHeight = 80;
+        const footerHeight = 70;
+
+        let lastTime = 0;
+        let chatHistory = [];
+        let conversationIndex = -1;
+        let messageIndex = 0;
+        let lastStateChangeTime = 0;
+        let currentState = 'START_CONVERSATION';
+        let scrollY = 0;
+        let targetScrollY = 0;
+        
+        const conversations = [
+            [
+                { sender: 'user', text: "Can you book me a dental check-up for tomorrow afternoon?" },
+                { sender: 'ai', text: "Certainly. Dr. Smith has an opening at 4:30 PM. The fee is $75. Shall I confirm?" },
+                { sender: 'user', text: "Yes, 4:30 PM works perfectly. Please confirm it for me." },
+                { sender: 'ai', text: "You're all set. Your appointment with Dr. Smith is confirmed for tomorrow at 4:30 PM." }
+            ],
+            [
+                { sender: 'user', text: "Do you offer international shipping for your products?" },
+                { sender: 'ai', text: "Yes, we ship globally via express courier. Delivery to most regions is 3-5 business days." },
+                { sender: 'user', text: "That's great. What are the charges for shipping to Europe?" },
+                { sender: 'ai', text: "Standard shipping to Europe is a flat rate of $25. It's complimentary on all orders over $100." }
+            ],
+            [
+                { sender: 'user', text: "Show me properties in the waterfront district in the 1-2 million dollar range." },
+                { sender: 'ai', text: "I have found three 2-bedroom condos in that range. One with a city view is listed at $1.5M. Interested?" },
+                { sender: 'user', text: "The one with the city view sounds good. Can you schedule a viewing for this Saturday?" },
+                { sender: 'ai', text: "Done. The viewing is scheduled for this Saturday at 11:00 AM. I've sent the details to your calendar." }
+            ],
+            [
+                { sender: 'user', text: "What promotions or discounts do you have active today?" },
+                { sender: 'ai', text: "Today we have 25% off all smart watches and a 'Buy One, Get One Free' offer on select wireless chargers." },
+                { sender: 'user', text: "Perfect, please add two of the 'Aura' wireless chargers to my cart." },
+                { sender: 'ai', text: "I've added them to your cart. The BOGO discount has been applied automatically. Your total is $59.99." }
+            ],
+             [
+                { sender: 'user', text: "My internet has been down for an hour in the Northwood area." },
+                { sender: 'ai', text: "I see a temporary service disruption in your area due to network upgrades." },
+                { sender: 'user', text: "Is there an ETA for when it will be restored?" },
+                { sender: 'ai', text: "Yes, our team expects to have the service fully restored by 4 PM. We apologize for the inconvenience." }
+            ]
         ];
 
-        blobs.forEach(b => {
-          const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-          g.addColorStop(0, b.c);
-          g.addColorStop(1, "rgba(0,0,0,0)");
-          ctx.fillStyle = g;
-          ctx.beginPath();
-          ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-          ctx.fill();
-        });
+        const typingDuration = 2000;
+        const transitionDuration = 500;
+        const thinkingDuration = 1500;
+        const conversationExitDuration = 1500;
 
-        requestAnimationFrame(draw);
-      }
-      draw();
-    })();
-  </script>
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            if (!container) return;
+            const aspectRatio = 9 / 18;
+            const width = container.clientWidth;
+            canvas.width = width;
+            canvas.height = width / aspectRatio;
+        }
+
+        function easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+        
+        function drawRoundRect(x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function drawMessageBubble(message) {
+            ctx.save();
+            
+            const textHeight = getTextHeight(message.text, bubbleWidth - bubblePadding * 2, 20);
+            const bubbleHeight = textHeight + bubblePadding * 2;
+            
+            const p = message.animationProgress || 0;
+            const scale = easeInOutQuad(p);
+            const alpha = message.alpha * p;
+
+            const finalY = message.y;
+            const avatarY = finalY + bubbleHeight / 2;
+            const avatarX = message.isUser ? canvas.width - 20 - avatarSize / 2 : 20 + avatarSize / 2;
+
+            const finalX = message.isUser ? canvas.width - bubbleWidth - 20 - avatarSize - 10 : 20 + avatarSize + 10;
+            const finalBubbleCenterX = finalX + bubbleWidth / 2;
+            const finalBubbleCenterY = finalY + bubbleHeight / 2;
+            
+            const currentBubbleCenterX = avatarX + (finalBubbleCenterX - avatarX) * p;
+            const currentBubbleCenterY = avatarY + (finalBubbleCenterY - avatarY) * p;
+            
+            const currentWidth = bubbleWidth * scale;
+            const currentHeight = bubbleHeight * scale;
+            const currentX = currentBubbleCenterX - currentWidth / 2;
+            const currentY = currentBubbleCenterY - currentHeight / 2;
+
+            ctx.globalAlpha = alpha;
+
+            ctx.fillStyle = message.isUser ? 'rgba(244, 163, 255, 0.15)' : 'rgba(106, 15, 255, 0.2)';
+            ctx.strokeStyle = message.isUser ? 'rgba(244, 163, 255, 0.3)' : 'rgba(130, 69, 255, 0.4)';
+            ctx.lineWidth = 1;
+            drawRoundRect(currentX, currentY, currentWidth, currentHeight, 15 * scale);
+            ctx.fill();
+            ctx.stroke();
+
+            if (message.isUser) {
+                const popScale = 1 + Math.sin(p * Math.PI) * 0.1;
+                ctx.save();
+                ctx.translate(avatarX, avatarY);
+                ctx.scale(popScale, popScale);
+                ctx.translate(-avatarX, -avatarY);
+                
+                ctx.fillStyle = '#F4A3FF';
+                ctx.beginPath();
+                ctx.arc(avatarX, avatarY - 4, avatarSize / 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(avatarX, avatarY + 10, avatarSize / 2, 0, Math.PI, false);
+                ctx.fill();
+                ctx.restore();
+            } else {
+                drawAIAvatar(avatarX, avatarY, false);
+            }
+
+            if (scale > 0.8) {
+                ctx.globalAlpha = alpha * ((scale - 0.8) * 5);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '16px Satoshi';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                wrapText(message.text, message.charLimit, currentX + bubblePadding, currentY + bubblePadding, bubbleWidth - bubblePadding * 2, 20);
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawAIAvatar(x, y, isScanning) {
+            const headWidth = 22;
+            const headHeight = 20;
+            const headX = x - headWidth / 2;
+            const headY = y - headHeight / 2;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(headX, headY + headHeight);
+            ctx.lineTo(headX, headY + 5);
+            ctx.quadraticCurveTo(headX, headY, headX + 5, headY);
+            ctx.lineTo(headX + headWidth - 5, headY);
+            ctx.quadraticCurveTo(headX + headWidth, headY, headX + headWidth, headY + 5);
+            ctx.lineTo(headX + headWidth, headY + headHeight);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, headY);
+            ctx.lineTo(x, headY - 4);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x, headY - 6, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#66CDFF';
+            ctx.beginPath();
+            ctx.fillRect(headX + 4, headY + 4, headWidth - 8, 8);
+            ctx.fill();
+            
+            if (isScanning) {
+                const scanProgress = (Date.now() % 1500) / 1500;
+                const scanPosition = Math.sin(scanProgress * Math.PI * 2) * 0.5 + 0.5;
+                const scanX = headX + 4 + (headWidth - 8 - 4) * scanPosition;
+                
+                ctx.fillStyle = '#F4A3FF';
+                ctx.shadowColor = '#F4A3FF';
+                ctx.shadowBlur = 8;
+                ctx.fillRect(scanX, headY + 4, 4, 8);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function getTextHeight(text, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lineCount = 1;
+            ctx.font = '16px Satoshi';
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                    lineCount++;
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            return lineCount * lineHeight;
+        }
+
+        function wrapText(text, charLimit, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            let charsDrawn = 0;
+            for(let i = 0; i < lines.length; i++) {
+                let lineToDraw = lines[i].trim();
+                if (charsDrawn + lineToDraw.length + 1 > charLimit) {
+                    lineToDraw = lineToDraw.substring(0, charLimit - charsDrawn);
+                }
+                ctx.fillText(lineToDraw, x, y + i * lineHeight);
+                charsDrawn += lines[i].length;
+                if (charsDrawn >= charLimit) break;
+            }
+        }
+
+        function drawTypingIndicator(y, progress) {
+            ctx.save();
+            ctx.globalAlpha = easeInOutQuad(progress);
+            
+            const bubbleHeight = 40;
+            const x = 20 + avatarSize + 10;
+            
+            drawAIAvatar(20 + avatarSize / 2, y + bubbleHeight / 2, true);
+
+            ctx.fillStyle = 'rgba(106, 15, 255, 0.2)';
+            ctx.strokeStyle = 'rgba(130, 69, 255, 0.4)';
+            ctx.lineWidth = 1;
+            drawRoundRect(x, y, 80, bubbleHeight, 20);
+            ctx.fill();
+            ctx.stroke();
+
+            const time = Date.now();
+            for (let i = 0; i < 3; i++) {
+                const dotPulse = Math.sin(time * 0.005 + i * 0.5) * 0.5 + 0.5;
+                ctx.fillStyle = `rgba(255, 255, 255, ${dotPulse})`;
+                ctx.beginPath();
+                ctx.arc(x + 25 + i * 15, y + bubbleHeight / 2, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+        
+        function drawAndUpdateBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0F2027');
+            gradient.addColorStop(1, '#000000');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawChatUI() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, headerHeight);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, headerHeight, canvas.width, 1);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px "General Sans"';
+            ctx.textAlign = 'center';
+            ctx.fillText('NOYOAI', canvas.width / 2, headerHeight / 2 - 5);
+            
+            ctx.font = '12px Satoshi';
+            ctx.fillStyle = '#66CDFF';
+            let statusText = 'Online';
+            if (currentState === 'AI_THINKING') {
+                statusText = 'Noyo is typing...';
+            }
+            ctx.fillText(statusText, canvas.width / 2, headerHeight / 2 + 15);
+
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
+            ctx.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, canvas.height - footerHeight, canvas.width, 1);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            drawRoundRect(20, canvas.height - footerHeight + 15, canvas.width - 90, 40, 20);
+            ctx.fill();
+
+            ctx.fillStyle = '#6A0FFF';
+            ctx.beginPath();
+            ctx.arc(canvas.width - 45, canvas.height - footerHeight + 35, 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function animate(now) {
+            if (!lastTime) lastTime = now;
+            const timeSinceLastState = now - lastStateChangeTime;
+
+            if (currentState === 'START_CONVERSATION') {
+                conversationIndex = (conversationIndex + 1) % conversations.length;
+                messageIndex = 0;
+                chatHistory = [];
+                scrollY = 0;
+                targetScrollY = 0;
+                currentState = 'SHOW_NEXT_MESSAGE';
+            } else if (currentState === 'SHOW_NEXT_MESSAGE') {
+                const currentConvo = conversations[conversationIndex];
+                if (messageIndex >= currentConvo.length) {
+                    currentState = 'CONVERSATION_EXIT';
+                    lastStateChangeTime = now;
+                } else {
+                    const msgData = currentConvo[messageIndex];
+                    const textHeight = getTextHeight(msgData.text, bubbleWidth - bubblePadding * 2, 20);
+                    const bubbleHeight = textHeight + bubblePadding * 2;
+                    chatHistory.push({ text: msgData.text, isUser: msgData.sender === 'user', charLimit: 0, height: bubbleHeight, animationProgress: 0, alpha: 1 });
+                    currentState = 'MESSAGE_APPEARING';
+                    lastStateChangeTime = now;
+                }
+            } else if (currentState === 'MESSAGE_APPEARING' && timeSinceLastState > transitionDuration) {
+                currentState = 'MESSAGE_TYPING';
+                lastStateChangeTime = now;
+            } else if (currentState === 'MESSAGE_TYPING' && timeSinceLastState > typingDuration) {
+                messageIndex++;
+                const nextSender = conversations[conversationIndex][messageIndex]?.sender;
+                currentState = (nextSender === 'ai') ? 'AI_THINKING' : 'SHOW_NEXT_MESSAGE';
+                lastStateChangeTime = now;
+            } else if (currentState === 'AI_THINKING' && timeSinceLastState > thinkingDuration) {
+                currentState = 'SHOW_NEXT_MESSAGE';
+                lastStateChangeTime = now;
+            } else if (currentState === 'CONVERSATION_EXIT' && timeSinceLastState > conversationExitDuration) {
+                currentState = 'START_CONVERSATION';
+                lastStateChangeTime = now;
+            }
+
+            let totalHeight = 0;
+            chatHistory.forEach(msg => totalHeight += msg.height + bubbleSpacing);
+            if (currentState === 'AI_THINKING') totalHeight += 60;
+            targetScrollY = Math.max(0, totalHeight - (canvas.height - headerHeight - footerHeight) + 40);
+            scrollY += (targetScrollY - scrollY) * 0.1;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawAndUpdateBackground();
+            
+            ctx.save();
+            ctx.translate(0, headerHeight - scrollY);
+
+            let currentY = 20;
+            chatHistory.forEach(msg => {
+                msg.y = currentY;
+                currentY += msg.height + bubbleSpacing;
+            });
+
+            chatHistory.forEach((msg, index) => {
+                const lastMsg = chatHistory[chatHistory.length - 1];
+                if (msg === lastMsg) {
+                    if (currentState === 'MESSAGE_APPEARING') {
+                        msg.animationProgress = easeInOutQuad(timeSinceLastState / transitionDuration);
+                    } else if (currentState === 'MESSAGE_TYPING') {
+                        msg.animationProgress = 1;
+                        msg.charLimit = Math.floor(msg.text.length * (timeSinceLastState / typingDuration));
+                    } else {
+                        msg.animationProgress = 1;
+                        msg.charLimit = msg.text.length;
+                    }
+                } else {
+                    msg.animationProgress = 1;
+                    msg.charLimit = msg.text.length;
+                }
+                
+                if (currentState === 'CONVERSATION_EXIT') {
+                    const delay = (chatHistory.length - index) * 100;
+                    const fadeProgress = Math.max(0, (timeSinceLastState - delay) / (conversationExitDuration - delay));
+                    msg.alpha = 1 - easeInOutQuad(fadeProgress);
+                } else if (currentState !== 'START_CONVERSATION') {
+                    msg.alpha = 1;
+                }
+                
+                drawMessageBubble(msg);
+            });
+
+            if (currentState === 'AI_THINKING') {
+                const p = easeInOutQuad(Math.min(1, timeSinceLastState / 500));
+                drawTypingIndicator(currentY, p);
+            }
+
+            ctx.restore();
+            drawChatUI();
+            
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        
+        setTimeout(() => {
+            resizeCanvas();
+            lastStateChangeTime = Date.now();
+            animate(Date.now());
+        }, 100);
+
+    </script>
+
 </body>
 </html>
