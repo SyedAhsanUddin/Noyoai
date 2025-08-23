@@ -311,28 +311,15 @@
         }
 
         /* Email Link Specific Hover Styles */
-        .footer-email-link i, .footer-email-link span {
-            transition: color 0.4s ease;
-        }
         .footer-email-link:hover {
-            color: transparent; /* Makes parent transparent, affecting children */
+            background: linear-gradient(to right, var(--c1), var(--c2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .footer-email-link:hover::before {
-             content: '\f0e0  info@noyoai.com'; /* FontAwesome unicode and text */
-             font-family: 'Font Awesome 6 Free', 'Satoshi', sans-serif; /* Specify both fonts */
-             font-weight: 900; /* For solid icon */
-             position: absolute;
-             inset: 0;
-             background-image: linear-gradient(to right, var(--c1), var(--c2));
-             background-size: 100% auto;
-             -webkit-background-clip: text;
-             background-clip: text;
+        .footer-email-link:hover i,
+        .footer-email-link:hover span {
              color: transparent;
-             opacity: 1;
-        }
-        .footer-email-link::before {
-            opacity: 0;
-            transition: opacity 0.4s ease;
         }
     </style>
 </head>
