@@ -404,14 +404,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            opacity: 0;
-            transform: scale(0.95);
+            opacity: 0; 
             pointer-events: none;
         }
         .step-visual.is-active {
-            opacity: 1;
-            transform: scale(1);
             pointer-events: auto;
         }
         .visual-panel .step-visual i {
@@ -424,7 +420,7 @@
         }
         @media (min-width: 1280px) {
              .visual-panel .step-visual i {
-                 font-size: 12rem;
+                font-size: 12rem;
             }
         }
         
@@ -1519,24 +1515,64 @@
                         const visuals = gsap.utils.toArray(".step-visual");
                         const progressBar = document.getElementById("progress-bar");
                         
-                        const updateVisual = (index) => {
-                            visuals.forEach((visual, i) => {
-                                visual.classList.toggle('is-active', (i + 1) === index);
-                            });
-                        };
+                        gsap.set(visuals, { opacity: 0, y: 50, scale: 0.8 });
+
+                        let currentTimeline;
+
+                        function updateVisual(index) {
+                            if (currentTimeline) {
+                                currentTimeline.kill();
+                            }
+
+                            const activeVisual = document.querySelector('.step-visual.is-active');
+                            const newVisual = visuals[index - 1];
+
+                            if (activeVisual === newVisual) return;
+
+                            currentTimeline = gsap.timeline();
+
+                            if (activeVisual) {
+                                activeVisual.classList.remove('is-active');
+                                currentTimeline.to(activeVisual, {
+                                    opacity: 0,
+                                    y: -50,
+                                    scale: 0.8,
+                                    duration: 0.4,
+                                    ease: 'power2.in'
+                                });
+                            }
+                            
+                            if (newVisual) {
+                                newVisual.classList.add('is-active');
+                                currentTimeline.to(newVisual, {
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                    duration: 0.6,
+                                    ease: 'power2.out'
+                                }, activeVisual ? "-=0.2" : 0);
+                            }
+                        }
 
                         steps.forEach((step, i) => {
                             ScrollTrigger.create({
                                 trigger: step,
                                 start: "top center",
                                 end: "bottom center",
-                                onToggle: self => self.isActive && updateVisual(i + 1),
-                                toggleClass: { targets: step, className: "is-active" }
+                                onToggle: (self) => {
+                                    if (self.isActive) {
+                                        updateVisual(i + 1);
+                                    }
+                                },
+                                toggleClass: {targets: step, className: "is-active"}
                             });
                         });
-
-                        if (steps.length > 0) steps[0].classList.add('is-active');
-                        if (visuals.length > 0) visuals[0].classList.add('is-active');
+                        
+                        // Set initial state
+                        if(steps.length > 0) {
+                            steps[0].classList.add('is-active');
+                            updateVisual(1);
+                        }
 
                         gsap.timeline({
                             scrollTrigger: {
