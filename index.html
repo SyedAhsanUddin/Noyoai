@@ -82,6 +82,12 @@
                             '40%': { transform: 'translate(-2px, -2px)' },
                             '60%': { transform: 'translate(2px, 2px)' },
                             '80%': { transform: 'translate(2px, -2px)' },
+                        },
+                        'static-flicker': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '25%': { transform: 'translateY(-2px)' },
+                            '50%': { transform: 'translateY(2px)' },
+                            '75%': { transform: 'translateY(-1px)' },
                         }
                     },
                     animation: {
@@ -93,7 +99,8 @@
                         'border-rotate': 'rotate 6s linear infinite',
                         'shine-effect': 'shine 5s linear infinite',
                         'blink': 'blink 1s step-end infinite',
-                        'glitch': 'glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite'
+                        'glitch': 'glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite',
+                        'static-flicker': 'static-flicker 0.2s infinite',
                     }
                 }
             }
@@ -300,7 +307,7 @@
             transform: scale(1.05);
         }
 
-        /* --- Features Section --- */
+        /* --- NEW TIMELINE FEATURES SECTION STYLES --- */
         .features-heading-gradient {
             background-image: linear-gradient(to right, #50c3f0, #ee4b89);
             -webkit-background-clip: text;
@@ -308,7 +315,148 @@
             color: transparent;
         }
         
-        /* Mobile Card Flip Styles */
+        #features-sticky-container {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #features-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .problem-node {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            will-change: transform, background-color, border-color, color;
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+        }
+
+        .problem-node.is-resolved {
+            background-color: rgba(102, 205, 255, 0.1);
+            border-color: rgba(102, 205, 255, 0.4);
+            color: #66CDFF;
+        }
+
+        .feature-card, .problem-title {
+            position: absolute;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid transparent;
+            
+            background-clip: padding-box;
+            -webkit-background-clip: padding-box;
+            border: solid 1px transparent;
+
+            opacity: 0;
+            will-change: opacity, transform;
+            overflow: hidden;
+        }
+        
+        .feature-card::after, .problem-title::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: -1;
+            margin: -1px;
+            border-radius: inherit;
+        }
+        .feature-card::after {
+            background: linear-gradient(to right, rgba(102, 205, 255, 0.15), rgba(102, 205, 255, 0.05));
+        }
+        .problem-title::after {
+             background: linear-gradient(to left, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+        }
+
+
+        .feature-card {
+            width: 300px;
+            text-align: left;
+            left: 55%;
+            transform: translateY(-50%) translateX(30px);
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-50%) translateX(30px) scale(1.05);
+            box-shadow: 0 0 30px rgba(102, 205, 255, 0.25);
+        }
+
+        .problem-title {
+            width: 300px;
+            text-align: right;
+            right: 55%;
+            transform: translateY(-50%) translateX(-30px);
+        }
+
+        .feature-card > *, .problem-title > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .problem-title::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(239, 68, 68, 0.08),
+                rgba(239, 68, 68, 0.08) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            animation: static-flicker 0.2s infinite steps(1);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            z-index: 1;
+        }
+
+        .problem-title.is-fading-out::before {
+            opacity: 0;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250%;
+            height: 250%;
+            background: radial-gradient(circle, rgba(102, 205, 255, 0.12) 0%, rgba(102, 205, 255, 0) 50%);
+            opacity: 0;
+            transition: opacity 0.8s ease-in, transform 0.3s ease-out;
+            z-index: 1;
+        }
+
+        .feature-card.is-glowing::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover::before {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* --- OLD MOBILE FEATURES SECTION STYLES (PRESERVED) --- */
         .mobile-feature-card-container {
             perspective: 1000px;
         }
@@ -869,16 +1017,33 @@
                     From Chaos to <span class="features-heading-gradient">Clarity.</span>
                 </h2>
                 <p class="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
-                    A smarter workflow, engineered for efficiency.
+                    Scroll to see how NOYOAI re-engineers your workflow for maximum efficiency.
                 </p>
             </div>
 
-            <!-- DESKTOP VERSION -->
+            <!-- DESKTOP VERSION (NEW TIMELINE) -->
             <div id="features-desktop-container" class="hidden lg:block">
-                <!-- Desktop content will be injected here -->
+                <div id="features-sticky-container">
+                    <svg id="features-canvas">
+                        <defs>
+                            <filter id="neon-glow">
+                                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"></feGaussianBlur>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"></feMergeNode>
+                                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <line id="central-axis-bg" stroke="rgba(106, 15, 255, 0.2)" stroke-width="2"></line>
+                        <line id="central-axis-glow" stroke="#66CDFF" stroke-width="2" filter="url(#neon-glow)"></line>
+                    </svg>
+                    <div id="features-content-container">
+                        <!-- Elements will be injected here by JS -->
+                    </div>
+                </div>
             </div>
 
-            <!-- MOBILE VERSION (CARD FLIP) -->
+            <!-- MOBILE VERSION (CARD FLIP - UNCHANGED) -->
             <div id="features-mobile-container" class="lg:hidden space-y-8">
                 <!-- Mobile card flip content will be injected here -->
             </div>
@@ -1281,57 +1446,221 @@
         function initializeAnimations() {
             gsap.registerPlugin(ScrollTrigger);
 
-            // --- Kinetic Grid Features Section Logic ---
-            const features = [
-                { problem: 'Missed Leads After Hours', solution: '24/7 Support', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
-                { problem: 'Repetitive Questions', solution: 'Instant Answers', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
-                { problem: 'Unqualified Inquiries', solution: 'Lead Qualification', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
-                { problem: 'Disorganized Data', solution: 'Real-time Lookups', description: 'Integrate with your databases to provide live information on stock or status.', icon: 'fa-magnifying-glass' },
-                { problem: 'Manual Scheduling', solution: 'Appointment Booking', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
-                { problem: 'No Customer Insight', solution: 'Automated Feedback', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
-            ];
+            // --- NEW TIMELINE FEATURES SECTION LOGIC ---
+            function setupTimelineFeatures() {
+                const desktopContainer = document.getElementById('features-desktop-container');
+                if (!desktopContainer) return; // Only run this logic if the desktop container exists
 
-            function generateDesktopFeatures() {
-                const container = document.getElementById('features-desktop-container');
-                if (!container) return;
-                
-                const stickyContainer = document.createElement('div');
-                stickyContainer.id = 'features-sticky-container';
-                stickyContainer.style.height = '100vh';
-                stickyContainer.style.position = 'relative';
+                const contentContainer = document.getElementById('features-content-container');
+                const svgCanvas = document.getElementById('features-canvas');
+                const axisBg = document.getElementById('central-axis-bg');
+                const axisGlow = document.getElementById('central-axis-glow');
 
-                const grid = document.createElement('div');
-                grid.id = 'features-grid';
-                grid.className = 'grid grid-cols-3 gap-8 absolute inset-0 p-[10vh]';
-                
-                features.forEach(feature => {
-                    const card = document.createElement('div');
-                    card.className = 'feature-card p-6';
-                    card.innerHTML = `
-                        <div class="card-inner">
-                            <div class="card-content problem-content">
+                if (!contentContainer || !svgCanvas || !axisGlow) return;
+
+                const features = [
+                    { solution: '24/7 Support', problem: 'Missed Leads After Hours', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
+                    { solution: 'Instant Answers', problem: 'Repetitive Questions', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
+                    { solution: 'Lead Qualification', problem: 'Unqualified Inquiries', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
+                    { solution: 'Appointment Booking', problem: 'Manual Scheduling', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
+                    { solution: 'Automated Feedback', problem: 'No Customer Insight', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
+                ];
+
+                function generateElements() {
+                    features.forEach((feature, index) => {
+                        const node = document.createElement('div');
+                        node.id = `problem-node-${index}`;
+                        node.className = 'problem-node';
+                        node.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+                        contentContainer.appendChild(node);
+
+                        const problemTitle = document.createElement('div');
+                        problemTitle.id = `problem-title-${index}`;
+                        problemTitle.className = 'problem-title';
+                        problemTitle.innerHTML = `<div><h4 class="font-semibold text-red-400">${feature.problem}</h4></div>`;
+                        contentContainer.appendChild(problemTitle);
+
+                        const card = document.createElement('div');
+                        card.id = `feature-card-${index}`;
+                        card.className = 'feature-card';
+                        
+                        card.innerHTML = `
+                            <div>
                                 <div class="flex items-center gap-4">
-                                    <div class="text-3xl text-red-500"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                                    <h3 class="font-bold text-xl text-red-400">${feature.problem}</h3>
+                                    <div class="card-icon text-2xl text-brand-highlight opacity-0"><i class="fa-solid ${feature.icon}"></i></div>
+                                    <h3 class="card-title font-bold text-lg text-white opacity-0">${feature.solution}</h3>
                                 </div>
+                                <p class="card-description text-gray-400 font-medium text-sm mt-2 opacity-0">${feature.description}</p>
                             </div>
-                            <div class="card-content solution-content">
-                                 <div class="flex items-center gap-4 mb-3">
-                                    <div class="text-3xl text-brand-highlight"><i class="fa-solid ${feature.icon}"></i></div>
-                                    <h3 class="font-bold text-xl text-white">${feature.solution}</h3>
-                                </div>
-                                <p class="text-gray-400 font-medium">${feature.description}</p>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
+                        `;
+                        contentContainer.appendChild(card);
+                        
+                        const lineToCard = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        lineToCard.id = `line-to-card-${index}`;
+                        lineToCard.setAttribute('stroke', 'rgba(102, 205, 255, 0.4)');
+                        lineToCard.setAttribute('stroke-width', '1.5');
+                        lineToCard.setAttribute('fill', 'none');
+                        svgCanvas.appendChild(lineToCard);
+
+                        const lineToTitle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        lineToTitle.id = `line-to-title-${index}`;
+                        lineToTitle.setAttribute('stroke', 'rgba(239, 68, 68, 0.4)');
+                        lineToTitle.setAttribute('stroke-width', '1.5');
+                        lineToTitle.setAttribute('fill', 'none');
+                        svgCanvas.appendChild(lineToTitle);
+                    });
+                }
+
+                function setupAnimations() {
+                    const stickyContainer = document.getElementById('features-sticky-container');
+                    
+                    function updateLayout() {
+                        ScrollTrigger.getAll().forEach(st => st.kill());
+
+                        const masterTimeline = gsap.timeline({
+                            scrollTrigger: {
+                                trigger: '#features-sticky-container',
+                                pin: true,
+                                scrub: 1.5,
+                                start: 'top 80px', // <-- FIX: Offset start to avoid header overlap
+                                end: `+=${features.length * 650}`
+                            }
+                        });
+
+                        const centerX = stickyContainer.clientWidth / 2;
+                        axisBg.setAttribute('x1', centerX);
+                        axisBg.setAttribute('y1', 0);
+                        axisBg.setAttribute('x2', centerX);
+                        axisBg.setAttribute('y2', stickyContainer.clientHeight);
+                        
+                        axisGlow.setAttribute('x1', centerX);
+                        axisGlow.setAttribute('y1', 0);
+                        axisGlow.setAttribute('x2', centerX);
+                        axisGlow.setAttribute('y2', stickyContainer.clientHeight);
+                        
+                        requestAnimationFrame(() => {
+                            const axisLength = axisGlow.getTotalLength();
+                            axisGlow.style.strokeDasharray = axisLength;
+                            axisGlow.style.strokeDashoffset = axisLength;
+                            masterTimeline.to(axisGlow, { strokeDashoffset: 0, ease: 'none' });
+                        });
+
+
+                        const verticalPadding = 10;
+
+                        features.forEach((feature, index) => {
+                            const node = document.getElementById(`problem-node-${index}`);
+                            const card = document.getElementById(`feature-card-${index}`);
+                            const title = document.getElementById(`problem-title-${index}`);
+                            
+                            const availableHeight = 100 - (verticalPadding * 2);
+                            const verticalPosition = verticalPadding + (index / (features.length - 1)) * availableHeight;
+                            
+                            gsap.set(node, { top: `${verticalPosition}%` });
+                            gsap.set(card, { top: `${verticalPosition}%` });
+                            gsap.set(title, { top: `${verticalPosition}%` });
+                        });
+
+                        requestAnimationFrame(() => {
+                            features.forEach((feature, index) => {
+                                const node = document.getElementById(`problem-node-${index}`);
+                                const card = document.getElementById(`feature-card-${index}`);
+                                const title = document.getElementById(`problem-title-${index}`);
+                                const icon = node.querySelector('i');
+                                const lineToCard = document.getElementById(`line-to-card-${index}`);
+                                const lineToTitle = document.getElementById(`line-to-title-${index}`);
+                                
+                                const availableHeight = 100 - (verticalPadding * 2);
+                                const verticalPosition = verticalPadding + (index / (features.length - 1)) * availableHeight;
+
+                                const nodeRect = node.getBoundingClientRect();
+                                const cardRect = card.getBoundingClientRect();
+                                const titleRect = title.getBoundingClientRect();
+                                const stickyRect = stickyContainer.getBoundingClientRect();
+
+                                const nodeCenter = { x: nodeRect.left - stickyRect.left + nodeRect.width / 2, y: nodeRect.top - stickyRect.top + nodeRect.height / 2 };
+                                const cardEdge = { x: cardRect.left - stickyRect.left, y: cardRect.top - stickyRect.top + cardRect.height / 2 };
+                                const titleEdge = { x: titleRect.left - stickyRect.left + titleRect.width, y: titleRect.top - stickyRect.top + titleRect.height / 2 };
+
+                                const controlOffset = 60;
+                                const lineToCardPath = `M ${nodeCenter.x + 20},${nodeCenter.y} C ${nodeCenter.x + controlOffset},${nodeCenter.y} ${cardEdge.x - controlOffset},${cardEdge.y} ${cardEdge.x},${cardEdge.y}`;
+                                const lineToTitlePath = `M ${nodeCenter.x - 20},${nodeCenter.y} C ${nodeCenter.x - controlOffset},${nodeCenter.y} ${titleEdge.x + controlOffset},${titleEdge.y} ${titleEdge.x},${titleEdge.y}`;
+                                
+                                lineToCard.setAttribute('d', lineToCardPath);
+                                lineToTitle.setAttribute('d', lineToTitlePath);
+
+                                [lineToCard, lineToTitle].forEach(line => {
+                                    const len = line.getTotalLength();
+                                    line.style.strokeDasharray = len;
+                                    line.style.strokeDashoffset = len;
+                                });
+
+                                const startTime = (verticalPosition / 100) * masterTimeline.duration() * 0.8;
+
+                                masterTimeline
+                                    .to(node, { scale: 1 }, startTime)
+                                    .to(title, { opacity: 1, x: 0 }, startTime + 0.1)
+                                    .to(lineToTitle, { strokeDashoffset: 0 }, startTime + 0.2)
+                                    .add(() => {
+                                        node.classList.add('is-resolved');
+                                        
+                                        gsap.to(icon, {
+                                            scale: 0,
+                                            rotate: -90,
+                                            duration: 0.2,
+                                            ease: 'power2.in',
+                                            onComplete: () => {
+                                                icon.className = 'fa-solid fa-check';
+                                                gsap.fromTo(icon, 
+                                                    { scale: 0, rotate: 90 }, 
+                                                    { scale: 1, rotate: 0, duration: 0.3, ease: 'back.out(1.7)' }
+                                                );
+                                            }
+                                        });
+
+                                        lineToTitle.style.transition = 'stroke 0.4s ease';
+                                        lineToTitle.setAttribute('stroke', 'rgba(102, 205, 255, 0.4)');
+                                        title.classList.add('is-fading-out');
+                                    }, startTime + 0.4)
+                                    .to(card, { 
+                                        opacity: 1, 
+                                        x: 0,
+                                        onStart: () => card.classList.add('is-glowing')
+                                    }, startTime + 0.4)
+                                    .to(lineToCard, { strokeDashoffset: 0 }, startTime + 0.4)
+                                    
+                                    .to(`#${card.id} .card-icon`, { opacity: 1, duration: 0.3 }, startTime + 0.6)
+                                    .to(`#${card.id} .card-title`, { opacity: 1, duration: 0.3 }, startTime + 0.7)
+                                    .to(`#${card.id} .card-description`, { opacity: 1, duration: 0.3 }, startTime + 0.8);
+                            });
+                        });
+                    }
+
+                    generateElements();
+                    setTimeout(() => {
+                        updateLayout();
+                        let resizeTimer;
+                        window.addEventListener('resize', () => {
+                            clearTimeout(resizeTimer);
+                            resizeTimer = setTimeout(updateLayout, 250);
+                        });
+                    }, 100);
+                }
                 
-                stickyContainer.appendChild(grid);
-                container.appendChild(stickyContainer);
+                setupAnimations();
             }
 
-            function generateMobileFeatures() {
+            // --- OLD MOBILE FEATURES SECTION LOGIC (PRESERVED) ---
+            function setupMobileFeatures() {
+                 const features = [
+                    { problem: 'Missed Leads After Hours', solution: '24/7 Support', description: 'Capture leads and answer questions around the clock.', icon: 'fa-headset' },
+                    { problem: 'Repetitive Questions', solution: 'Instant Answers', description: 'Provide immediate, accurate responses to frequently asked questions.', icon: 'fa-circle-question' },
+                    { problem: 'Unqualified Inquiries', solution: 'Lead Qualification', description: 'Automatically filter inquiries so your team focuses on high-value prospects.', icon: 'fa-filter-circle-dollar' },
+                    { problem: 'Disorganized Data', solution: 'Real-time Lookups', description: 'Integrate with your databases to provide live information on stock or status.', icon: 'fa-magnifying-glass' },
+                    { problem: 'Manual Scheduling', solution: 'Appointment Booking', description: 'Seamlessly schedule meetings and demos directly in the chat.', icon: 'fa-calendar-check' },
+                    { problem: 'No Customer Insight', solution: 'Automated Feedback', description: 'Gather valuable customer insights effortlessly at the end of conversations.', icon: 'fa-star-half-stroke' },
+                ];
+
                 const container = document.getElementById('features-mobile-container');
                 if (!container) return;
 
@@ -1357,71 +1686,40 @@
                     `;
                     container.appendChild(cardContainer);
                 });
-            }
 
-            function setupFeatureAnimations() {
-                ScrollTrigger.matchMedia({
-                    "(min-width: 1024px)": function() {
-                        const heading = document.querySelector('#features-section-wrapper h2').parentElement;
-                        const stickyContainer = document.getElementById('features-sticky-container');
-                        
-                        const tl = gsap.timeline({
-                            scrollTrigger: {
-                                trigger: stickyContainer,
-                                pin: true,
-                                scrub: 1,
-                                start: 'top top',
-                                end: '+=3000'
-                            }
-                        });
+                const cards = gsap.utils.toArray('.mobile-feature-card-container');
+                cards.forEach(card => {
+                    const inner = card.querySelector('.mobile-feature-card-inner');
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                            toggleActions: "play none none none"
+                        },
+                        opacity: 0,
+                        y: 50,
+                        duration: 0.6
+                    });
 
-                        tl.fromTo(heading, { opacity: 1 }, { opacity: 0, scale: 0.95, duration: 0.3 });
-                        
-                        const cards = gsap.utils.toArray('#features-grid .feature-card');
-                        tl.to(cards, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' });
-                        tl.to({}, { duration: 0.5 });
-
-                        cards.forEach(card => {
-                            const problemContent = card.querySelector('.problem-content');
-                            const solutionContent = card.querySelector('.solution-content');
-                            
-                            tl.to(problemContent, { opacity: 0, y: -20, duration: 0.3, ease: 'power1.in' }, '-=0.4')
-                              .to(solutionContent, { opacity: 1, y: 0, duration: 0.3, ease: 'power1.out' });
-                        });
-                        
-                        tl.to({}, { duration: 1.0 });
-                    },
-
-                    "(max-width: 1023px)": function() {
-                        const cards = gsap.utils.toArray('.mobile-feature-card-container');
-                        cards.forEach(card => {
-                            const inner = card.querySelector('.mobile-feature-card-inner');
-                            gsap.from(card, {
-                                scrollTrigger: {
-                                    trigger: card,
-                                    start: "top 85%",
-                                    toggleActions: "play none none none"
-                                },
-                                opacity: 0,
-                                y: 50,
-                                duration: 0.6
-                            });
-
-                            ScrollTrigger.create({
-                                trigger: card,
-                                start: "top center",
-                                onEnter: () => inner.style.transform = "rotateY(180deg)",
-                                onLeaveBack: () => inner.style.transform = "rotateY(0deg)",
-                                toggleActions: "play none none reverse"
-                            });
-                        });
-                    }
+                    ScrollTrigger.create({
+                        trigger: card,
+                        start: "top center",
+                        onEnter: () => inner.style.transform = "rotateY(180deg)",
+                        onLeaveBack: () => inner.style.transform = "rotateY(0deg)",
+                        toggleActions: "play none none reverse"
+                    });
                 });
             }
             
-            generateDesktopFeatures();
-            generateMobileFeatures();
-            setupFeatureAnimations();
+            // --- INITIALIZE ALL FEATURES ---
+            ScrollTrigger.matchMedia({
+                "(min-width: 1024px)": function() {
+                    setupTimelineFeatures();
+                },
+                "(max-width: 1023px)": function() {
+                    setupMobileFeatures();
+                }
+            });
 
             // --- How It Works Section ---
             function setupHowItWorksAnimation() {
