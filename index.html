@@ -351,80 +351,16 @@
             background-clip: text;
             color: transparent;
         }
-        .scroll-stepper-container {
-            position: relative;
-            width: 100%;
-        }
-        .scroll-stepper-progress {
-            position: absolute;
-            left: 20px;
-            top: 4rem;
-            bottom: 4rem;
-            width: 4px;
-            background-color: #374151;
-            border-radius: 2px;
-        }
-        .scroll-stepper-progress-bar {
-            width: 100%;
-            height: 0%;
-            background-color: #6A0FFF;
-            border-radius: 2px;
-        }
-        .step-content-item {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            opacity: 0.3;
-            transition: opacity 0.4s ease-in-out;
-            padding-left: 50px;
-            min-height: 60vh;
-        }
-        .step-content-item.is-active {
-            opacity: 1;
-        }
-        .scroll-stepper-right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        @media (min-width: 1024px) {
-            .scroll-stepper-right {
-                height: 100vh;
-            }
-        }
-        .visual-panel {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            max-width: 450px;
-        }
-        .step-visual {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0; 
-            pointer-events: none;
-        }
-        .step-visual.is-active {
-            pointer-events: auto;
-        }
-        .visual-panel .step-visual i {
-            font-size: 10rem;
+        .step-item .icon-content i {
+            font-size: 8rem; /* Or any size you prefer */
             background-image: linear-gradient(to bottom right, #66CDFF, #F4A3FF);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             text-shadow: 0 0 20px rgba(102, 205, 255, 0.5);
         }
-        @media (min-width: 1280px) {
-             .visual-panel .step-visual i {
-                font-size: 12rem;
-            }
-        }
         
-        /* NEW: Mobile "How It Works" Fading Number Cards */
+        /* Mobile "How It Works" Fading Number Cards */
         .mobile-how-it-works-card {
             position: relative;
             padding: 2rem;
@@ -959,33 +895,35 @@
         </div>
 
         <!-- Desktop Version -->
-        <div class="hidden lg:block">
-            <div class="scroll-stepper-container">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-                    <div class="scroll-stepper-left">
-                        <div class="scroll-stepper-progress">
-                            <div id="progress-bar" class="scroll-stepper-progress-bar"></div>
-                        </div>
-                        <div class="step-content-item" data-step="1">
-                            <h3 class="font-bold text-3xl text-white mb-3">Share Your Vision</h3>
-                            <p class="text-brand-gray font-medium text-lg">It all begins with your goals. Tell us what you want to automate, whether it's booking appointments, qualifying leads, or providing instant support, and we'll map out the perfect solution.</p>
-                        </div>
-                        <div class="step-content-item" data-step="2">
-                            <h3 class="font-bold text-3xl text-white mb-3">Watch Your AI Come to Life</h3>
-                            <p class="text-brand-gray font-medium text-lg">Our experts build and train your chatbot on your business data, transforming it into an intelligent agent that speaks in your brand's voice and knows your operations inside and out.</p>
-                        </div>
-                        <div class="step-content-item" data-step="3">
-                            <h3 class="font-bold text-3xl text-white mb-3">Go Live and Grow</h3>
-                            <p class="text-brand-gray font-medium text-lg">We handle the entire deployment. Your new AI-powered employee starts working for you instantly, engaging customers and driving growth around the clock, so you never miss an opportunity.</p>
-                        </div>
-                    </div>
-                    <div class="scroll-stepper-right">
-                        <div class="visual-panel sticky top-24">
-                            <div class="step-visual" data-visual-step="1"><i class="fa-solid fa-comments"></i></div>
-                            <div class="step-visual" data-visual-step="2"><i class="fa-solid fa-cogs"></i></div>
-                            <div class="step-visual" data-visual-step="3"><i class="fa-solid fa-rocket"></i></div>
-                        </div>
-                    </div>
+        <div class="hidden lg:block space-y-24">
+            <!-- Step 1 -->
+            <div class="step-item flex items-center gap-16">
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Share Your Vision</h3>
+                     <p class="text-brand-gray font-medium text-lg">It all begins with your goals. Tell us what you want to automate, whether it's booking appointments, qualifying leads, or providing instant support, and we'll map out the perfect solution.</p>
+                </div>
+                <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-comments"></i>
+                </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="step-item flex items-center gap-16">
+                 <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-cogs"></i>
+                </div>
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Watch Your AI Come to Life</h3>
+                     <p class="text-brand-gray font-medium text-lg">Our experts build and train your chatbot on your business data, transforming it into an intelligent agent that speaks in your brand's voice and knows your operations inside and out.</p>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="step-item flex items-center gap-16">
+                <div class="text-content w-1/2">
+                     <h3 class="font-bold text-3xl text-white mb-3">Go Live and Grow</h3>
+                     <p class="text-brand-gray font-medium text-lg">We handle the entire deployment. Your new AI-powered employee starts working for you instantly, engaging customers and driving growth around the clock, so you never miss an opportunity.</p>
+                </div>
+                <div class="icon-content w-1/2 flex justify-center">
+                     <i class="fa-solid fa-rocket"></i>
                 </div>
             </div>
         </div>
@@ -1511,79 +1449,19 @@
                 
                 ScrollTrigger.matchMedia({
                     "(min-width: 1024px)": function() {
-                        const steps = gsap.utils.toArray(".step-content-item");
-                        const visuals = gsap.utils.toArray(".step-visual");
-                        const progressBar = document.getElementById("progress-bar");
-                        
-                        gsap.set(visuals, { opacity: 0, y: 50, scale: 0.8 });
-
-                        let currentTimeline;
-
-                        function updateVisual(index) {
-                            if (currentTimeline) {
-                                currentTimeline.kill();
-                            }
-
-                            const activeVisual = document.querySelector('.step-visual.is-active');
-                            const newVisual = visuals[index - 1];
-
-                            if (activeVisual === newVisual) return;
-
-                            currentTimeline = gsap.timeline();
-
-                            if (activeVisual) {
-                                activeVisual.classList.remove('is-active');
-                                currentTimeline.to(activeVisual, {
-                                    opacity: 0,
-                                    y: -50,
-                                    scale: 0.8,
-                                    duration: 0.4,
-                                    ease: 'power2.in'
-                                });
-                            }
-                            
-                            if (newVisual) {
-                                newVisual.classList.add('is-active');
-                                currentTimeline.to(newVisual, {
-                                    opacity: 1,
-                                    y: 0,
-                                    scale: 1,
-                                    duration: 0.6,
-                                    ease: 'power2.out'
-                                }, activeVisual ? "-=0.2" : 0);
-                            }
-                        }
-
-                        steps.forEach((step, i) => {
-                            ScrollTrigger.create({
-                                trigger: step,
-                                start: "top center",
-                                end: "bottom center",
-                                onToggle: (self) => {
-                                    if (self.isActive) {
-                                        updateVisual(i + 1);
-                                    }
+                        gsap.utils.toArray('.step-item').forEach(item => {
+                            gsap.from(item, {
+                                scrollTrigger: {
+                                    trigger: item,
+                                    start: 'top 80%',
+                                    toggleActions: 'play none none none',
                                 },
-                                toggleClass: {targets: step, className: "is-active"}
+                                opacity: 0,
+                                y: 50,
+                                duration: 0.8,
+                                ease: 'power2.out'
                             });
                         });
-                        
-                        // Set initial state
-                        if(steps.length > 0) {
-                            steps[0].classList.add('is-active');
-                            updateVisual(1);
-                        }
-
-                        gsap.timeline({
-                            scrollTrigger: {
-                                trigger: ".scroll-stepper-left",
-                                start: "top top",
-                                end: "bottom bottom",
-                                scrub: true,
-                                pin: ".scroll-stepper-right",
-                            }
-                        })
-                        .to(progressBar, { height: "100%", ease: "none" });
                     },
                     "(max-width: 1023px)": function() {
                         const cards = gsap.utils.toArray('.mobile-how-it-works-card');
