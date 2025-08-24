@@ -159,6 +159,7 @@
             overflow: hidden;
             background: rgba(44, 44, 44, 0.6);
             border: 1px solid rgba(229, 57, 53, 0.2);
+            padding: 2rem 2.5rem;
         }
         #aurora-canvas {
             position: absolute;
@@ -166,14 +167,16 @@
             width: 100%;
             height: 100%;
             z-index: 0;
+            opacity: 0.7;
+            pointer-events: none;
         }
         .aurora-content {
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 2rem;
-            padding: 2rem;
+            align-items: start;
         }
         .footer-column {
             display: flex;
@@ -205,15 +208,16 @@
         .social-links {
             display: flex;
             gap: 1rem;
-            font-size: 1.25rem;
+            margin-top: 1rem;
         }
-        .social-links a { color: #A1A1AA; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-links a { font-size: 1.25rem; color: #A1A1AA; transition: color 0.3s ease, transform 0.3s ease; }
         .social-links a:hover { color: white; transform: scale(1.1); }
         .aurora-footer-bottom {
             position: relative;
             z-index: 1;
             text-align: center;
             padding: 1.5rem 1rem 1rem;
+            margin-top: 2rem;
             border-top: 1px solid rgba(229, 57, 53, 0.2);
             font-size: 0.875rem;
             color: #A1A1AA;
@@ -226,7 +230,7 @@
     <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 font-display transition-all duration-300 ease-in-out">
         <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
             <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
-                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 md:h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
             </a>
             <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
                 <nav id="desktop-nav" class="hidden lg:flex items-center gap-8 font-medium text-sm text-food-text-light">
@@ -382,7 +386,7 @@
             <canvas id="aurora-canvas"></canvas>
             <div class="aurora-content">
                 <div class="footer-column brand-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-10 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
                     <div class="social-links">
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
