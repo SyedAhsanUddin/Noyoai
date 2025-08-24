@@ -44,7 +44,7 @@
                         'brand-accent': '#F4A3FF',  // Light Pink
                         'brand-dark-cyan': '#008B8B', // Dark Cyan
                         'brand-dark': '#1d1d1f',
-                        'brand-gray': '#a0aec0',      // Combined gray
+                        'brand-gray': '#a0aec0',     // Combined gray
                         'brand-navy': '#192A56',
                         'brand-light-gray': '#f5f5f7'
                     },
@@ -272,9 +272,16 @@
             height: 400px;
             overflow: hidden;
         }
+
+        @media (max-width: 767px) {
+            .carousel-inner {
+                height: 300px;
+                /* MODIFICATION: Changed from 'visible' to 'hidden' to contain cards */
+                overflow: hidden;
+            }
+        }
+        
         .carousel-card {
-            position: absolute;
-            inset: 0;
             padding: 1.5rem;
             border-radius: 1.5rem;
             background: #000;
@@ -283,25 +290,48 @@
             justify-content: flex-end;
             text-align: left;
             will-change: transform, opacity;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
             box-sizing: border-box;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transform-style: preserve-3d;
             cursor: pointer;
-            width: 400px; /* Adjusting the card width */
-            height: 300px; /* Adjusting the card height */
+            width: 400px;
+            height: 300px;
+            position: absolute; /* Added absolute positioning for proper belt effect */
+        }
+        
+        @media (max-width: 767px) {
+            .carousel-card {
+                width: 80vw;
+                height: 60vw;
+                position: relative;
+                margin-right: 20px;
+                top: 0;
+                left: 0;
+                transform: scale(0.9) translateY(10px);
+                opacity: 0.5;
+                pointer-events: none;
+                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
+            }
+            .carousel-card.is-active {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
         }
 
-        @media (max-width: 500px) {
-          .carousel-card {
-            width: 80vw;
-            height: 60vw;
-          }
-        }
         .carousel-card:hover {
             transform: scale(1.05) translateY(-8px);
             box-shadow: 0 15px 30px rgba(106, 15, 255, 0.3);
         }
+
+        @media (max-width: 767px) {
+            .carousel-card:hover {
+                transform: scale(1) translateY(0);
+                box-shadow: none;
+            }
+        }
+
         .carousel-card .icon-background {
             position: absolute;
             inset: 0;
@@ -379,7 +409,15 @@
         .carousel-belt {
             display: flex;
             flex-wrap: nowrap;
-            padding-left: 50px; /* Adjust as needed */
+            /* Reset padding-left for desktop version for proper centering */
+            padding-left: 0; 
+            align-items: center;
+        }
+
+        @media (max-width: 767px) {
+            .carousel-belt {
+                /* MODIFICATION: Removed padding and transform to allow JS to handle centering */
+            }
         }
         .carousel-belt a {
             flex-shrink: 0;
@@ -388,6 +426,12 @@
             position: relative;
         }
 
+        @media (max-width: 767px) {
+            .carousel-belt a {
+                width: 80vw;
+                margin-right: 20px;
+            }
+        }
 
         /* --- NEW TIMELINE FEATURES SECTION STYLES --- */
         .features-heading-gradient {
@@ -937,8 +981,8 @@
         }
         /* Force only How It Works steps to always be visible */
         #how-it-works .step-item {
-          opacity: 1 !important;
-          transform: translate(0,0) !important;
+         opacity: 1 !important;
+         transform: translate(0,0) !important;
         }
     </style>
 </head>
@@ -968,7 +1012,7 @@
                         <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
                             <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
                         </button>
-                           <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
                             <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Blog</a>
                             <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">FAQ</a>
                             <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Help Center</a>
@@ -1094,7 +1138,7 @@
     </section>
 
     <!-- Industries Served Section -->
-    <div id="industries-root"></div>
+    <section id="industries-root"></section>
     
     <!-- Features Section -->
     <section id="features-section-wrapper" class="py-24 px-6 md:px-12">
@@ -2255,22 +2299,28 @@
             }, [handleNext, handlePrev]);
 
             useEffect(() => {
-                if (carouselInnerRef.current && cardsRef.current[0]) {
-                    const cardWidth = cardsRef.current[0].offsetWidth + 20;
-                    const newTranslateX = -activeIndex * cardWidth;
+                if (carouselInnerRef.current && cardsRef.current[activeIndex]) {
+                    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+                    const cardWidth = cardsRef.current[activeIndex].offsetWidth;
+                    const cardGap = 20;
                     
-                    const tl = gsap.timeline({
-                        onComplete: () => {
-                            setIsAnimating(false);
-                        }
-                    });
-
-                    // Main carousel movement
-                    tl.to(carouselInnerRef.current, {
+                    let newTranslateX;
+                    if (isMobile) {
+                        const carouselContainerWidth = carouselRef.current.clientWidth;
+                        const totalWidthOfPreviousCards = activeIndex * (cardWidth + cardGap);
+                        const offsetToCenter = (carouselContainerWidth - cardWidth) / 2;
+                        newTranslateX = offsetToCenter - totalWidthOfPreviousCards;
+                    } else {
+                        // Desktop logic remains the same
+                        newTranslateX = -activeIndex * (cardWidth + cardGap);
+                    }
+                    
+                    gsap.to(carouselInnerRef.current, {
                         x: newTranslateX,
                         duration: 0.6,
                         ease: 'power2.inOut',
-                    }, 0);
+                        onComplete: () => setIsAnimating(false),
+                    });
                     
                     // Animate text in for the new active card
                     const activeCard = cardsRef.current[activeIndex];
@@ -2306,7 +2356,8 @@
                                     <a
                                         href={card.href}
                                         key={index}
-                                        className="carousel-card group"
+                                        /* MODIFICATION: Added logic to apply 'is-active' class */
+                                        className={`carousel-card group ${index === activeIndex ? 'is-active' : ''}`}
                                         ref={el => cardsRef.current[index] = el}
                                         style={{
                                             zIndex: cardsData.length - Math.abs(index - activeIndex),
