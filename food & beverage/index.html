@@ -11,7 +11,7 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/f/libs/gsap/3.12.5/Draggable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
 
     <!-- Custom Fonts -->
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
                 extend: {
                     colors: {
                         // Food & Beverage Palette
-                        'food-primary': '#E53935',      // Energetic Red
+                        'food-primary': '#E53935',     // Energetic Red
                         'food-secondary': '#FDD835',   // Warm Gold
                         'food-accent': '#FFB300',      // Amber Accent
                         'food-bg-dark': '#1A1A1A',     // Dark Charcoal
@@ -143,84 +143,144 @@
         }
         .launch-step.in-view::before { background-color: #E53935; color: white; border-color: #E53935; transform: scale(1.1); }
         
-        /* --- Footer Styles --- */
-        .aurora-footer { position: relative; padding: 1rem; margin-top: 6rem; }
+        /* --- NEW FOOTER STYLES --- */
+        .aurora-footer {
+            position: relative;
+            padding: 1rem;
+            margin-top: 6rem;
+        }
         @media (min-width: 1024px) {
-            .aurora-footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); margin-top: 0; }
-            .aurora-footer.is-visible { transform: translateY(0); }
-            main { margin-bottom: 300px; }
+            .aurora-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                transform: translateY(100%);
+                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+                margin-top: 0;
+            }
+            .aurora-footer.is-visible {
+                transform: translateY(0);
+            }
+            /* Add margin to main content to prevent footer overlap */
+            main {
+                margin-bottom: 300px; 
+            }
         }
         .aurora-panel {
             position: relative;
             width: 100%;
             max-width: 1100px;
             margin: 0 auto;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            background: rgba(44, 44, 44, 0.6);
-            border: 1px solid rgba(229, 57, 53, 0.2);
             padding: 2rem 2.5rem;
+            background: rgba(44, 44, 44, 0.6); /* food-bg-light with transparency */
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(229, 57, 53, 0.2); /* food-primary with transparency */
+            overflow: hidden;
         }
         #aurora-canvas {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: 1;
             opacity: 0.7;
             pointer-events: none;
         }
         .aurora-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 2rem;
             align-items: start;
         }
-        .footer-column {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .footer-column h4 {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .aurora-footer .footer-column h4 {
             font-family: 'General Sans', sans-serif;
-            color: #F5F5F5;
+            font-weight: 700;
+            color: #F5F5F5; /* food-text-light */
+            margin-bottom: 1rem;
         }
-        .footer-column a {
+        .aurora-footer .footer-column a {
             position: relative;
             text-decoration: none;
+            display: block;
+            margin-bottom: 0.75rem;
             font-size: 0.9rem;
             font-weight: 500;
-            color: #A1A1AA;
-            transition: color 0.3s ease;
+            color: #A1A1AA; /* food-text-muted */
+            transition: transform 0.3s ease;
         }
-        .footer-column a:hover { color: transparent; }
-        .footer-column a::before {
-            content: attr(data-text); position: absolute; inset: 0;
+        .aurora-footer .footer-column a:hover {
+            transform: scale(1.05);
+            color: transparent; /* Hide original text on hover */
+        }
+        .aurora-footer .footer-column a::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
             background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
-            background-size: 200% auto; background-clip: text; -webkit-background-clip: text;
-            color: transparent; transition: opacity 0.4s ease; opacity: 0;
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
         }
-        .footer-column a:hover::before { opacity: 1; }
-        .social-links {
+        .aurora-footer .footer-column a:hover::before {
+            opacity: 1;
+        }
+        .aurora-footer .brand-column .social-links {
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
         }
-        .social-links a { font-size: 1.25rem; color: #A1A1AA; transition: color 0.3s ease, transform 0.3s ease; }
-        .social-links a:hover { color: white; transform: scale(1.1); }
+        .aurora-footer .brand-column .social-links a {
+            font-size: 1.25rem;
+            color: #A1A1AA; /* food-text-muted */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .aurora-footer .brand-column .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
         .aurora-footer-bottom {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             text-align: center;
-            padding: 1.5rem 1rem 1rem;
             margin-top: 2rem;
-            border-top: 1px solid rgba(229, 57, 53, 0.2);
-            font-size: 0.875rem;
-            color: #A1A1AA;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(229, 57, 53, 0.2); /* food-primary with transparency */
+            color: #A1A1AA; /* food-text-muted */
+            font-size: 0.8rem;
+        }
+        .footer-email-link span {
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .footer-email-link:hover span {
+            color: transparent;
+        }
+        .footer-email-link span::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .footer-email-link:hover span::before {
+            opacity: 1;
         }
     </style>
 </head>
@@ -361,7 +421,7 @@
                 <div id="launchpad-section" class="relative max-w-2xl mx-auto pt-4 pb-4">
                     <div id="launchpad-timeline"><div id="launchpad-progress"></div></div>
                     <div id="launchpad-steps-container" class="space-y-16">
-                         <!-- Steps will be populated by JS -->
+                            <!-- Steps will be populated by JS -->
                     </div>
                 </div>
             </div>
@@ -386,7 +446,7 @@
             <canvas id="aurora-canvas"></canvas>
             <div class="aurora-content">
                 <div class="footer-column brand-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-10 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
                     <div class="social-links">
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -413,12 +473,15 @@
                 </div>
                 <div class="footer-column">
                     <h4>Get in Touch</h4>
-                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" data-text="info@noyoai.com" style="--c1: #FFB300; --c2: #E53935;">
-                         <i class="fa-solid fa-envelope"></i><span>info@noyoai.com</span>
+                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" style="--c1: #FFB300; --c2: #E53935;">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span data-text="info@noyoai.com">info@noyoai.com</span>
                     </a>
                 </div>
             </div>
-            <div class="aurora-footer-bottom"><p>&copy; 2025 NOYOAI. All Rights Reserved.</p></div>
+            <div class="aurora-footer-bottom">
+                <p>&copy; 2025 NOYOAI. All Rights Reserved.</p>
+            </div>
         </div>
     </footer>
 
@@ -559,14 +622,14 @@
                 });
             }
 
-            // --- Footer Logic ---
+            // --- NEW FOOTER LOGIC ---
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
                 ScrollTrigger.matchMedia({
                     "(min-width: 1024px)": function() {
                         ScrollTrigger.create({
-                            trigger: "main",
-                            start: "bottom bottom",
+                            trigger: "#final-cta", // Trigger when the final CTA section is reached
+                            start: "bottom bottom-=100px",
                             onEnter: () => auroraFooter.classList.add('is-visible'),
                             onLeaveBack: () => auroraFooter.classList.remove('is-visible')
                         });
@@ -575,6 +638,7 @@
 
                 const canvas = document.getElementById('aurora-canvas');
                 const ctx = canvas.getContext('2d');
+                let mouse = { x: undefined, y: undefined };
                 let glows = [];
 
                 function resizeAurora() {
@@ -584,7 +648,9 @@
                 }
 
                 class Glow {
-                    constructor(x, y, radius, color, velocity) { this.x = x; this.y = y; this.radius = radius; this.color = color; this.velocity = velocity; }
+                    constructor(x, y, radius, color, velocity) {
+                        this.x = x; this.y = y; this.radius = radius; this.color = color; this.velocity = velocity;
+                    }
                     draw() {
                         ctx.beginPath();
                         const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
@@ -595,17 +661,33 @@
                         ctx.fill();
                     }
                     update() {
-                        this.x += this.velocity.x; this.y += this.velocity.y;
+                        this.x += this.velocity.x;
+                        this.y += this.velocity.y;
                         if (this.x - this.radius > canvas.width) this.x = -this.radius;
                         if (this.x + this.radius < 0) this.x = canvas.width + this.radius;
                         if (this.y - this.radius > canvas.height) this.y = -this.radius;
                         if (this.y + this.radius < 0) this.y = canvas.height + this.radius;
+
+                        if (mouse.x !== undefined && mouse.y !== undefined) {
+                            const dx = this.x - mouse.x;
+                            const dy = this.y - mouse.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const maxDistance = 200;
+                            const force = (maxDistance - distance) / maxDistance;
+                            if (distance < maxDistance) {
+                                this.x += forceDirectionX * force * 1.5;
+                                this.y += forceDirectionY * force * 1.5;
+                            }
+                        }
                         this.draw();
                     }
                 }
 
                 function initGlows() {
                     glows = [];
+                    // Use the food-themed colors
                     const colors = ['229, 57, 53', '253, 216, 53', '255, 179, 0'];
                     for (let i = 0; i < 3; i++) {
                         const radius = Math.random() * 150 + 200;
@@ -624,6 +706,16 @@
                 }
 
                 window.addEventListener('resize', resizeAurora);
+                auroraFooter.addEventListener('mousemove', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
+                });
+                auroraFooter.addEventListener('mouseleave', () => {
+                    mouse.x = undefined;
+                    mouse.y = undefined;
+                });
+
                 resizeAurora();
                 animateAurora();
             }
