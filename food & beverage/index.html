@@ -11,6 +11,7 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
 
     <!-- Custom Fonts -->
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
@@ -375,40 +376,40 @@
         </section>
     </main>
 
-    <!-- FOOTER (from homepage) -->
+    <!-- FOOTER -->
     <footer id="aurora-footer" class="aurora-footer">
         <div class="aurora-panel">
             <canvas id="aurora-canvas"></canvas>
             <div class="aurora-content">
                 <div class="footer-column brand-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-10 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A1A1A/FFFFFF?text=NOYOAI';">
                     <div class="social-links">
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram" class="text-food-text-muted hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn" class="text-food-text-muted hover:text-white transition-colors"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Facebook" class="text-food-text-muted hover:text-white transition-colors"><i class="fab fa-facebook-f"></i></a>
                     </div>
                 </div>
                 <div class="footer-column">
-                    <h4>Solutions</h4>
-                    <a href="#" data-text="By Industry" style="--c1: #E53935; --c2: #FDD835;">By Industry</a>
-                    <a href="#" data-text="By Feature" style="--c1: #FDD835; --c2: #FFB300;">By Feature</a>
-                    <a href="#" data-text="Integrations" style="--c1: #FFB300; --c2: #E53935;">Integrations</a>
+                    <h4 class="text-food-text-light">Solutions</h4>
+                    <a href="#" data-text="By Industry" class="text-food-text-muted" style="--c1: #E53935; --c2: #FDD835;">By Industry</a>
+                    <a href="#" data-text="By Feature" class="text-food-text-muted" style="--c1: #FDD835; --c2: #FFB300;">By Feature</a>
+                    <a href="#" data-text="Integrations" class="text-food-text-muted" style="--c1: #FFB300; --c2: #E53935;">Integrations</a>
                 </div>
                 <div class="footer-column">
-                    <h4>Resources</h4>
-                    <a href="#" data-text="Blog" style="--c1: #E53935; --c2: #FFB300;">Blog</a>
-                    <a href="#" data-text="Help Center" style="--c1: #FDD835; --c2: #E53935;">Help Center</a>
-                    <a href="#" data-text="FAQ" style="--c1: #FFB300; --c2: #FDD835;">FAQ</a>
+                    <h4 class="text-food-text-light">Resources</h4>
+                    <a href="#" data-text="Blog" class="text-food-text-muted" style="--c1: #E53935; --c2: #FFB300;">Blog</a>
+                    <a href="#" data-text="Help Center" class="text-food-text-muted" style="--c1: #FDD835; --c2: #E53935;">Help Center</a>
+                    <a href="#" data-text="FAQ" class="text-food-text-muted" style="--c1: #FFB300; --c2: #FDD835;">FAQ</a>
                 </div>
                 <div class="footer-column">
-                    <h4>Company</h4>
-                    <a href="#" data-text="About Us" style="--c1: #FDD835; --c2: #FFB300;">About Us</a>
-                    <a href="#" data-text="Pricing" style="--c1: #FFB300; --c2: #E53935;">Pricing</a>
-                    <a href="#" data-text="Contact" style="--c1: #E53935; --c2: #FDD835;">Contact</a>
+                    <h4 class="text-food-text-light">Company</h4>
+                    <a href="#" data-text="About Us" class="text-food-text-muted" style="--c1: #FDD835; --c2: #FFB300;">About Us</a>
+                    <a href="#" data-text="Pricing" class="text-food-text-muted" style="--c1: #FFB300; --c2: #E53935;">Pricing</a>
+                    <a href="#" data-text="Contact" class="text-food-text-muted" style="--c1: #E53935; --c2: #FDD835;">Contact</a>
                 </div>
                 <div class="footer-column">
-                    <h4>Get in Touch</h4>
-                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2" data-text="info@noyoai.com" style="--c1: #FFB300; --c2: #E53935;">
+                    <h4 class="text-food-text-light">Get in Touch</h4>
+                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 text-food-text-muted" data-text="info@noyoai.com" style="--c1: #FFB300; --c2: #E53935;">
                          <i class="fa-solid fa-envelope"></i><span>info@noyoai.com</span>
                     </a>
                 </div>
@@ -554,7 +555,7 @@
                 });
             }
 
-            // --- Footer Logic (from homepage) ---
+            // --- Footer Logic ---
             const auroraFooter = document.getElementById('aurora-footer');
             if (auroraFooter) {
                 ScrollTrigger.matchMedia({
