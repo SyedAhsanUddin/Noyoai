@@ -25,15 +25,15 @@
             theme: {
                 extend: {
                     colors: {
-                        // Education Palette - Modern & Innovative
-                        'edu-primary': '#4B0082',      // Primary Deep Indigo
-                        'edu-secondary': '#D3D3D3',    // Secondary Cool Gray
-                        'edu-accent-start': '#87CEEB', // CTA Sky Blue
-                        'edu-accent-end': '#40E0D0',   // CTA Turquoise
-                        'edu-bg-dark': '#000033',      // Background Dark Blue
-                        'edu-bg-light': '#001a4c',     // Lighter Blue for Cards
-                        'edu-text-light': '#F0F8FF',   // AliceBlue Text
-                        'edu-text-muted': '#B0C4DE',   // LightSteelBlue Text
+                        // Education Palette - Natural Growth & Clarity
+                        'edu-primary': '#5A7D7C',      // Primary Sage Green
+                        'edu-secondary': '#F5F5DC',    // Secondary Parchment
+                        'edu-accent-start': '#B2D8D8', // CTA Mint
+                        'edu-accent-end': '#F5F5DC',   // CTA Parchment
+                        'edu-bg-dark': '#1A2A2A',      // Background Deep Forest
+                        'edu-bg-light': '#2B4040',     // Lighter Forest for Cards
+                        'edu-text-light': '#F5F5DC',   // Parchment Text
+                        'edu-text-muted': '#A9B2B2',   // Muted Sage Text
                     },
                     fontFamily: {
                         display: ['General Sans', 'sans-serif'],
@@ -63,29 +63,29 @@
     <style>
         body {
             font-family: 'Satoshi', 'General Sans', sans-serif;
-            background-color: #000033; /* edu-bg-dark */
-            color: #F0F8FF; /* edu-text-light */
+            background-color: #1A2A2A; /* edu-bg-dark */
+            color: #F5F5DC; /* edu-text-light */
             overflow-x: hidden;
         }
 
-        .bg-blue-gradient {
-            background-image: linear-gradient(to right, #87CEEB, #40E0D0);
+        .bg-mint-gradient {
+            background-image: linear-gradient(to right, #B2D8D8, #F5F5DC);
         }
 
         /* --- Glassmorphism Effect --- */
         .glass-effect {
-            background: rgba(0, 26, 76, 0.6); /* edu-bg-light with transparency */
+            background: rgba(43, 64, 64, 0.6); /* edu-bg-light with transparency */
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(75, 0, 130, 0.2); /* edu-primary with transparency */
+            border: 1px solid rgba(90, 125, 124, 0.2); /* edu-primary with transparency */
         }
         
         /* --- Header Styles --- */
-        .dropdown-menu { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); opacity: 0; pointer-events: none; background-color: #001a4c; border: 1px solid rgba(75, 0, 130, 0.2); }
+        .dropdown-menu { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); opacity: 0; pointer-events: none; background-color: #2B4040; border: 1px solid rgba(90, 125, 124, 0.2); }
         .dropdown-menu.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .dropdown-item:hover { color: #87CEEB; background-color: rgba(75, 0, 130, 0.1); }
+        .dropdown-item:hover { color: #B2D8D8; background-color: rgba(90, 125, 124, 0.1); }
         .nav-link:hover > span, .dropdown-item:hover {
-            background: linear-gradient(to right, #87CEEB, #40E0D0);
+            background: linear-gradient(to right, #B2D8D8, #F5F5DC);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -99,9 +99,9 @@
             #main-header.header-scrolled #logo-link { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%) scale(0.8); }
         }
         #main-header.header-scrolled #nav-wrapper {
-            position: static; transform: none; background-color: rgba(0, 26, 76, 0.7); backdrop-filter: blur(12px);
+            position: static; transform: none; background-color: rgba(43, 64, 64, 0.7); backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px); padding: 0.5rem 0.75rem 0.5rem 1.5rem; border-radius: 9999px;
-            border: 1px solid rgba(75, 0, 130, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 51, 0.5);
+            border: 1px solid rgba(90, 125, 124, 0.2); box-shadow: 0 8px 32px rgba(26, 42, 42, 0.5);
         }
         #mobile-menu { transition: transform 0.3s ease-in-out; z-index: 60; }
         .mobile-submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
@@ -110,7 +110,7 @@
         .hero-aura {
             position: absolute; top: 50%; left: 50%; width: 800px; height: 800px;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(75, 0, 130, 0.15) 0%, rgba(75, 0, 130, 0) 60%);
+            background: radial-gradient(circle, rgba(90, 125, 124, 0.15) 0%, rgba(90, 125, 124, 0) 60%);
             animation: aurora-bg 10s ease-in-out infinite alternate; pointer-events: none; z-index: -1;
         }
         
@@ -118,33 +118,33 @@
         .advantage-card {
             transition: transform 0.3s ease, border-color 0.3s ease; border: 1px solid transparent; position: relative; overflow: hidden;
         }
-        .advantage-card:hover { transform: translateY(-10px); border-color: rgba(75, 0, 130, 0.4); }
+        .advantage-card:hover { transform: translateY(-10px); border-color: rgba(90, 125, 124, 0.4); }
         .advantage-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(75, 0, 130, 0.08), transparent 40%);
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(90, 125, 124, 0.08), transparent 40%);
             opacity: 0; transition: opacity 0.3s ease;
         }
         .advantage-card:hover::before { opacity: 1; }
         .advantage-card .icon { transition: color 0.3s ease; }
-        .advantage-card:hover .icon { color: #87CEEB; }
+        .advantage-card:hover .icon { color: #B2D8D8; }
 
         /* --- Specialty Section --- */
-        .specialty-tab { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; border: 1px solid rgba(75, 0, 130, 0.3); }
-        .specialty-tab.active { background-image: linear-gradient(to right, #87CEEB, #40E0D0); color: #000033; border-color: #87CEEB; }
-        .specialty-tab:not(.active):hover { background-color: rgba(75, 0, 130, 0.1); border-color: rgba(75, 0, 130, 0.4); }
+        .specialty-tab { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; border: 1px solid rgba(90, 125, 124, 0.3); }
+        .specialty-tab.active { background-image: linear-gradient(to right, #B2D8D8, #F5F5DC); color: #1A2A2A; border-color: #B2D8D8; }
+        .specialty-tab:not(.active):hover { background-color: rgba(90, 125, 124, 0.1); border-color: rgba(90, 125, 124, 0.4); }
         .specialty-content { display: none; }
         .specialty-content.active { display: block; }
 
         /* --- Launchpad Section --- */
-        #launchpad-timeline { position: absolute; left: calc(1.25rem - 1px); top: 1.25rem; bottom: 1.25rem; width: 2px; background-color: rgba(75, 0, 130, 0.3); }
-        #launchpad-progress { width: 100%; height: 0%; background-color: #4B0082; transition: height 0.5s ease-out; }
+        #launchpad-timeline { position: absolute; left: calc(1.25rem - 1px); top: 1.25rem; bottom: 1.25rem; width: 2px; background-color: rgba(90, 125, 124, 0.3); }
+        #launchpad-progress { width: 100%; height: 0%; background-color: #5A7D7C; transition: height 0.5s ease-out; }
         .launch-step { position: relative; padding-left: 3.5rem; }
         .launch-step::before {
             content: attr(data-step); position: absolute; left: 0; top: 0; width: 2.5rem; height: 2.5rem;
-            border-radius: 9999px; background-color: #001a4c; border: 2px solid rgba(75, 0, 130, 0.4);
-            color: #B0C4DE; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease;
+            border-radius: 9999px; background-color: #2B4040; border: 2px solid rgba(90, 125, 124, 0.4);
+            color: #A9B2B2; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease;
         }
-        .launch-step.in-view::before { background-color: #4B0082; color: white; border-color: #87CEEB; transform: scale(1.1); }
+        .launch-step.in-view::before { background-color: #5A7D7C; color: white; border-color: #B2D8D8; transform: scale(1.1); }
 
         /* --- Footer Styles --- */
         .aurora-footer { position: relative; padding: 1rem; margin-top: 6rem; }
@@ -155,13 +155,13 @@
         }
         .aurora-panel {
             position: relative; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 2.5rem;
-            background: rgba(0, 26, 76, 0.6); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 1.5rem; border: 1px solid rgba(75, 0, 130, 0.2); overflow: hidden;
+            background: rgba(43, 64, 64, 0.6); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem; border: 1px solid rgba(90, 125, 124, 0.2); overflow: hidden;
         }
         #aurora-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.7; pointer-events: none; }
         .aurora-content { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; align-items: start; }
-        .aurora-footer .footer-column h4 { font-family: 'General Sans', sans-serif; font-weight: 700; color: #F0F8FF; margin-bottom: 1rem; }
-        .aurora-footer .footer-column a { position: relative; text-decoration: none; display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: #B0C4DE; transition: transform 0.3s ease; }
+        .aurora-footer .footer-column h4 { font-family: 'General Sans', sans-serif; font-weight: 700; color: #F5F5DC; margin-bottom: 1rem; }
+        .aurora-footer .footer-column a { position: relative; text-decoration: none; display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: #A9B2B2; transition: transform 0.3s ease; }
         .aurora-footer .footer-column a:hover { transform: scale(1.05); color: transparent; }
         .aurora-footer .footer-column a::before {
             content: attr(data-text); position: absolute; inset: 0;
@@ -171,9 +171,9 @@
         }
         .aurora-footer .footer-column a:hover::before { opacity: 1; }
         .aurora-footer .brand-column .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
-        .aurora-footer .brand-column .social-links a { font-size: 1.25rem; color: #B0C4DE; transition: color 0.3s ease, transform 0.3s ease; }
+        .aurora-footer .brand-column .social-links a { font-size: 1.25rem; color: #A9B2B2; transition: color 0.3s ease, transform 0.3s ease; }
         .aurora-footer .brand-column .social-links a:hover { color: white; transform: scale(1.1); }
-        .aurora-footer-bottom { position: relative; z-index: 2; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(75, 0, 130, 0.2); color: #B0C4DE; font-size: 0.8rem; }
+        .aurora-footer-bottom { position: relative; z-index: 2; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(90, 125, 124, 0.2); color: #A9B2B2; font-size: 0.8rem; }
         .footer-email-link span { position: relative; transition: color 0.4s ease; }
         .footer-email-link:hover span { color: transparent; }
         .footer-email-link span::before {
@@ -191,7 +191,7 @@
     <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 font-display transition-all duration-300 ease-in-out">
         <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
             <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
-                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000033/F0F8FF?text=NOYOAI';">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A2A2A/F5F5DC?text=NOYOAI';">
             </a>
             <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
                 <nav id="desktop-nav" class="hidden lg:flex items-center gap-8 font-medium text-sm text-edu-text-light">
@@ -218,7 +218,7 @@
                     </div>
                     <a href="#" class="nav-link"><span>About</span></a>
                 </nav>
-                <a href="#final-cta" class="bg-blue-gradient text-edu-bg-dark font-bold text-sm py-2.5 px-6 rounded-lg transition-all hover:shadow-lg hover:shadow-edu-accent-start/20 hover:scale-105 hidden lg:inline-block">
+                <a href="#final-cta" class="bg-mint-gradient text-edu-bg-dark font-bold text-sm py-2.5 px-6 rounded-lg transition-all hover:shadow-lg hover:shadow-edu-accent-start/20 hover:scale-105 hidden lg:inline-block">
                     Request a Demo
                 </a>
                 <button id="mobile-menu-button" class="lg:hidden text-white text-2xl z-50">
@@ -228,7 +228,7 @@
         </div>
     </header>
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full glass-effect -translate-x-full lg:hidden" style="background: rgba(0, 0, 51, 0.9);">
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full glass-effect -translate-x-full lg:hidden" style="background: rgba(26, 42, 42, 0.9);">
         <button id="mobile-menu-close-button" class="absolute top-6 right-6 text-white text-4xl">
             <i class="fa-solid fa-times"></i>
         </button>
@@ -255,7 +255,7 @@
                 </div>
             </div>
             <a href="#" class="nav-link">About</a>
-            <a href="#final-cta" class="bg-blue-gradient text-edu-bg-dark font-bold py-3 px-8 rounded-lg text-lg mt-4">
+            <a href="#final-cta" class="bg-mint-gradient text-edu-bg-dark font-bold py-3 px-8 rounded-lg text-lg mt-4">
                 Request a Demo
             </a>
         </div>
@@ -272,7 +272,7 @@
                     Noyo is the WhatsApp Growth Partner that automates inquiries and admissions, helping you connect with prospective students 24/7.
                 </p>
                 <div class="animate-fade-in-up" style="animation-delay: 0.7s;">
-                    <a href="#final-cta" class="bg-blue-gradient text-edu-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-edu-accent-start/30">
+                    <a href="#final-cta" class="bg-mint-gradient text-edu-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-edu-accent-start/30">
                         Request a Demo
                     </a>
                 </div>
@@ -333,7 +333,7 @@
              <div class="container mx-auto max-w-3xl glass-effect rounded-2xl p-12">
                 <h2 class="font-display font-bold text-4xl text-white mb-4">Ready to Revolutionize Your Institution?</h2>
                 <p class="text-lg text-edu-text-muted mb-8">See a live demo of Noyo tailored to your specific courses and admission process.</p>
-                <a href="index.html#contact" class="bg-blue-gradient text-edu-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-edu-accent-start/30">
+                <a href="index.html#contact" class="bg-mint-gradient text-edu-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-edu-accent-start/30">
                     Schedule Your Demo
                 </a>
                 <p class="text-sm text-edu-text-muted mt-4">Complimentary. No obligation.</p>
@@ -347,7 +347,7 @@
             <canvas id="aurora-canvas"></canvas>
             <div class="aurora-content">
                 <div class="footer-column brand-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000033/F0F8FF?text=NOYOAI';">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/1A2A2A/F5F5DC?text=NOYOAI';">
                     <div class="social-links">
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -356,25 +356,25 @@
                 </div>
                 <div class="footer-column">
                     <h4>Solutions</h4>
-                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #87CEEB; --c2: #D3D3D3;">By Industry</a>
-                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #D3D3D3; --c2: #4B0082;">By Feature</a>
-                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #4B0082; --c2: #87CEEB;">Integrations</a>
+                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #B2D8D8; --c2: #F5F5DC;">By Industry</a>
+                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #F5F5DC; --c2: #5A7D7C;">By Feature</a>
+                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #5A7D7C; --c2: #B2D8D8;">Integrations</a>
                 </div>
                 <div class="footer-column">
                     <h4>Resources</h4>
-                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #87CEEB; --c2: #4B0082;">Blog</a>
-                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #D3D3D3; --c2: #87CEEB;">Help Center</a>
-                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #4B0082; --c2: #D3D3D3;">FAQ</a>
+                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #B2D8D8; --c2: #5A7D7C;">Blog</a>
+                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #F5F5DC; --c2: #B2D8D8;">Help Center</a>
+                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #5A7D7C; --c2: #F5F5DC;">FAQ</a>
                 </div>
                 <div class="footer-column">
                     <h4>Company</h4>
-                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #D3D3D3; --c2: #87CEEB;">About Us</a>
-                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #4B0082; --c2: #D3D3D3;">Pricing</a>
-                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #87CEEB; --c2: #4B0082;">Contact</a>
+                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #F5F5DC; --c2: #B2D8D8;">About Us</a>
+                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #5A7D7C; --c2: #F5F5DC;">Pricing</a>
+                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #B2D8D8; --c2: #5A7D7C;">Contact</a>
                 </div>
                 <div class="footer-column">
                     <h4>Get in Touch</h4>
-                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" style="--c1: #D3D3D3; --c2: #87CEEB;">
+                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" style="--c1: #F5F5DC; --c2: #B2D8D8;">
                         <i class="fa-solid fa-envelope"></i>
                         <span data-text="info@noyoai.com">info@noyoai.com</span>
                     </a>
@@ -454,7 +454,7 @@
                     <div id="${item.id}-content" class="specialty-content ${index === 0 ? 'active' : ''}">
                         <h3 class="font-bold text-3xl text-white mb-6">${item.title}</h3>
                         <ul class="space-y-4 text-edu-text-muted list-inside">
-                            ${item.features.map(feature => `<li class="flex items-start"><i class="fa-solid fa-check text-edu-accent-start mt-1 mr-3"></i> ${feature}</li>`).join('')}
+                            ${item.features.map(feature => `<li class="flex items-start"><i class="fa-solid fa-check text-edu-secondary mt-1 mr-3"></i> ${feature}</li>`).join('')}
                         </ul>
                     </div>
                 `).join('');
@@ -587,7 +587,7 @@
 
                 function initGlows() {
                     glows = [];
-                    const colors = ['75, 0, 130', '135, 206, 235', '64, 224, 208']; // Indigo, Sky Blue, Turquoise
+                    const colors = ['90, 125, 124', '245, 245, 220', '178, 216, 216']; // Sage, Parchment, Mint
                     for (let i = 0; i < 3; i++) {
                         const radius = Math.random() * 200 + 250;
                         const x = Math.random() * canvas.width;
