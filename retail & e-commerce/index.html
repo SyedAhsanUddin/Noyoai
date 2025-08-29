@@ -25,14 +25,15 @@
             theme: {
                 extend: {
                     colors: {
-                        // Retail Palette - Fresh & Organic
-                        'retail-primary': '#166534',     // Primary Forest Green
-                        'retail-secondary': '#F3F4F6',   // Secondary Cream
-                        'retail-accent': '#FF7F50',      // CTA Bright Coral
-                        'retail-bg-dark': '#052e16',     // Background Dark Green
-                        'retail-bg-light': '#064e3b',    // Lighter Green for Cards
-                        'retail-text-light': '#F3F4F6',
-                        'retail-text-muted': '#E5E7EB',
+                        // Retail Palette - Marble & Rose Gold
+                        'retail-primary': '#F8F8F8',      // Primary Off-White
+                        'retail-secondary': '#D3D3D3',    // Secondary Soft Gray
+                        'retail-accent-start': '#F7CAC9', // CTA Light Rose
+                        'retail-accent-end': '#E6BFB2',   // CTA Rich Rose Gold
+                        'retail-bg-dark': '#222222',      // Background Rich Charcoal
+                        'retail-bg-light': '#333333',     // Lighter Charcoal for Cards
+                        'retail-text-light': '#F8F8F8',
+                        'retail-text-muted': '#D3D3D3',
                     },
                     fontFamily: {
                         display: ['General Sans', 'sans-serif'],
@@ -62,25 +63,29 @@
     <style>
         body {
             font-family: 'Satoshi', 'General Sans', sans-serif;
-            background-color: #052e16; /* retail-bg-dark */
-            color: #F3F4F6; /* retail-text-light */
+            background-color: #222222; /* retail-bg-dark */
+            color: #F8F8F8; /* retail-text-light */
             overflow-x: hidden;
+        }
+
+        .bg-rosegold-gradient {
+            background-image: linear-gradient(to right, #F7CAC9, #E6BFB2);
         }
 
         /* --- Glassmorphism Effect --- */
         .glass-effect {
-            background: rgba(6, 78, 59, 0.6); /* retail-bg-light with transparency */
+            background: rgba(51, 51, 51, 0.6); /* retail-bg-light with transparency */
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(255, 127, 80, 0.2); /* retail-accent with transparency */
+            border: 1px solid rgba(248, 248, 248, 0.2); /* retail-primary with transparency */
         }
         
         /* --- Header Styles --- */
-        .dropdown-menu { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); opacity: 0; pointer-events: none; background-color: #064e3b; border: 1px solid rgba(255, 127, 80, 0.2); }
+        .dropdown-menu { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); opacity: 0; pointer-events: none; background-color: #333333; border: 1px solid rgba(248, 248, 248, 0.2); }
         .dropdown-menu.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .dropdown-item:hover { color: #FF7F50; background-color: rgba(255, 127, 80, 0.1); }
+        .dropdown-item:hover { background-color: rgba(248, 248, 248, 0.1); }
         .nav-link:hover > span, .dropdown-item:hover {
-            background: linear-gradient(to right, #FF7F50, #F3F4F6);
+            background: linear-gradient(to right, #F7CAC9, #E6BFB2);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -94,9 +99,9 @@
             #main-header.header-scrolled #logo-link { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%) scale(0.8); }
         }
         #main-header.header-scrolled #nav-wrapper {
-            position: static; transform: none; background-color: rgba(6, 78, 59, 0.7); backdrop-filter: blur(12px);
+            position: static; transform: none; background-color: rgba(51, 51, 51, 0.7); backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px); padding: 0.5rem 0.75rem 0.5rem 1.5rem; border-radius: 9999px;
-            border: 1px solid rgba(255, 127, 80, 0.2); box-shadow: 0 8px 32px rgba(5, 46, 22, 0.5);
+            border: 1px solid rgba(248, 248, 248, 0.2); box-shadow: 0 8px 32px rgba(34, 34, 34, 0.5);
         }
         #mobile-menu { transition: transform 0.3s ease-in-out; z-index: 60; }
         .mobile-submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
@@ -105,7 +110,7 @@
         .hero-aura {
             position: absolute; top: 50%; left: 50%; width: 800px; height: 800px;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(255, 127, 80, 0.1) 0%, rgba(255, 127, 80, 0) 60%);
+            background: radial-gradient(circle, rgba(230, 191, 178, 0.1) 0%, rgba(230, 191, 178, 0) 60%);
             animation: aurora-bg 10s ease-in-out infinite alternate; pointer-events: none; z-index: -1;
         }
         
@@ -113,33 +118,33 @@
         .advantage-card {
             transition: transform 0.3s ease, border-color 0.3s ease; border: 1px solid transparent; position: relative; overflow: hidden;
         }
-        .advantage-card:hover { transform: translateY(-10px); border-color: rgba(255, 127, 80, 0.4); }
+        .advantage-card:hover { transform: translateY(-10px); border-color: rgba(230, 191, 178, 0.4); }
         .advantage-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(255, 127, 80, 0.08), transparent 40%);
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(230, 191, 178, 0.08), transparent 40%);
             opacity: 0; transition: opacity 0.3s ease;
         }
         .advantage-card:hover::before { opacity: 1; }
         .advantage-card .icon { transition: color 0.3s ease; }
-        .advantage-card:hover .icon { color: #FF7F50; }
+        .advantage-card:hover .icon { color: #E6BFB2; }
 
         /* --- Specialty Section --- */
-        .specialty-tab { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; border: 1px solid rgba(22, 101, 52, 0.5); }
-        .specialty-tab.active { background-color: #FF7F50; color: #052e16; border-color: #FF7F50; }
-        .specialty-tab:not(.active):hover { background-color: rgba(255, 127, 80, 0.1); border-color: rgba(255, 127, 80, 0.4); }
+        .specialty-tab { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; border: 1px solid #333333; }
+        .specialty-tab.active { background-image: linear-gradient(to right, #F7CAC9, #E6BFB2); color: #222222; border-color: #F7CAC9; }
+        .specialty-tab:not(.active):hover { background-color: rgba(247, 202, 201, 0.1); border-color: rgba(247, 202, 201, 0.4); }
         .specialty-content { display: none; }
         .specialty-content.active { display: block; }
 
         /* --- Launchpad Section --- */
-        #launchpad-timeline { position: absolute; left: calc(1.25rem - 1px); top: 1.25rem; bottom: 1.25rem; width: 2px; background-color: rgba(22, 101, 52, 0.5); }
-        #launchpad-progress { width: 100%; height: 0%; background-color: #166534; transition: height 0.5s ease-out; }
+        #launchpad-timeline { position: absolute; left: calc(1.25rem - 1px); top: 1.25rem; bottom: 1.25rem; width: 2px; background-color: #333333; }
+        #launchpad-progress { width: 100%; height: 0%; background-color: #F8F8F8; transition: height 0.5s ease-out; }
         .launch-step { position: relative; padding-left: 3.5rem; }
         .launch-step::before {
             content: attr(data-step); position: absolute; left: 0; top: 0; width: 2.5rem; height: 2.5rem;
-            border-radius: 9999px; background-color: #064e3b; border: 2px solid rgba(22, 101, 52, 0.6);
-            color: #E5E7EB; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease;
+            border-radius: 9999px; background-color: #333333; border: 2px solid rgba(248, 248, 248, 0.3);
+            color: #D3D3D3; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease;
         }
-        .launch-step.in-view::before { background-color: #166534; color: white; border-color: #FF7F50; transform: scale(1.1); }
+        .launch-step.in-view::before { background-color: #F8F8F8; color: #222222; border-color: #E6BFB2; transform: scale(1.1); }
 
         /* --- Footer Styles --- */
         .aurora-footer { position: relative; padding: 1rem; margin-top: 6rem; }
@@ -150,13 +155,13 @@
         }
         .aurora-panel {
             position: relative; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 2.5rem;
-            background: rgba(6, 78, 59, 0.6); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 1.5rem; border: 1px solid rgba(255, 127, 80, 0.2); overflow: hidden;
+            background: rgba(51, 51, 51, 0.6); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem; border: 1px solid rgba(248, 248, 248, 0.2); overflow: hidden;
         }
         #aurora-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.7; pointer-events: none; }
         .aurora-content { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; align-items: start; }
-        .aurora-footer .footer-column h4 { font-family: 'General Sans', sans-serif; font-weight: 700; color: #F3F4F6; margin-bottom: 1rem; }
-        .aurora-footer .footer-column a { position: relative; text-decoration: none; display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: #E5E7EB; transition: transform 0.3s ease; }
+        .aurora-footer .footer-column h4 { font-family: 'General Sans', sans-serif; font-weight: 700; color: #F8F8F8; margin-bottom: 1rem; }
+        .aurora-footer .footer-column a { position: relative; text-decoration: none; display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 500; color: #D3D3D3; transition: transform 0.3s ease; }
         .aurora-footer .footer-column a:hover { transform: scale(1.05); color: transparent; }
         .aurora-footer .footer-column a::before {
             content: attr(data-text); position: absolute; inset: 0;
@@ -166,9 +171,9 @@
         }
         .aurora-footer .footer-column a:hover::before { opacity: 1; }
         .aurora-footer .brand-column .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
-        .aurora-footer .brand-column .social-links a { font-size: 1.25rem; color: #E5E7EB; transition: color 0.3s ease, transform 0.3s ease; }
+        .aurora-footer .brand-column .social-links a { font-size: 1.25rem; color: #D3D3D3; transition: color 0.3s ease, transform 0.3s ease; }
         .aurora-footer .brand-column .social-links a:hover { color: white; transform: scale(1.1); }
-        .aurora-footer-bottom { position: relative; z-index: 2; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 127, 80, 0.2); color: #E5E7EB; font-size: 0.8rem; }
+        .aurora-footer-bottom { position: relative; z-index: 2; text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(248, 248, 248, 0.2); color: #D3D3D3; font-size: 0.8rem; }
         .footer-email-link span { position: relative; transition: color 0.4s ease; }
         .footer-email-link:hover span { color: transparent; }
         .footer-email-link span::before {
@@ -186,7 +191,7 @@
     <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 font-display transition-all duration-300 ease-in-out">
         <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
             <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
-                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/052e16/F3F4F6?text=NOYOAI';">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/222222/FFFFFF?text=NOYOAI';">
             </a>
             <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
                 <nav id="desktop-nav" class="hidden lg:flex items-center gap-8 font-medium text-sm text-retail-text-light">
@@ -213,7 +218,7 @@
                     </div>
                     <a href="#" class="nav-link"><span>About</span></a>
                 </nav>
-                <a href="#final-cta" class="bg-retail-accent text-retail-bg-dark font-bold text-sm py-2.5 px-6 rounded-lg transition-all hover:bg-opacity-80 hover:shadow-lg hover:shadow-retail-accent/20 hover:scale-105 hidden lg:inline-block">
+                <a href="#final-cta" class="bg-rosegold-gradient text-retail-bg-dark font-bold text-sm py-2.5 px-6 rounded-lg transition-all hover:shadow-lg hover:shadow-retail-accent-end/20 hover:scale-105 hidden lg:inline-block">
                     Request a Demo
                 </a>
                 <button id="mobile-menu-button" class="lg:hidden text-white text-2xl z-50">
@@ -223,7 +228,7 @@
         </div>
     </header>
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full glass-effect -translate-x-full lg:hidden" style="background: rgba(5, 46, 22, 0.9);">
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full glass-effect -translate-x-full lg:hidden" style="background: rgba(34, 34, 34, 0.9);">
         <button id="mobile-menu-close-button" class="absolute top-6 right-6 text-white text-4xl">
             <i class="fa-solid fa-times"></i>
         </button>
@@ -234,8 +239,8 @@
                     <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
                 </button>
                 <div class="mobile-submenu ml-4 text-xl font-medium text-gray-400 flex flex-col gap-2 mt-2">
-                    <a href="#" class="hover:text-retail-accent">By Industry</a>
-                    <a href="#" class="hover:text-retail-accent">By Feature</a>
+                    <a href="#" class="hover:text-retail-accent-start">By Industry</a>
+                    <a href="#" class="hover:text-retail-accent-start">By Feature</a>
                 </div>
             </div>
             <a href="index.html#pricing" class="nav-link">Pricing</a>
@@ -244,13 +249,13 @@
                     <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
                 </button>
                 <div class="mobile-submenu ml-4 text-xl font-medium text-gray-400 flex flex-col gap-2 mt-2">
-                    <a href="#" class="hover:text-retail-accent">Blog</a>
-                    <a href="#" class="hover:text-retail-accent">FAQ</a>
-                    <a href="#" class="hover:text-retail-accent">Help Center</a>
+                    <a href="#" class="hover:text-retail-accent-start">Blog</a>
+                    <a href="#" class="hover:text-retail-accent-start">FAQ</a>
+                    <a href="#" class="hover:text-retail-accent-start">Help Center</a>
                 </div>
             </div>
             <a href="#" class="nav-link">About</a>
-            <a href="#final-cta" class="bg-retail-accent text-retail-bg-dark font-bold py-3 px-8 rounded-lg text-lg mt-4">
+            <a href="#final-cta" class="bg-rosegold-gradient text-retail-bg-dark font-bold py-3 px-8 rounded-lg text-lg mt-4">
                 Request a Demo
             </a>
         </div>
@@ -267,7 +272,7 @@
                     Noyo is the WhatsApp Growth Partner that automates your sales and support, creating a seamless shopping experience that boosts loyalty and revenue.
                 </p>
                 <div class="animate-fade-in-up" style="animation-delay: 0.7s;">
-                    <a href="#final-cta" class="bg-retail-accent text-retail-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-retail-accent/30">
+                    <a href="#final-cta" class="bg-rosegold-gradient text-retail-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-retail-accent-end/20">
                         Request a Demo
                     </a>
                 </div>
@@ -328,7 +333,7 @@
              <div class="container mx-auto max-w-3xl glass-effect rounded-2xl p-12">
                 <h2 class="font-display font-bold text-4xl text-white mb-4">Ready to Revolutionize Your Store?</h2>
                 <p class="text-lg text-retail-text-muted mb-8">See a live demo of Noyo tailored to your specific product catalog.</p>
-                <a href="index.html#contact" class="bg-retail-accent text-retail-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-retail-accent/30">
+                <a href="index.html#contact" class="bg-rosegold-gradient text-retail-bg-dark font-bold py-4 px-10 rounded-lg text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-retail-accent-end/20">
                     Schedule Your Demo
                 </a>
                 <p class="text-sm text-retail-text-muted mt-4">Complimentary. No obligation.</p>
@@ -342,7 +347,7 @@
             <canvas id="aurora-canvas"></canvas>
             <div class="aurora-content">
                 <div class="footer-column brand-column">
-                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/052e16/F3F4F6?text=NOYOAI';">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/222222/FFFFFF?text=NOYOAI';">
                     <div class="social-links">
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -351,25 +356,25 @@
                 </div>
                 <div class="footer-column">
                     <h4>Solutions</h4>
-                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #FF7F50; --c2: #F3F4F6;">By Industry</a>
-                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #F3F4F6; --c2: #166534;">By Feature</a>
-                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #166534; --c2: #FF7F50;">Integrations</a>
+                    <a href="#" data-text="By Industry" class="gradient-link" style="--c1: #F7CAC9; --c2: #E6BFB2;">By Industry</a>
+                    <a href="#" data-text="By Feature" class="gradient-link" style="--c1: #E6BFB2; --c2: #D3D3D3;">By Feature</a>
+                    <a href="#" data-text="Integrations" class="gradient-link" style="--c1: #D3D3D3; --c2: #F7CAC9;">Integrations</a>
                 </div>
                 <div class="footer-column">
                     <h4>Resources</h4>
-                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #FF7F50; --c2: #166534;">Blog</a>
-                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #F3F4F6; --c2: #FF7F50;">Help Center</a>
-                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #166534; --c2: #F3F4F6;">FAQ</a>
+                    <a href="#" data-text="Blog" class="gradient-link" style="--c1: #F7CAC9; --c2: #D3D3D3;">Blog</a>
+                    <a href="#" data-text="Help Center" class="gradient-link" style="--c1: #E6BFB2; --c2: #F7CAC9;">Help Center</a>
+                    <a href="#" data-text="FAQ" class="gradient-link" style="--c1: #D3D3D3; --c2: #E6BFB2;">FAQ</a>
                 </div>
                 <div class="footer-column">
                     <h4>Company</h4>
-                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #F3F4F6; --c2: #FF7F50;">About Us</a>
-                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #166534; --c2: #F3F4F6;">Pricing</a>
-                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #FF7F50; --c2: #166534;">Contact</a>
+                    <a href="#" data-text="About Us" class="gradient-link" style="--c1: #E6BFB2; --c2: #F7CAC9;">About Us</a>
+                    <a href="#" data-text="Pricing" class="gradient-link" style="--c1: #D3D3D3; --c2: #E6BFB2;">Pricing</a>
+                    <a href="#" data-text="Contact" class="gradient-link" style="--c1: #F7CAC9; --c2: #D3D3D3;">Contact</a>
                 </div>
                 <div class="footer-column">
                     <h4>Get in Touch</h4>
-                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" style="--c1: #F3F4F6; --c2: #FF7F50;">
+                    <a href="mailto:info@noyoai.com" class="flex items-center gap-2 footer-email-link" style="--c1: #F7CAC9; --c2: #E6BFB2;">
                         <i class="fa-solid fa-envelope"></i>
                         <span data-text="info@noyoai.com">info@noyoai.com</span>
                     </a>
@@ -427,7 +432,7 @@
                 advantageContainer.innerHTML = advantageData.map(item => `
                     <div class="advantage-card glass-effect p-8 rounded-lg text-center">
                         <div class="relative">
-                            <div class="icon text-4xl text-retail-primary mb-4"><i class="fa-solid ${item.icon}"></i></div>
+                            <div class="icon text-4xl text-retail-secondary mb-4"><i class="fa-solid ${item.icon}"></i></div>
                             <h3 class="font-bold text-xl text-retail-text-light mb-2">${item.title}</h3>
                             <p class="text-retail-text-muted">${item.text}</p>
                         </div>
@@ -449,7 +454,7 @@
                     <div id="${item.id}-content" class="specialty-content ${index === 0 ? 'active' : ''}">
                         <h3 class="font-bold text-3xl text-white mb-6">${item.title}</h3>
                         <ul class="space-y-4 text-retail-text-muted list-inside">
-                            ${item.features.map(feature => `<li class="flex items-start"><i class="fa-solid fa-check text-retail-accent mt-1 mr-3"></i> ${feature}</li>`).join('')}
+                            ${item.features.map(feature => `<li class="flex items-start"><i class="fa-solid fa-check text-retail-secondary mt-1 mr-3"></i> ${feature}</li>`).join('')}
                         </ul>
                     </div>
                 `).join('');
@@ -582,7 +587,7 @@
 
                 function initGlows() {
                     glows = [];
-                    const colors = ['255, 127, 80', '22, 101, 52', '243, 244, 246']; // Coral, Green, Cream
+                    const colors = ['247, 202, 201', '230, 191, 178', '211, 211, 211']; // Rose, Rose Gold, Gray
                     for (let i = 0; i < 3; i++) {
                         const radius = Math.random() * 200 + 250;
                         const x = Math.random() * canvas.width;
@@ -617,3 +622,4 @@
     </script>
 </body>
 </html>
+
