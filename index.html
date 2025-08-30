@@ -122,9 +122,7 @@
             --gradient-cta-start: #66CDFF;
             --gradient-cta-end: #F4A3FF;
         }
-        html {
-        scroll-padding-top: 100px; /* Adjust this value to match your header's height */
-        }
+
         body {
             font-family: 'General Sans', 'Satoshi', sans-serif;
             background-color: #000000; /* Fallback for the gradient */
@@ -1018,9 +1016,9 @@
                         </button>
                         <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
                             <!-- MODIFICATION: Updated href for smooth scroll -->
-                            <a href="/#industries-root" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Industry</a>
+                            <a href="#industries-root" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Industry</a>
                             <!-- MODIFICATION: Updated href for smooth scroll -->
-                            <a href="/#features-section-wrapper" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Feature</a>
+                            <a href="#features-section-wrapper" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Feature</a>
                         </div>
                     </div>
                     <a href="#" class="relative py-2 group nav-link">
@@ -2887,21 +2885,6 @@ document.addEventListener("DOMContentLoaded", function() {
     updateFooter();
 });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Check if the page loaded with a hash in the URL (e.g., /#industries-root)
-        if (window.location.hash) {
-            // Use a small delay to ensure all content (like your React sections) has loaded
-            setTimeout(() => {
-                const targetElement = document.querySelector(window.location.hash);
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            }, 200); // A 200ms delay is usually enough for scripts to load
-        }
-    });
-</script>
+
 </body>
 </html>
