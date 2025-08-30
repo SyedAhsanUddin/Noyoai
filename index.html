@@ -428,24 +428,6 @@
                 margin-right: 20px;
             }
         }
-        
-        /* MODIFICATION: Added styles for desktop carousel enhancement */
-        @media (min-width: 768px) {
-            .carousel-inner {
-                max-width: 700px; /* Widen container to show parts of side cards */
-                height: 450px; /* Increase height for bigger cards */
-                /* The fade effect */
-                -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
-                mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
-            }
-            /* The 'a' tag is the card container in the belt */
-            .carousel-belt a {
-                width: 480px; /* Increase card width */
-            }
-            .carousel-card {
-                height: 360px; /* Increase card height */
-            }
-        }
 
         /* --- NEW TIMELINE FEATURES SECTION STYLES --- */
         .features-heading-gradient {
@@ -2242,7 +2224,7 @@
 
         function IndustriesApp() {
             const cardsData = [
-                { title: "HEALTHCARE MANAGEMENT", href: "/healthcare-management", description: "Automate appointment booking and provide 24/7 patient support.", icon: 'fa-heart-pulse', colors: ['#F4A3FF', '#6A0FFF', '#66CDFF'] },
+                { title: "HEALTHCARE & WELLNESS", href: "/healthcare-wellness", description: "Automate appointment booking and provide 24/7 patient support.", icon: 'fa-heart-pulse', colors: ['#F4A3FF', '#6A0FFF', '#66CDFF'] },
                 { title: "FOOD & BEVERAGE", href: "/food-beverage", description: "Handle reservations and take orders effortlessly.", icon: 'fa-utensils', colors: ['#66CDFF', '#F4A3FF', '#6A0FFF'] },
                 { title: "RETAIL & E-COMMERCE", href: "/retail-ecommerce", description: "Turn conversations into conversions with personalized recommendations.", icon: 'fa-shopping-bag', colors: ['#6A0FFF', '#66CDFF', '#F4A3FF'] },
                 { title: "REAL ESTATE", href: "/real-estate-property", description: "Capture and qualify every lead, day or night.", icon: 'fa-home', colors: ['#F4A3FF', '#6A0FFF', '#66CDFF'] },
@@ -2260,6 +2242,7 @@
             const carouselInnerRef = useRef(null);
             const touchStartX = useRef(0);
             const touchEndX = useRef(0);
+            // MODIFICATION: Added a ref to track if a swipe is in progress
             const isSwiping = useRef(false);
 
             const handlePrev = useCallback(() => {
@@ -2280,14 +2263,16 @@
                 setActiveIndex(index);
             }, [isAnimating, activeIndex]);
             
+            // MODIFICATION: Updated touch handlers to distinguish between tap and swipe
             const handleTouchStart = (e) => {
                 touchStartX.current = e.touches[0].clientX;
-                touchEndX.current = e.touches[0].clientX; 
-                isSwiping.current = false; 
+                touchEndX.current = e.touches[0].clientX; // Reset endX on start
+                isSwiping.current = false; // Reset swipe flag
             };
 
             const handleTouchMove = (e) => {
                 touchEndX.current = e.touches[0].clientX;
+                // If movement is significant, we consider it a swipe
                 if (Math.abs(touchEndX.current - touchStartX.current) > 10) {
                     isSwiping.current = true;
                 }
@@ -2296,6 +2281,7 @@
             const handleTouchEnd = () => {
                 const deltaX = touchEndX.current - touchStartX.current;
 
+                // Only trigger carousel navigation if it was a clear swipe
                 if (isSwiping.current && Math.abs(deltaX) > 50) {
                     if (deltaX > 50) {
                         handlePrev();
@@ -2306,6 +2292,7 @@
             };
 
             const handleCardClick = (e) => {
+                // Prevent the default link navigation if a swipe was detected
                 if (isSwiping.current) {
                     e.preventDefault();
                 }
@@ -2340,11 +2327,8 @@
                         const offsetToCenter = (carouselContainerWidth - cardWidth) / 2;
                         newTranslateX = offsetToCenter - totalWidthOfPreviousCards;
                     } else {
-                        // Desktop logic centers the card
-                        const containerWidth = carouselRef.current.clientWidth;
-                        const totalWidthOfPreviousCards = activeIndex * (cardWidth + cardGap);
-                        const offsetToCenter = (containerWidth - cardWidth) / 2;
-                        newTranslateX = offsetToCenter - totalWidthOfPreviousCards;
+                        // Desktop logic remains the same
+                        newTranslateX = -activeIndex * (cardWidth + cardGap);
                     }
                     
                     gsap.to(carouselInnerRef.current, {
@@ -2390,7 +2374,7 @@
                                         key={index}
                                         className={`carousel-card group ${index === activeIndex ? 'is-active' : ''}`}
                                         ref={el => cardsRef.current[index] = el}
-                                        onClick={handleCardClick} 
+                                        onClick={handleCardClick} // MODIFICATION: Added click handler
                                         style={{
                                             zIndex: cardsData.length - Math.abs(index - activeIndex),
                                             pointerEvents: isAnimating ? 'none' : 'auto'
