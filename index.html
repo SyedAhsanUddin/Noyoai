@@ -122,7 +122,9 @@
             --gradient-cta-start: #66CDFF;
             --gradient-cta-end: #F4A3FF;
         }
-
+        html {
+        scroll-padding-top: 100px; /* Adjust this value to match your header's height */
+        }
         body {
             font-family: 'General Sans', 'Satoshi', sans-serif;
             background-color: #000000; /* Fallback for the gradient */
@@ -2885,6 +2887,21 @@ document.addEventListener("DOMContentLoaded", function() {
     updateFooter();
 });
 </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check if the page loaded with a hash in the URL (e.g., /#industries-root)
+        if (window.location.hash) {
+            // Use a small delay to ensure all content (like your React sections) has loaded
+            setTimeout(() => {
+                const targetElement = document.querySelector(window.location.hash);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }, 200); // A 200ms delay is usually enough for scripts to load
+        }
+    });
+</script>
 </body>
 </html>
