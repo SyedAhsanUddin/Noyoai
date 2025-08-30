@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - NOYOAI</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Custom Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700,800&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#001B6B',
+                        'brand-cta': '#6A0FFF',
+                        'brand-highlight': '#66CDFF',
+                        'brand-accent': '#F4A3FF',
+                        'brand-dark': '#1d1d1f',
+                        'brand-gray': '#a0aec0',
+                    },
+                    fontFamily: {
+                        display: ['General Sans', 'sans-serif'],
+                        sans: ['Satoshi', 'sans-serif'],
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        taglineGradient: {
+                            '0%': { backgroundPosition: '200% center' },
+                            '100%': { backgroundPosition: '-200% center' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-1': 'fadeIn 1s ease-out 0.3s forwards',
+                        'fade-in-2': 'fadeIn 1s ease-out 0.6s forwards',
+                        'fade-in-3': 'fadeIn 1s ease-out 0.9s forwards',
+                        'tagline-gradient': 'taglineGradient 8s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'General Sans', 'Satoshi', sans-serif;
+            background-color: #000000;
+            background-image: linear-gradient(to bottom, #0F2027, #000000);
+            background-attachment: fixed;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .heading-gradient-text {
+            background-image: linear-gradient(to right, #66CDFF, #F4A3FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .glare-hover {
+            overflow: hidden;
+            position: relative;
+        }
+        .glare-hover::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(-45deg, hsla(0,0%,100%,0) 60%, rgba(255,255,255,0.5) 70%, hsla(0,0%,100%,0), hsla(0,0%,100%,0) 100%);
+            transition: 650ms ease;
+            background-size: 250% 250%, 100% 100%;
+            background-repeat: no-repeat;
+            background-position: -100% -100%, 0 0;
+        }
+        .glare-hover:hover::before { background-position: 100% 100%, 0 0; }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .faq-question {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .faq-question:hover {
+            color: #66CDFF;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), padding 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding-top: 0;
+        }
+        .faq-item.active .faq-answer {
+            padding-top: 1.5rem;
+        }
+        .faq-icon {
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .dropdown-menu {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .nav-link:hover > span {
+            background: linear-gradient(to right, #F4A3FF, #66CDFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+            z-index: 60;
+        }
+        .mobile-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        /* --- HEADER DOCK/NOTCH STYLES --- */
+        #main-header .container { position: relative; }
+        #main-header:not(.header-scrolled) #desktop-nav {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #main-header.header-scrolled {
+            background-color: transparent;
+            border-bottom-color: transparent;
+            backdrop-filter: none;
+        }
+        #main-header.header-scrolled .container { justify-content: center; }
+        #main-header.header-scrolled #logo-link {
+            transform: scale(0.8);
+            opacity: 0.7;
+        }
+        @media (min-width: 768px) {
+            #main-header.header-scrolled #logo-link {
+                position: absolute;
+                left: 1.5rem;
+                top: 50%;
+                transform: translateY(-50%) scale(0.8);
+            }
+        }
+        #main-header.header-scrolled #nav-wrapper {
+            position: static;
+            transform: none;
+            background-color: rgba(29, 29, 31, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- FOOTER SLIDE STYLES --- */
+        .aurora-footer {
+            position: relative;
+            padding: 1rem;
+            margin-top: 6rem;
+        }
+        @media (min-width: 1024px) {
+            .aurora-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                transform: translateY(100%);
+                transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+                margin-top: 0;
+            }
+            .aurora-footer.is-visible {
+                transform: translateY(0);
+            }
+            #final-cta-section {
+                margin-bottom: 250px; /* Space for the footer */
+            }
+        }
+        .aurora-panel {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            overflow: hidden;
+        }
+        #aurora-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .aurora-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+        .aurora-footer .footer-column h4 {
+            font-family: 'General Sans', sans-serif;
+            font-weight: 700;
+            color: #eee;
+            margin-bottom: 1rem;
+        }
+        .aurora-footer .footer-column a {
+            position: relative;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .aurora-footer .footer-column a:hover {
+            transform: scale(1.05);
+        }
+        .aurora-footer .footer-column a::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+        }
+        .aurora-footer .footer-column a:hover::before {
+            opacity: 1;
+        }
+        .aurora-footer .brand-column .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .aurora-footer .brand-column .social-links a {
+            font-size: 1.25rem;
+            color: var(--brand-gray);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .aurora-footer .brand-column .social-links a:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+        .footer-email-link span {
+            position: relative;
+            transition: color 0.4s ease;
+        }
+        .footer-email-link:hover span {
+            color: transparent;
+        }
+        .footer-email-link span::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, var(--c1), var(--c2), var(--c1));
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .footer-email-link:hover span::before {
+            opacity: 1;
+        }
+        .aurora-footer-bottom {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--brand-gray);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- HEADER -->
+    <header id="main-header" class="py-4 px-6 md:px-12 fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-white/10 font-display transition-all duration-300 ease-in-out">
+        <div class="container mx-auto flex justify-between items-center transition-all duration-300 ease-in-out">
+            <a href="index.html" id="logo-link" class="transition-all duration-300 ease-in-out z-50">
+                <img src="images/logo.png" alt="NOYOAI Logo" class="h-8 md:h-8 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+            </a>
+            <div id="nav-wrapper" class="flex items-center gap-4 transition-all duration-300 ease-in-out">
+                <nav id="desktop-nav" class="hidden md:flex items-center gap-10 font-medium text-sm text-white">
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                        <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Industry</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">By Feature</a>
+                        </div>
+                    </div>
+                    <a href="#" class="relative py-2 group nav-link">
+                        <span>Pricing</span>
+                    </a>
+                    <div class="relative group" data-dropdown>
+                        <button class="flex items-center gap-2 py-2 transition-colors nav-link" data-dropdown-button>
+                            <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </button>
+                         <div class="dropdown-menu absolute hidden top-full left-1/2 -translate-x-1/2 mt-4 w-52 bg-brand-dark rounded-xl shadow-2xl p-2 border border-gray-800" data-dropdown-menu>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Blog</a>
+                            <a href="faq.html" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">FAQ</a>
+                            <a href="#" class="block px-4 py-2 rounded-md text-white hover:bg-gray-800 dropdown-item font-semibold transition-colors">Help Center</a>
+                        </div>
+                    </div>
+                    <a href="about.html" class="relative py-2 group nav-link">
+                        <span>About</span>
+                    </a>
+                </nav>
+                <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold text-sm py-2.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-brand-cta/40 hover:scale-105 hidden md:inline-block">
+                    Get Started
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-white text-2xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg -translate-x-full md:hidden">
+        <button id="mobile-menu-close-button" class="absolute top-6 right-6 text-white text-4xl">
+            <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center justify-center h-full gap-6 text-2xl font-bold">
+            <div class="text-center">
+                <button class="flex items-center gap-2 py-2 transition-colors" data-mobile-submenu-button>
+                    <span>Solutions</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                </button>
+                <div class="mobile-submenu ml-4 text-xl font-medium text-gray-300 flex flex-col gap-2 mt-2">
+                    <a href="#" class="hover:text-brand-highlight">By Industry</a>
+                    <a href="#" class="hover:text-brand-highlight">By Feature</a>
+                </div>
+            </div>
+            <a href="#" class="nav-link">Pricing</a>
+            <div class="text-center">
+                <button class="flex items-center gap-2 py-2 transition-colors" data-mobile-submenu-button>
+                    <span>Resources</span> <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                </button>
+                <div class="mobile-submenu ml-4 text-xl font-medium text-gray-300 flex flex-col gap-2 mt-2">
+                    <a href="#" class="hover:text-brand-highlight">Blog</a>
+                    <a href="faq.html" class="hover:text-brand-highlight">FAQ</a>
+                    <a href="#" class="hover:text-brand-highlight">Help Center</a>
+                </div>
+            </div>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="#" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg mt-4">
+                Get Started
+            </a>
+        </div>
+    </div>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="relative pt-48 pb-24 flex flex-col justify-center text-center p-6 font-display overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-primary via-black to-black opacity-80 z-0"></div>
+            <div class="relative z-10 max-w-screen-lg mx-auto">
+                <h1 class="font-extrabold text-4xl sm:text-5xl lg:text-7xl text-white mb-6 tracking-tight opacity-0 animate-fade-in-1 leading-tight">
+                    Frequently Asked <br class="hidden sm:block" /> <span class="tagline-gradient animate-tagline-gradient">Questions</span>
+                </h1>
+                <p class="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto opacity-0 animate-fade-in-2">
+                    Have a question? We've got answers. If you can't find what you're looking for, feel free to get in touch.
+                </p>
+            </div>
+        </section>
+
+        <!-- FAQ ACCORDION SECTION -->
+        <section class="py-24 px-6 md:px-12">
+            <div class="container mx-auto max-w-4xl">
+                <div id="faq-accordion" class="space-y-4">
+                    <!-- FAQ items will be injected here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- "STILL HAVE QUESTIONS?" SECTION -->
+        <section id="final-cta-section" class="py-24 px-6 md:px-12 bg-black/20">
+            <div class="container mx-auto text-center max-w-3xl">
+                <h2 class="font-bold text-4xl md:text-5xl text-white mb-6">Still Have Questions?</h2>
+                <p class="text-lg text-gray-300 mb-10">
+                    Our team is ready to help. Reach out to us for a personalized demo or to discuss your specific business needs.
+                </p>
+                <a href="#contact" class="glare-hover bg-gradient-to-r from-brand-accent to-brand-highlight text-white font-semibold py-3 px-8 rounded-full text-lg inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-accent/40">
+                    Contact Us
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="aurora-footer" class="aurora-footer">
+        <div class="aurora-panel">
+            <canvas id="aurora-canvas"></canvas>
+            <div class="aurora-content">
+                <div class="footer-column brand-column">
+                    <img src="images/logo.png" alt="NOYOAI Logo" class="h-7 mb-4" onerror="this.onerror=null;this.src='https://placehold.co/240x56/000000/FFFFFF?text=NOYOAI';">
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Solutions</h4>
+                    <a href="#" data-text="By Industry" style="--c1: #6A0FFF; --c2: #66CDFF;">By Industry</a>
+                    <a href="#" data-text="By Feature" style="--c1: #66CDFF; --c2: #F4A3FF;">By Feature</a>
+                    <a href="#" data-text="Integrations" style="--c1: #F4A3FF; --c2: #008B8B;">Integrations</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <a href="#" data-text="Blog" style="--c1: #008B8B; --c2: #6A0FFF;">Blog</a>
+                    <a href="#" data-text="Help Center" style="--c1: #6A0FFF; --c2: #F4A3FF;">Help Center</a>
+                    <a href="faq.html" data-text="FAQ" style="--c1: #66CDFF; --c2: #008B8B;">FAQ</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="about.html" data-text="About Us" style="--c1: #F4A3FF; --c2: #66CDFF;">About Us</a>
+                    <a href="#" data-text="Pricing" style="--c1: #6A0FFF; --c2: #008B8B;">Pricing</a>
+                    <a href="#" data-text="Contact" style="--c1: #66CDFF; --c2: #6A0FFF;">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Get in Touch</h4>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@noyoai.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 footer-email-link" style="--c1: #F4A3FF; --c2: #66CDFF;">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span data-text="info@noyoai.com">info@noyoai.com</span>
+                    </a>
+                </div>
+            </div>
+            <div class="aurora-footer-bottom">
+                <p>&copy; 2025 NOYOAI. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- FAQ Accordion Logic ---
+            const faqData = [
+                { question: "What is a NOYOAI chatbot?", answer: "A NOYOAI chatbot is a custom-built AI designed to integrate with your WhatsApp business account. It automates conversations, answers customer questions, qualifies leads, and performs tasks like booking appointments, all available 24/7." },
+                { question: "How long does it take to set up?", answer: "Our standard setup process is designed for speed. We can typically have a fully functional, custom-trained AI chatbot integrated with your WhatsApp account within 48-72 hours after our initial consultation." },
+                { question: "What kind of businesses can benefit from this?", answer: "Any business that relies on customer communication can benefit. We have successful implementations in retail, real estate, healthcare, salons, e-commerce, and more. If you get repetitive questions or want to capture leads after hours, our solution is for you." },
+                { question: "Do I need technical skills to manage the chatbot?", answer: "Not at all. We handle the entire setup and integration process. Once launched, the chatbot operates autonomously. We also provide a simple dashboard for you to view analytics and insights." },
+                { question: "What is the pricing structure?", answer: "We offer flexible pricing plans based on your business needs, typically based on the volume of conversations. We recommend booking a free demo so we can understand your requirements and provide a custom quote." },
+                { question: "What kind of support do you offer?", answer: "We believe in partnership. All our plans come with dedicated support from our team. We're here to help you optimize your chatbot's performance and ensure you're getting the most out of our service." },
+                { question: "How do you ensure the security of my customer data?", answer: "Data security is our top priority. All conversations are end-to-end encrypted, and our platform is built on secure, compliant infrastructure. We adhere to strict data privacy protocols to ensure your customer information is always protected." },
+                { question: "Can the chatbot handle a high volume of conversations simultaneously?", answer: "Absolutely. Our cloud-based infrastructure is designed to scale, allowing the chatbot to manage thousands of concurrent conversations without any degradation in performance, ensuring every customer receives an instant response." }
+            ];
+
+            const accordionContainer = document.getElementById('faq-accordion');
+            if (accordionContainer) {
+                faqData.forEach(item => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'faq-item';
+                    faqItem.innerHTML = `
+                        <div class="faq-question flex justify-between items-center py-6">
+                            <h3 class="font-bold text-xl md:text-2xl">${item.question}</h3>
+                            <div class="faq-icon text-2xl text-brand-highlight">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-gray-300 text-lg leading-relaxed pb-6">${item.answer}</p>
+                        </div>
+                    `;
+                    accordionContainer.appendChild(faqItem);
+                });
+
+                const faqItems = document.querySelectorAll('.faq-item');
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question');
+                    const answer = item.querySelector('.faq-answer');
+                    question.addEventListener('click', () => {
+                        const isActive = item.classList.contains('active');
+                        faqItems.forEach(i => {
+                            i.classList.remove('active');
+                            i.querySelector('.faq-answer').style.maxHeight = null;
+                        });
+                        if (!isActive) {
+                            item.classList.add('active');
+                            answer.style.maxHeight = answer.scrollHeight + "px";
+                        }
+                    });
+                });
+            }
+
+            // --- Header & Mobile Menu Logic ---
+            const mainHeader = document.getElementById('main-header');
+            if (mainHeader) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) mainHeader.classList.add('header-scrolled');
+                    else mainHeader.classList.remove('header-scrolled');
+                });
+            }
+
+            document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
+                const button = dropdown.querySelector('[data-dropdown-button]');
+                const menu = dropdown.querySelector('[data-dropdown-menu]');
+                let hideTimeout;
+                const showMenu = () => {
+                    clearTimeout(hideTimeout);
+                    menu.classList.remove('hidden');
+                    setTimeout(() => menu.classList.add('is-visible'), 10);
+                };
+                const hideMenu = () => {
+                    hideTimeout = setTimeout(() => {
+                        menu.classList.remove('is-visible');
+                        setTimeout(() => menu.classList.add('hidden'), 300);
+                    }, 200);
+                };
+                dropdown.addEventListener('mouseenter', showMenu);
+                dropdown.addEventListener('mouseleave', hideMenu);
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('-translate-x-full'));
+            mobileMenuCloseButton.addEventListener('click', () => mobileMenu.classList.add('-translate-x-full'));
+
+            document.querySelectorAll('[data-mobile-submenu-button]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const submenu = button.nextElementSibling;
+                    const icon = button.querySelector('i');
+                    if (submenu.style.maxHeight) {
+                        submenu.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        submenu.style.maxHeight = submenu.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    } 
+                });
+            });
+
+            // --- Aurora Footer Logic ---
+            const auroraFooter = document.getElementById('aurora-footer');
+            if (auroraFooter) {
+                let mm = gsap.matchMedia();
+                mm.add("(min-width: 1024px)", () => {
+                    ScrollTrigger.create({
+                        trigger: "#final-cta-section",
+                        start: "bottom bottom-=100px",
+                        onEnter: () => auroraFooter.classList.add('is-visible'),
+                        onLeaveBack: () => auroraFooter.classList.remove('is-visible')
+                    });
+                });
+
+                const canvas = document.getElementById('aurora-canvas');
+                const ctx = canvas.getContext('2d');
+                let mouse = { x: undefined, y: undefined };
+                let glows = [];
+
+                function resizeAurora() {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    initGlows();
+                }
+
+                class Glow {
+                    constructor(x, y, radius, color, velocity) {
+                        this.x = x; this.y = y; this.radius = radius; this.color = color; this.velocity = velocity;
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                        gradient.addColorStop(0, `rgba(${this.color}, 0.2)`);
+                        gradient.addColorStop(1, `rgba(${this.color}, 0)`);
+                        ctx.fillStyle = gradient;
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    update() {
+                        this.x += this.velocity.x; this.y += this.velocity.y;
+                        if (this.x - this.radius > canvas.width) this.x = -this.radius;
+                        if (this.x + this.radius < 0) this.x = canvas.width + this.radius;
+                        if (this.y - this.radius > canvas.height) this.y = -this.radius;
+                        if (this.y + this.radius < 0) this.y = canvas.height + this.radius;
+                        
+                        if (mouse.x !== undefined && mouse.y !== undefined) {
+                            const dx = this.x - mouse.x;
+                            const dy = this.y - mouse.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            if (distance < this.radius) {
+                                const forceDirectionX = dx / distance;
+                                const forceDirectionY = dy / distance;
+                                const maxDistance = this.radius;
+                                const force = (maxDistance - distance) / maxDistance;
+                                this.x += forceDirectionX * force * 2.5; // Increased repulsion
+                                this.y += forceDirectionY * force * 2.5;
+                            }
+                        }
+
+                        this.draw();
+                    }
+                }
+
+                function initGlows() {
+                    glows = [];
+                    const colors = ['106, 15, 255', '102, 205, 255', '244, 163, 255'];
+                    for (let i = 0; i < 3; i++) {
+                        const radius = Math.random() * 200 + 250;
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        const color = colors[i % colors.length];
+                        const velocity = { x: (Math.random() - 0.5) * 0.4, y: (Math.random() - 0.5) * 0.4 };
+                        glows.push(new Glow(x, y, radius, color, velocity));
+                    }
+                }
+
+                function animateAurora() {
+                    requestAnimationFrame(animateAurora);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    glows.forEach(glow => glow.update());
+                }
+
+                window.addEventListener('resize', resizeAurora);
+                auroraFooter.addEventListener('mousemove', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
+                });
+                auroraFooter.addEventListener('mouseleave', () => {
+                    mouse.x = undefined;
+                    mouse.y = undefined;
+                });
+
+                resizeAurora();
+                animateAurora();
+            }
+        });
+    </script>
+
+</body>
+</html>
